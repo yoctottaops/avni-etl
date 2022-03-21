@@ -1,0 +1,67 @@
+package org.avniproject.etl.repository;
+
+import org.avniproject.etl.domain.metadata.ColumnMetadata;
+import org.avniproject.etl.domain.metadata.TableMetadata;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Repository
+public class ColumnMetadataRepository {
+    private JdbcTemplate jdbcTemplate;
+
+    public ColumnMetadataRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public TableMetadata saveColumns(TableMetadata tableMetadata) {
+        tableMetadata.setColumnMetadataList(tableMetadata
+                .getColumnMetadataList()
+                .stream()
+                .map(columnMetadata -> saveColumn(tableMetadata.getId(), columnMetadata))
+                .collect(Collectors.toList()));
+        return tableMetadata;
+    }
+
+    private ColumnMetadata saveColumn(Integer tableId, ColumnMetadata columnMetadata) {
+        return columnMetadata.getId() == null ? insert(tableId, columnMetadata) : update(tableId, columnMetadata);
+    }
+
+    private ColumnMetadata update(Integer tableId, ColumnMetadata columnMetadata) {
+        String sql = "update column_metadata\n" +
+                "set name = :name,\n" +
+                "    type = :type,\n" +
+                "    table_id = :table_id,\n" +
+                "    concept_id = :concept_id\n" +
+                "where id = :id;";
+        new NamedParameterJdbcTemplate(jdbcTemplate).update(sql, addParameters(tableId, columnMetadata));
+
+        return columnMetadata;
+    }
+
+    private ColumnMetadata insert(Integer tableId, ColumnMetadata columnMetadata) {
+        Number id = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("column_metadata")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(addParameters(tableId, columnMetadata));
+        columnMetadata.setId(id.intValue());
+
+        return columnMetadata;
+    }
+
+    private Map<String, Object> addParameters(Integer tableId, ColumnMetadata columnMetadata) {
+        Map<String, Object> parameters = new HashMap<>(1);
+        parameters.put("id", columnMetadata.getId());
+        parameters.put("table_id", tableId);
+        parameters.put("name", columnMetadata.getName());
+        parameters.put("type", columnMetadata.getType());
+        parameters.put("concept_id", columnMetadata.getConceptId());
+
+        return parameters;
+    }
+}
