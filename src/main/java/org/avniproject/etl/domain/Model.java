@@ -17,4 +17,11 @@ public class Model {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    protected static boolean equalsIgnoreNulls(Object a, Object b) {
+        if (a == null && b == null) return true;
+        if (a == null && b != null) return false;
+        if (a != null && b == null) return false;
+        return a.equals(b);
+    }
 }

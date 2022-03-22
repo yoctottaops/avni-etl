@@ -1,10 +1,13 @@
 package org.avniproject.etl.domain.metadata;
 
 import org.avniproject.etl.domain.Model;
+import org.avniproject.etl.domain.metadata.diff.AddColumn;
 import org.avniproject.etl.domain.metadata.diff.Diff;
+import org.avniproject.etl.domain.metadata.diff.RenameTable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TableMetadata extends Model {
@@ -13,13 +16,6 @@ public class TableMetadata extends Model {
     }
 
     public TableMetadata() {
-    }
-
-    boolean equalsIgnoreNulls(Object a, Object b) {
-        if (a == null && b == null) return true;
-        if (a == null && b != null) return false;
-        if (a != null && b == null) return false;
-        return a.equals(b);
     }
 
     public boolean matches(TableMetadata realTable) {
@@ -31,9 +27,25 @@ public class TableMetadata extends Model {
                 && equalsIgnoreNulls(realTable.getProgramId(), this.programId);
     }
 
-    //todo: implement this
-    public List<Diff> findChanges(TableMetadata tableMetadata) {
-        return new ArrayList<>();
+    public List<Diff> findChanges(TableMetadata currentTable) {
+        ArrayList<Diff> diffs = new ArrayList<>();
+        if (!currentTable.getName().equals(getName())) {
+            diffs.add(new RenameTable(currentTable.getName(), getName()));
+        }
+
+        getColumnMetadataList().forEach(columnMetadata -> {
+            Optional<ColumnMetadata> matchingTable = currentTable.findMatchingTable(columnMetadata);
+            if (!matchingTable.isPresent()) {
+                diffs.add(new AddColumn(getName(), columnMetadata.getColumn()));
+            } else {
+                diffs.addAll(columnMetadata.findChanges(this, matchingTable.get()));
+            }
+        });
+        return diffs;
+    }
+
+    private Optional<ColumnMetadata> findMatchingTable(ColumnMetadata columnMetadata) {
+        return this.columnMetadataList.stream().filter(thisColumn -> thisColumn.matches(columnMetadata)).findFirst();
     }
 
     public List<Column> getColumns() {

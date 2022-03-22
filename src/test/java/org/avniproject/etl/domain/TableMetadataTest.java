@@ -1,7 +1,12 @@
 package org.avniproject.etl.domain;
 
 import org.avniproject.etl.builder.domain.metadata.TableMetadataBuilder;
+import org.avniproject.etl.domain.metadata.Column;
+import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
+import org.avniproject.etl.domain.metadata.diff.AddColumn;
+import org.avniproject.etl.domain.metadata.diff.Diff;
+import org.avniproject.etl.domain.metadata.diff.RenameTable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -48,10 +53,31 @@ public class TableMetadataTest {
                 }
             });
         });
-
-
     }
 
+    @Test
+    public void shouldRenameTableIfNecessary() {
+        TableMetadata oldTable = new TableMetadata();
+        oldTable.setName("oldTable");
+        TableMetadata newTable = new TableMetadata();
+        newTable.setName("newTable");
 
+        List<Diff> changes = newTable.findChanges(oldTable);
+        assertThat(changes.size(), is(1));
+        assertThat(changes.get(0), instanceOf(RenameTable.class));
+    }
 
+    @Test
+    public void shouldAddColumnIfMissing() {
+        TableMetadata oldTable = new TableMetadataBuilder().forPerson().build();
+        TableMetadata newTable = new TableMetadataBuilder().forPerson().build();
+        newTable.addColumnMetadata(List.of(new ColumnMetadata(new Column("newColumn", Column.Type.text), 24)));
+
+        List<Diff> changes = newTable.findChanges(oldTable);
+
+        assertThat(changes.size(), is(1));
+        Diff diff = changes.get(0);
+        assertThat(diff, instanceOf(AddColumn.class));
+        assertThat(diff.getSql(), containsString("newColumn"));
+    }
 }

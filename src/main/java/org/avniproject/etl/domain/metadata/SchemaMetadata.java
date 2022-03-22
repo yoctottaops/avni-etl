@@ -2,7 +2,6 @@ package org.avniproject.etl.domain.metadata;
 
 import org.avniproject.etl.domain.metadata.diff.CreateTable;
 import org.avniproject.etl.domain.metadata.diff.Diff;
-import org.avniproject.etl.domain.metadata.diff.RenameTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +40,6 @@ public class SchemaMetadata {
         Optional<TableMetadata> optionalMatchingTable = currentSchema.findMatchingTable(newTable);
         if (optionalMatchingTable.isPresent()) {
             TableMetadata matchingTable = optionalMatchingTable.get();
-            if (!matchingTable.getName().equals(newTable.getName())) {
-                diffs.add(new RenameTable(matchingTable.getName(), newTable.getName()));
-            }
             diffs.addAll(newTable.findChanges(matchingTable));
         } else {
             diffs.add(new CreateTable(newTable.getName(), newTable.getColumns()));

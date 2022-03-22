@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 public class SchemaMetadataTest {
 
@@ -46,4 +47,24 @@ public class SchemaMetadataTest {
 
         assertThat(changes.size(), is(0));
     }
+
+    @Test
+    public void shouldCallAndGetDiffFromTableMetadata() {
+        TableMetadata oldTableMetadata = mock(TableMetadata.class);
+        TableMetadata newTableMetadata = mock(TableMetadata.class);
+        when(newTableMetadata.matches(oldTableMetadata)).thenReturn(true);
+        when(oldTableMetadata.matches(newTableMetadata)).thenReturn(true);
+        Diff diffFromTableMetadata = mock(Diff.class);
+        when(newTableMetadata.findChanges(oldTableMetadata)).thenReturn(List.of(diffFromTableMetadata));
+
+        SchemaMetadata oldSchema = new SchemaMetadata(Arrays.asList(oldTableMetadata));
+        SchemaMetadata newSchema = new SchemaMetadata(Arrays.asList(newTableMetadata));
+
+        List<Diff> changes = newSchema.findChanges(oldSchema);
+
+        verify(newTableMetadata).findChanges(oldTableMetadata);
+        assertThat(changes, contains(diffFromTableMetadata));
+
+    }
+
 }
