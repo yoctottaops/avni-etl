@@ -4,17 +4,9 @@ import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
 
 public class Organisation {
-    private SchemaMetadata currentSchemaMetadata;
     private OrganisationIdentity organisationIdentity;
+    private SchemaMetadata schemaMetadata;
     private SchemaDataSyncStatus syncStatus;
-
-    public SchemaMetadata getCurrentSchemaMetadata() {
-        return currentSchemaMetadata;
-    }
-
-    public void setCurrentSchemaMetadata(SchemaMetadata currentSchemaMetadata) {
-        this.currentSchemaMetadata = currentSchemaMetadata;
-    }
 
     public OrganisationIdentity getOrganisationIdentity() {
         return organisationIdentity;
@@ -22,6 +14,14 @@ public class Organisation {
 
     public void setOrganisationIdentity(OrganisationIdentity organisationIdentity) {
         this.organisationIdentity = organisationIdentity;
+    }
+
+    public SchemaMetadata getSchemaMetadata() {
+        return schemaMetadata;
+    }
+
+    public void setSchemaMetadata(SchemaMetadata currentSchemaMetadata) {
+        this.schemaMetadata = currentSchemaMetadata;
     }
 
     public SchemaDataSyncStatus getSyncStatus() {

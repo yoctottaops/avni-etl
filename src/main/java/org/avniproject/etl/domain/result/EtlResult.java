@@ -1,7 +1,7 @@
 package org.avniproject.etl.domain.result;
 
 public class EtlResult {
-    private Boolean isSuccess;
+    private final Boolean isSuccess;
 
     public EtlResult(Boolean isSuccess) {
         this.isSuccess = isSuccess;

@@ -1,17 +1,29 @@
 package org.avniproject.etl.domain;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 public class ContextHolder {
-    private static ThreadLocal<OrganisationIdentity>  organisationIdentity = new ThreadLocal<>();
+    private static final ThreadLocal<OrganisationIdentity>  organisationIdentity = new ThreadLocal<>();
+    private static Date startTime;
+
 
     public void setOrganisationIdentity(OrganisationIdentity organisationIdentity) {
-        this.organisationIdentity.set(organisationIdentity);
+        ContextHolder.organisationIdentity.set(organisationIdentity);
     }
 
     private ContextHolder() {
     }
 
-    public static void create(OrganisationIdentity context) {
-        organisationIdentity.set(context);
+    public static void create(OrganisationIdentity identity) {
+        organisationIdentity.set(identity);
+        startTime = toDate(LocalDateTime.now().minus(Duration.ofSeconds(10)));
+    }
+
+    private static Date toDate(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public static OrganisationIdentity getOrganisationIdentity() {
@@ -24,5 +36,9 @@ public class ContextHolder {
 
     public static String getDbSchema() {
         return organisationIdentity.get().getSchemaName();
+    }
+
+    public static Date getStartTime() {
+        return startTime;
     }
 }

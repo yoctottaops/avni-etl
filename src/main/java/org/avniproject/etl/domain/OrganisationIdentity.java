@@ -9,9 +9,9 @@ public class OrganisationIdentity extends Model{
         Organisation,
         OrganisationGroup
     }
-    private String dbUser;
-    private String schemaName;
-    private OrganisationType organisationType;
+    private final String dbUser;
+    private final String schemaName;
+    private final OrganisationType organisationType;
 
     public OrganisationIdentity(Integer id, String dbUser, String schemaName, OrganisationType organisationType) {
         super(id);

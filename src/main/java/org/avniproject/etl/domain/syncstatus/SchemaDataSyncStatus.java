@@ -1,6 +1,8 @@
 package org.avniproject.etl.domain.syncstatus;
 
+import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.Model;
+import org.avniproject.etl.domain.metadata.TableMetadata;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -10,10 +12,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SchemaDataSyncStatus extends Model {
-    private List<EntitySyncStatus> entitySyncStatusList;
+    private final List<EntitySyncStatus> entitySyncStatusList;
 
     public SchemaDataSyncStatus(List<EntitySyncStatus> entitySyncStatusList) {
         this.entitySyncStatusList = entitySyncStatusList;
+    }
+
+    public EntitySyncStatus getEntitySyncStatus(TableMetadata tableMetadata) {
+        return entitySyncStatusList
+                .stream()
+                .filter(entitySyncStatus -> entitySyncStatus.getTableMetadataId().equals(tableMetadata.getId()))
+                .findFirst()
+                .orElse(new EntitySyncStatus(tableMetadata.getId(), new Date("1970-01-01"), ContextHolder.getStartTime(), EntitySyncStatus.Status.Running));
     }
 
     public static SchemaDataSyncStatus createNewFrom(SchemaDataSyncStatus oldSyncStatus) {

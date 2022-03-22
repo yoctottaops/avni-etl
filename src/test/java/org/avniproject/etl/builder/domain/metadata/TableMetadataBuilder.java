@@ -10,14 +10,14 @@ import static java.lang.Math.random;
 import static java.lang.Math.round;
 
 public class TableMetadataBuilder {
-    private Integer id = Math.toIntExact(round(random() * 1000));
+    private final Integer id = Math.toIntExact(round(random() * 1000));
     private String name = "Person";
     private TableMetadata.Type type = TableMetadata.Type.Person;
     private Integer subjectTypeId = 1;
     private Integer programId = null;
     private Integer encounterTypeId = null;
     private Integer formId = 1;
-    private List<ColumnMetadata> columnMetadataList = new ArrayList<>();
+    private final List<ColumnMetadata> columnMetadataList = new ArrayList<>();
 
     public TableMetadataBuilder forPerson() {
         name = "Person";

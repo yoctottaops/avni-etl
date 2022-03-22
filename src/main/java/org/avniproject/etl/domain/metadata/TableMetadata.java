@@ -34,17 +34,17 @@ public class TableMetadata extends Model {
         }
 
         getColumnMetadataList().forEach(columnMetadata -> {
-            Optional<ColumnMetadata> matchingTable = currentTable.findMatchingTable(columnMetadata);
-            if (!matchingTable.isPresent()) {
+            Optional<ColumnMetadata> matchingColumn = currentTable.findMatchingColumn(columnMetadata);
+            if (!matchingColumn.isPresent()) {
                 diffs.add(new AddColumn(getName(), columnMetadata.getColumn()));
             } else {
-                diffs.addAll(columnMetadata.findChanges(this, matchingTable.get()));
+                diffs.addAll(columnMetadata.findChanges(this, matchingColumn.get()));
             }
         });
         return diffs;
     }
 
-    private Optional<ColumnMetadata> findMatchingTable(ColumnMetadata columnMetadata) {
+    private Optional<ColumnMetadata> findMatchingColumn(ColumnMetadata columnMetadata) {
         return this.columnMetadataList.stream().filter(thisColumn -> thisColumn.matches(columnMetadata)).findFirst();
     }
 
@@ -66,7 +66,7 @@ public class TableMetadata extends Model {
         ProgramEncounterCancellation,
         Encounter,
         EncounterCancellation,
-        Address;
+        Address
     }
 
     private String name;

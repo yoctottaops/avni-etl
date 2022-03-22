@@ -5,41 +5,31 @@ import org.avniproject.etl.domain.Model;
 import java.util.Date;
 
 public class EntitySyncStatus extends Model {
-    public enum EntityType {
-        Address,
-        Catchment,
-        Concept,
-        Users,
-        Gender,
-        Subject,
-        Checklist,
-        Encounter,
-        FormMapping,
-        FormElement,
-        ProgramEnrolment,
-        ProgramEncounter,
-    }
-
     public enum Status {
         Running,
         Success,
         Failure
     }
 
-    private EntityType entityName;
-    private Date syncStartTime;
-    private Date syncEndTime;
+    private final Integer tableMetadataId;
+    private final Date syncStartTime;
+    private final Date syncEndTime;
     private Status syncStatus;
 
-    public EntitySyncStatus(EntityType entityName, Date syncStartTime, Date syncEndTime, Status syncStatus) {
-        this.entityName = entityName;
+    public EntitySyncStatus(Integer id, Integer tableMetadataId, Date syncStartTime, Date syncEndTime, Status syncStatus) {
+        super(id);
+        this.tableMetadataId = tableMetadataId;
         this.syncStartTime = syncStartTime;
         this.syncEndTime = syncEndTime;
         this.syncStatus = syncStatus;
     }
 
+    public EntitySyncStatus(Integer tableMetadataId, Date syncStartTime, Date syncEndTime, Status syncStatus) {
+        this(null, tableMetadataId, syncStartTime, syncEndTime, syncStatus);
+    }
+
     public EntitySyncStatus nextStatus(EntitySyncStatus entitySyncStatus, Date tillDate) {
-        return new EntitySyncStatus(entitySyncStatus.entityName, entitySyncStatus.syncEndTime, tillDate, Status.Running);
+        return new EntitySyncStatus(getId(), tableMetadataId, entitySyncStatus.syncEndTime, tillDate, Status.Running);
     }
 
     public void markSuccess() {
@@ -48,5 +38,9 @@ public class EntitySyncStatus extends Model {
 
     public void markFailure() {
         this.syncStatus = Status.Failure;
+    }
+
+    public Integer getTableMetadataId() {
+        return tableMetadataId;
     }
 }

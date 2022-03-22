@@ -18,9 +18,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 		matchIfMissing = true)
 public class EtlApplication implements CommandLineRunner {
 
-	private static Logger log = LoggerFactory.getLogger(EtlApplication.class);
+	private static final Logger log = LoggerFactory.getLogger(EtlApplication.class);
 
-	private EtlService etlService;
+	private final EtlService etlService;
 
 	public EtlApplication(EtlService etlService) {
 		this.etlService = etlService;

@@ -1,7 +1,8 @@
 package org.avniproject.etl.domain.metadata.diff;
 
-import static org.avniproject.etl.domain.metadata.diff.Strings.END_STATEMENT;
-import static org.avniproject.etl.domain.metadata.diff.Strings.QUOTE;
+import org.avniproject.etl.domain.ContextHolder;
+
+import static org.avniproject.etl.domain.metadata.diff.Strings.*;
 
 public class RenameColumn implements Diff {
     private final String tableName;
@@ -18,6 +19,8 @@ public class RenameColumn implements Diff {
     public String getSql() {
         return new StringBuffer()
                 .append("alter table ")
+                .append(ContextHolder.getDbSchema())
+                .append(DOT)
                 .append(tableName)
                 .append(" rename column ")
                 .append(QUOTE)

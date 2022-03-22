@@ -18,9 +18,10 @@ public class TableMetadataMapper {
         tableMetadata.setName((String) tableDetails.get("table_name"));
 
         tableMetadata.addColumnMetadata(columns.stream()
-                .filter(stringObjectMap -> stringObjectMap.get("concept_id") != null)
+                .filter(stringObjectMap -> stringObjectMap.get("column_id") != null)
                 .map(
                         column -> new ColumnMetadata(
+                                (Integer) column.get("id"),
                                 new Column((String) column.get("concept_name"),
                                         Column.Type.valueOf((String) column.get("column_type"))),
                                 (Integer) column.get("concept_id")))

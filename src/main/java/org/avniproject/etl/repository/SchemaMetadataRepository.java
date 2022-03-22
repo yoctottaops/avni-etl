@@ -21,9 +21,9 @@ import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
 @Repository
 public class SchemaMetadataRepository {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    private ColumnMetadataRepository columnMetadataRepository;
+    private final ColumnMetadataRepository columnMetadataRepository;
 
     @Autowired
     public SchemaMetadataRepository(JdbcTemplate jdbcTemplate, ColumnMetadataRepository columnMetadataRepository) {

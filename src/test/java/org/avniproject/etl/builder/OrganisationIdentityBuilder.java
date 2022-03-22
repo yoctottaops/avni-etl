@@ -5,8 +5,8 @@ import org.avniproject.etl.domain.OrganisationIdentity;
 public class OrganisationIdentityBuilder {
     private Integer id = 1;
     private String dbUser = "dbUser";
-    private String schemaName = "schema";
-    private OrganisationIdentity.OrganisationType organisationType = OrganisationIdentity.OrganisationType.Organisation;
+    private final String schemaName = "schema";
+    private final OrganisationIdentity.OrganisationType organisationType = OrganisationIdentity.OrganisationType.Organisation;
 
     public OrganisationIdentityBuilder withId(Integer id) {
         this.id = id;

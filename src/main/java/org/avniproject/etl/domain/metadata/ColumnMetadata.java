@@ -12,9 +12,14 @@ public class ColumnMetadata extends Model {
     private final Column column;
     private Integer conceptId;
 
-    public ColumnMetadata(Column column, Integer conceptId) {
+    public ColumnMetadata(Integer id, Column column, Integer conceptId) {
+        super(id);
         this.column = column;
         this.conceptId = conceptId;
+    }
+
+    public ColumnMetadata(Column column, Integer conceptId) {
+        this(null, column, conceptId);
     }
 
     public Integer getConceptId() {

@@ -1,5 +1,6 @@
 package org.avniproject.etl.domain.metadata.diff;
 
+import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.metadata.Column;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.*;
@@ -17,6 +18,8 @@ public class AddColumn implements Diff {
     public String getSql() {
         return new StringBuffer()
                 .append("alter table ")
+                .append(ContextHolder.getDbSchema())
+                .append(DOT)
                 .append(tableName)
                 .append(" add column ")
                 .append(QUOTE)

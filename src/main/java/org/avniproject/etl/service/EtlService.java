@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EtlService {
-    private OrganisationRepository organisationRepository;
-    private OrganisationFactory organisationFactory;
-    private SchemaMigrationService schemaMigrationService;
-    private SyncService syncService;
+    private final OrganisationRepository organisationRepository;
+    private final OrganisationFactory organisationFactory;
+    private final SchemaMigrationService schemaMigrationService;
+    private final SyncService syncService;
 
     @Autowired
     public EtlService(OrganisationRepository organisationRepository, OrganisationFactory organisationFactory, SchemaMigrationService schemaMigrationService, SyncService syncService) {

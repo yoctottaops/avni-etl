@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SchemaMigrationService {
-    private SchemaMetadataRepository schemaMetadataRepository;
+    private final SchemaMetadataRepository schemaMetadataRepository;
 
     @Autowired
     public SchemaMigrationService(SchemaMetadataRepository schemaMetadataRepository) {
@@ -22,7 +22,7 @@ public class SchemaMigrationService {
         SchemaMetadata newSchemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
 
         schemaMetadataRepository.applyChanges(newSchemaMetadata
-                .findChanges(organisation.getCurrentSchemaMetadata()));
+                .findChanges(organisation.getSchemaMetadata()));
 
         schemaMetadataRepository.save(newSchemaMetadata);
 

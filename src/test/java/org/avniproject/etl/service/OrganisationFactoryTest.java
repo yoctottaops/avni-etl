@@ -3,6 +3,7 @@ package org.avniproject.etl.service;
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
+import org.avniproject.etl.repository.EntitySyncStatusRepository;
 import org.avniproject.etl.repository.SchemaMetadataRepository;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ public class OrganisationFactoryTest {
     public void populatesOrganisationIdentityInOrganisation() {
         SchemaMetadataRepository schemaMetadataRepository = mock(SchemaMetadataRepository.class);
         OrganisationIdentity organisationIdentity = new OrganisationIdentityBuilder().build();
-        Organisation organisation = new OrganisationFactory(schemaMetadataRepository).create(organisationIdentity);
+        Organisation organisation = new OrganisationFactory(schemaMetadataRepository, mock(EntitySyncStatusRepository.class)).create(organisationIdentity);
         verify(schemaMetadataRepository).getExistingSchemaMetadata();
         assertThat(organisation.getOrganisationIdentity(), is(organisationIdentity));
     }

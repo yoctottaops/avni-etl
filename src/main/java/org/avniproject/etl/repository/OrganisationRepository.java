@@ -13,7 +13,7 @@ import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
 @Repository
 public class OrganisationRepository {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public OrganisationRepository(JdbcTemplate jdbcTemplate) {

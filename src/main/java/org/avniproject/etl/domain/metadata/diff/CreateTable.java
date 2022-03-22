@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import static org.avniproject.etl.domain.metadata.diff.Strings.*;
 
 public class CreateTable implements Diff {
-    private List<Column> columns = new ArrayList<>();
+    private final List<Column> columns = new ArrayList<>();
     private String name = "";
 
     public CreateTable(String name, List<Column> columns) {

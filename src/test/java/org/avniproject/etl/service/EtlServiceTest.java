@@ -57,11 +57,8 @@ public class EtlServiceTest {
     @Test
     public void callsOrganisationFactoryToCreateAllOrganisations() {
         List<OrganisationIdentity> listOfOrganisations = Arrays.asList(
-                new OrganisationIdentity[]{
-                        new OrganisationIdentityBuilder().withId(1).withDbUser("a").build(),
-                        new OrganisationIdentityBuilder().withId(2).withDbUser("b").build()
-                }
-        );
+                new OrganisationIdentityBuilder().withId(1).withDbUser("a").build(),
+                new OrganisationIdentityBuilder().withId(2).withDbUser("b").build());
         OrganisationRepository organisationRepository = mock(OrganisationRepository.class);
         when(organisationRepository.getOrganisationList()).thenReturn(listOfOrganisations);
         OrganisationFactory organisationFactory = mock(OrganisationFactory.class);
