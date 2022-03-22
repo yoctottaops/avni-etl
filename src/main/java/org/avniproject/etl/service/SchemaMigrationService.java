@@ -26,8 +26,6 @@ public class SchemaMigrationService {
 
         schemaMetadataRepository.save(newSchemaMetadata);
 
-
-
         return organisation;
     }
 

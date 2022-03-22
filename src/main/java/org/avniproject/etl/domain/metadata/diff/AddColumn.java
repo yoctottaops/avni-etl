@@ -2,7 +2,7 @@ package org.avniproject.etl.domain.metadata.diff;
 
 import org.avniproject.etl.domain.metadata.Column;
 
-import static org.avniproject.etl.domain.metadata.diff.Strings.END_STATEMENT;
+import static org.avniproject.etl.domain.metadata.diff.Strings.*;
 
 public class AddColumn implements Diff {
     private final String tableName;
@@ -19,7 +19,10 @@ public class AddColumn implements Diff {
                 .append("alter table ")
                 .append(tableName)
                 .append(" add column ")
+                .append(QUOTE)
                 .append(column.getName())
+                .append(QUOTE)
+                .append(SPACE)
                 .append(column.getType().typeString())
                 .append(END_STATEMENT).toString();
     }
