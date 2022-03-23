@@ -61,7 +61,7 @@ public class ColumnMetadataRepository {
         parameters.put("db_user", ContextHolder.getDbUser());
         parameters.put("table_id", tableId);
         parameters.put("name", columnMetadata.getName());
-        parameters.put("type", columnMetadata.getType());
+        parameters.put("type", columnMetadata.getType().toString());
         parameters.put("concept_id", columnMetadata.getConceptId());
 
         return parameters;

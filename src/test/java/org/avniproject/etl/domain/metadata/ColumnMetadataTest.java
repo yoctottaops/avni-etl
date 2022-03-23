@@ -29,4 +29,10 @@ class ColumnMetadataTest {
         assertThat(changes.get(0), instanceOf(RenameColumn.class));
         assertThat(changes.get(0).getSql(), is("alter table schema.table rename column \"oldName\" to \"newName\";"));
     }
+
+    @Test
+    public void shouldPopulateColumnDetails() {
+        ColumnMetadata oldColumn = new ColumnMetadata(1, new Column("oldName", Column.Type.text), 100);
+        ColumnMetadata newColumn = new ColumnMetadata(null, new Column("oldName", Column.Type.text), 100);
+    }
 }

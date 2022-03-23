@@ -3,6 +3,7 @@ package org.avniproject.etl.service;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
+import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.repository.SchemaMetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class SchemaMigrationService {
     private final SchemaMetadataRepository schemaMetadataRepository;
+    private final OrganisationRepository organisationRepository;
 
     @Autowired
-    public SchemaMigrationService(SchemaMetadataRepository schemaMetadataRepository) {
+    public SchemaMigrationService(SchemaMetadataRepository schemaMetadataRepository, OrganisationRepository organisationRepository) {
         this.schemaMetadataRepository = schemaMetadataRepository;
+        this.organisationRepository = organisationRepository;
     }
 
     public Organisation migrate(Organisation organisation) {
@@ -24,13 +27,15 @@ public class SchemaMigrationService {
         schemaMetadataRepository.applyChanges(newSchemaMetadata
                 .findChanges(organisation.getSchemaMetadata()));
 
-        schemaMetadataRepository.save(newSchemaMetadata);
+        organisation.applyNewSchema(newSchemaMetadata);
+
+        schemaMetadataRepository.save(organisation.getSchemaMetadata());
 
         return organisation;
     }
 
     private void ensureSchemaExists(OrganisationIdentity organisationIdentity) {
-        schemaMetadataRepository.createDBUser(organisationIdentity.getDbUser(), "password");
-        schemaMetadataRepository.createImplementationSchema(organisationIdentity.getSchemaName(), organisationIdentity.getDbUser());
+        organisationRepository.createDBUser(organisationIdentity.getDbUser(), "password");
+        organisationRepository.createImplementationSchema(organisationIdentity.getSchemaName(), organisationIdentity.getDbUser());
     }
 }

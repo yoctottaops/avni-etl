@@ -34,20 +34,6 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldRunStoredProcedureToCreateDbUser() {
-        schemaMetadataRepository.createDBUser("newuser", "password");
-    }
-
-    @Test
-    public void shouldNotFailWhenCreatingSchemaMultipleTimes() {
-        schemaMetadataRepository.createDBUser("newuser", "password");
-        schemaMetadataRepository.createImplementationSchema("newuser", "newuser");
-
-        schemaMetadataRepository.createDBUser("newuser", "password");
-        schemaMetadataRepository.createImplementationSchema("newuser", "newuser");
-    }
-
-    @Test
     public void shouldNotHaveAnySchemaDiffsIfSchemaMetadataHasBeenSavedOnce() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
         schemaMetadataRepository.save(schemaMetadata);

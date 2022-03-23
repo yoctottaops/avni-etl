@@ -90,14 +90,6 @@ public class SchemaMetadataRepository {
         return new SchemaMetadata(tables);
     }
 
-    public void createDBUser(String name, String pass) {
-        jdbcTemplate.queryForMap("select create_db_user(?, ?)", name, pass);
-    }
-
-    public void createImplementationSchema(String schemaName, String dbUser) {
-        jdbcTemplate.queryForMap("select create_implementation_schema(?, ?)", schemaName, dbUser);
-    }
-
     public void applyChanges(List<Diff> changes) {
         changes.forEach(change -> {
             jdbcTemplate.execute(change.getSql());
@@ -124,17 +116,15 @@ public class SchemaMetadataRepository {
 
     private TableMetadata update(TableMetadata tableMetadata) {
         String sql = "update table_metadata\n" +
-                "set db_user           = :db_user,\n" +
-                "    name              = :name,\n" +
+                "set name              = :name,\n" +
                 "    type              = :type,\n" +
                 "    subject_type_id   = :subject_type_id,\n" +
                 "    program_id        = :program_id,\n" +
                 "    encounter_type_id = :encounter_type_id,\n" +
                 "    form_id           = :form_id\n" +
                 "where id = :id;";
-        BeanPropertySqlParameterSource paramSource = new BeanPropertySqlParameterSource(tableMetadata);
 
-        new NamedParameterJdbcTemplate(jdbcTemplate).update(sql, paramSource);
+        new NamedParameterJdbcTemplate(jdbcTemplate).update(sql, addParameters(tableMetadata));
         return tableMetadata;
     }
 
@@ -149,9 +139,10 @@ public class SchemaMetadataRepository {
 
     private Map<String, Object> addParameters(TableMetadata tableMetadata) {
         Map<String, Object> parameters = new HashMap<>(1);
+        parameters.put("id", tableMetadata.getId());
         parameters.put("db_user", ContextHolder.getDbUser());
         parameters.put("name", tableMetadata.getName());
-        parameters.put("type", tableMetadata.getType());
+        parameters.put("type", tableMetadata.getType().toString());
         parameters.put("subject_type_id", tableMetadata.getSubjectTypeId());
         parameters.put("program_id", tableMetadata.getProgramId());
         parameters.put("encounter_type_id", tableMetadata.getEncounterTypeId());

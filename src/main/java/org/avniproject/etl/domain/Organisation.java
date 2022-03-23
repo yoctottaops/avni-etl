@@ -31,4 +31,9 @@ public class Organisation {
     public void setSyncStatus(SchemaDataSyncStatus syncStatus) {
         this.syncStatus = syncStatus;
     }
+
+    public void applyNewSchema(SchemaMetadata newSchemaMetadata) {
+        newSchemaMetadata.mergeWith(schemaMetadata);
+        this.setSchemaMetadata(newSchemaMetadata);
+    }
 }

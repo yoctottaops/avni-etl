@@ -54,4 +54,13 @@ public class SchemaMetadata {
             return diffs;
         };
     }
+
+    public void mergeWith(SchemaMetadata oldSchemaMetadata) {
+        getTableMetadata()
+                .stream()
+                .forEach(newTable ->
+                        oldSchemaMetadata
+                                .findMatchingTable(newTable)
+                                .ifPresent(oldTable -> newTable.mergeWith(oldTable)));
+    }
 }

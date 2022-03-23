@@ -33,6 +33,14 @@ public class OrganisationRepository {
         return organisationIdentityMapper;
     }
 
+    public void createDBUser(String name, String pass) {
+        jdbcTemplate.queryForMap("select create_db_user(?, ?)", name, pass);
+    }
+
+    public void createImplementationSchema(String schemaName, String dbUser) {
+        jdbcTemplate.queryForMap("select create_implementation_schema(?, ?)", schemaName, dbUser);
+    }
+
     //Written for testing of runInOrgContext. Will remove when real queries come in
     public Integer getCountOfOrganisationsWithSetRole() {
         return  runInOrgContext(() -> jdbcTemplate.queryForObject("select count(*) from organisation", Integer.class), jdbcTemplate);

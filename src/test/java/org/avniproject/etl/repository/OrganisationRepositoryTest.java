@@ -41,4 +41,18 @@ public class OrganisationRepositoryTest extends BaseIntegrationTest {
         ContextHolder.create(organisationList.stream().filter(organisationIdentity -> organisationIdentity.getDbUser().equals("orgb")).findFirst().get());
         assertThat(organisationRepository.getCountOfOrganisationsWithSetRole(), is(1));
     }
+
+    @Test
+    public void shouldRunStoredProcedureToCreateDbUser() {
+        organisationRepository.createDBUser("newuser", "password");
+    }
+
+    @Test
+    public void shouldNotFailWhenCreatingSchemaMultipleTimes() {
+        organisationRepository.createDBUser("newuser", "password");
+        organisationRepository.createImplementationSchema("newuser", "newuser");
+
+        organisationRepository.createDBUser("newuser", "password");
+        organisationRepository.createImplementationSchema("newuser", "newuser");
+    }
 }

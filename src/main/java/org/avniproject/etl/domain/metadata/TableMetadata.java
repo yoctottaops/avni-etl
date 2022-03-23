@@ -55,6 +55,16 @@ public class TableMetadata extends Model {
                 .collect(Collectors.toList());
     }
 
+    public void mergeWith(TableMetadata oldTableMetadata) {
+        setId(oldTableMetadata.getId());
+        getColumnMetadataList()
+                .stream()
+                .forEach(newColumn ->
+                        oldTableMetadata
+                                .findMatchingColumn(newColumn)
+                                .ifPresent(oldColumn -> newColumn.mergeWith(oldColumn)));
+    }
+
     public enum Type {
         IndividualProfile,
         Person,

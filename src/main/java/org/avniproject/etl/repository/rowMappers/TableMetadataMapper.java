@@ -16,12 +16,13 @@ public class TableMetadataMapper {
         populateCommonColumns(tableMetadata, tableDetails);
 
         tableMetadata.setName((String) tableDetails.get("table_name"));
+        tableMetadata.setId((Integer) tableDetails.get("table_id"));
 
         tableMetadata.addColumnMetadata(columns.stream()
                 .filter(stringObjectMap -> stringObjectMap.get("column_id") != null)
                 .map(
                         column -> new ColumnMetadata(
-                                (Integer) column.get("id"),
+                                (Integer) column.get("column_id"),
                                 new Column((String) column.get("concept_name"),
                                         Column.Type.valueOf((String) column.get("column_type"))),
                                 (Integer) column.get("concept_id")))
