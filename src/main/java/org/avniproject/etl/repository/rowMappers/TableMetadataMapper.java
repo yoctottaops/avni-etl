@@ -23,9 +23,13 @@ public class TableMetadataMapper {
                 .map(
                         column -> new ColumnMetadata(
                                 (Integer) column.get("column_id"),
-                                new Column((String) column.get("concept_name"),
-                                        Column.Type.valueOf((String) column.get("column_type"))),
-                                (Integer) column.get("concept_id")))
+                                new Column(
+                                        (String) column.get("concept_name"),
+                                        Column.Type.valueOf((String) column.get("column_type"))
+                                ),
+                                (Integer) column.get("concept_id"),
+                                column.get("concept_type") == null? null: ColumnMetadata.ConceptType.valueOf((String) column.get("concept_type")),
+                                (String) column.get("concept_uuid")))
                 .collect(Collectors.toList()));
 
         return tableMetadata;
@@ -42,14 +46,16 @@ public class TableMetadataMapper {
         tableMetadata.setName(table.name(tableDetails));
         tableMetadata.setProgramId((Integer) tableDetails.get("program_id"));
 
-        tableMetadata.addColumnMetadata(table.columns().stream().map(column -> new ColumnMetadata(new Column(column.getName(), column.getType()), null)).collect(Collectors.toList()));
+        tableMetadata.addColumnMetadata(table.columns().stream().map(column -> new ColumnMetadata(new Column(column.getName(), column.getType()), null, null, null)).collect(Collectors.toList()));
         tableMetadata.addColumnMetadata(columns.stream()
                 .filter(stringObjectMap -> stringObjectMap.get("concept_id") != null)
                 .map(
-                        column -> new ColumnMetadata(new Column(
+                        column -> new ColumnMetadata(
+                                null,
                                 (String) column.get("concept_name"),
-                                (ConceptDatatypeMapper.map((String) column.get("element_type")))),
-                                (Integer) column.get("concept_id"))).collect(Collectors.toList()));
+                                (Integer) column.get("concept_id"),
+                                ColumnMetadata.ConceptType.valueOf((String) column.get("element_type")) ,
+                                (String) column.get("concept_uuid"))).collect(Collectors.toList()));
 
         return tableMetadata;
     }

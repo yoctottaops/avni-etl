@@ -63,6 +63,8 @@ public class ColumnMetadataRepository {
         parameters.put("name", columnMetadata.getName());
         parameters.put("type", columnMetadata.getType().toString());
         parameters.put("concept_id", columnMetadata.getConceptId());
+        parameters.put("concept_type", columnMetadata.getConceptType() != null ? columnMetadata.getConceptType().toString() : null);
+        parameters.put("concept_uuid", columnMetadata.getConceptUuid());
 
         return parameters;
     }

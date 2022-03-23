@@ -40,6 +40,7 @@ public class SchemaMetadataRepository {
                 "       fm.enable_approval                                                     enable_approval,\n" +
                 "       c.name                                                                 concept_name,\n" +
                 "       c.id                                                                   concept_id,\n" +
+                "       c.uuid                                                                 concept_uuid,\n" +
                 "       (case when c.data_type = 'Coded' then fe.type else c.data_type end) as element_type\n" +
                 "from form_mapping fm\n" +
                 "         inner join form f on fm.form_id = f.id\n" +
@@ -73,6 +74,7 @@ public class SchemaMetadataRepository {
                 "       tm.subject_type_id   subject_type_id,\n" +
                 "       cm.id                column_id,\n" +
                 "       cm.type              column_type,\n" +
+                "       cm.concept_type      concept_type,\n" +
                 "       cm.concept_id        concept_id,\n" +
                 "       cm.name              concept_name,\n" +
                 "       cm.concept_uuid      concept_uuid\n" +

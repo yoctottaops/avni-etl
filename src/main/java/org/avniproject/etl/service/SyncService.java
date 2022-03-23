@@ -18,5 +18,6 @@ public class SyncService {
     }
 
     private void migrateTable(TableMetadata tableMetadata, SchemaDataSyncStatus syncStatus) {
+
     }
 }

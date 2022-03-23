@@ -65,6 +65,8 @@ public class TableMetadata extends Model {
                                 .ifPresent(oldColumn -> newColumn.mergeWith(oldColumn)));
     }
 
+
+
     public enum Type {
         IndividualProfile,
         Person,
@@ -76,17 +78,16 @@ public class TableMetadata extends Model {
         ProgramEncounterCancellation,
         Encounter,
         EncounterCancellation,
-        Address
+        Address;
     }
-
     private String name;
+
     private Type type;
     private Integer subjectTypeId;
     private Integer programId;
     private Integer encounterTypeId;
     private Integer formId;
     private List<ColumnMetadata> columnMetadataList = new ArrayList<>();
-
     public String getName() {
         return name;
     }
@@ -139,11 +140,19 @@ public class TableMetadata extends Model {
         return columnMetadataList;
     }
 
+    public List<ColumnMetadata> getNonDefaultColumnMetadataList() {
+        return getColumnMetadataList().stream().filter(columnMetadata -> columnMetadata.getConceptId() != null).collect(Collectors.toList());
+    }
+
     public void setColumnMetadataList(List<ColumnMetadata> columnMetadataList) {
         this.columnMetadataList = columnMetadataList;
     }
 
     public void addColumnMetadata(List<ColumnMetadata> columnMetadataList) {
         this.columnMetadataList.addAll(columnMetadataList);
+    }
+
+    public boolean hasNonDefaultColumns() {
+        return !getNonDefaultColumnMetadataList().isEmpty();
     }
 }

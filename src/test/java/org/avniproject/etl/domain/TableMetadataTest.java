@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -72,7 +73,7 @@ public class TableMetadataTest {
         ContextHolder.create(new OrganisationIdentity(1, "dbUser", "schema", OrganisationIdentity.OrganisationType.Organisation));
         TableMetadata oldTable = new TableMetadataBuilder().forPerson().build();
         TableMetadata newTable = new TableMetadataBuilder().forPerson().build();
-        newTable.addColumnMetadata(List.of(new ColumnMetadata(new Column("newColumn", Column.Type.text), 24)));
+        newTable.addColumnMetadata(List.of(new ColumnMetadata(new Column("newColumn", Column.Type.text), 24, ColumnMetadata.ConceptType.Text, UUID.randomUUID().toString())));
 
         List<Diff> changes = newTable.findChanges(oldTable);
 

@@ -11,23 +11,71 @@ import java.util.List;
 public class ColumnMetadata extends Model {
     private final Column column;
     private Integer conceptId;
+    private ConceptType conceptType;
+    private String conceptUuid;
 
-    public ColumnMetadata(Integer id, Column column, Integer conceptId) {
+    public enum ConceptType {
+        Audio,
+        Date,
+        DateTime,
+        Duration,
+        File,
+        GroupAffiliation,
+        Id,
+        Image,
+        Location,
+        MultiSelect,
+        NA,
+        Notes,
+        Numeric,
+        PhoneNumber,
+        SingleSelect,
+        Subject,
+        Text,
+        Time,
+        Video;
+
+        Column.Type getColumnDatatype() {
+            switch (this) {
+                case Numeric:
+                    return Column.Type.integer;
+                case Duration:
+                case Date:
+                    return Column.Type.date;
+                case DateTime:
+                case Time:
+                    return Column.Type.timestamp;
+                case Location:
+                    return Column.Type.point;
+                default:
+                    return Column.Type.text;
+            }
+        }
+
+    }
+
+    public ColumnMetadata(Integer id, Column column, Integer conceptId, ConceptType conceptType, String conceptUuid) {
         super(id);
         this.column = column;
         this.conceptId = conceptId;
+        this.conceptType = conceptType;
+        this.conceptUuid = conceptUuid;
     }
 
-    public ColumnMetadata(Column column, Integer conceptId) {
-        this(null, column, conceptId);
+    public ColumnMetadata(Integer id, String name, Integer conceptId, ConceptType conceptType, String conceptUuid) {
+        this(id, conceptType == null ? new Column(name, null) : new Column(name, conceptType.getColumnDatatype()), conceptId, conceptType, conceptUuid);
+    }
+
+    public ColumnMetadata(Column column, Integer conceptId, ConceptType conceptType, String conceptUuid) {
+        this(null, column, conceptId, conceptType, conceptUuid);
     }
 
     public Integer getConceptId() {
         return conceptId;
     }
 
-    public void setConceptId(Integer conceptId) {
-        this.conceptId = conceptId;
+    public ConceptType getConceptType() {
+        return conceptType;
     }
 
     public Column getColumn() {
@@ -42,6 +90,10 @@ public class ColumnMetadata extends Model {
         return column.getType();
     }
 
+    public String getConceptUuid() {
+        return conceptUuid;
+    }
+
     public boolean matches(ColumnMetadata realColumn) {
         if (realColumn == null) return false;
         if (realColumn.getConceptId() == null && getConceptId() == null) {
@@ -54,7 +106,7 @@ public class ColumnMetadata extends Model {
         if (!getName().equals(oldColumnMetadata.getName())) {
             return List.of(new RenameColumn(newTable.getName(), oldColumnMetadata.getName(), getName()));
         }
-        if(!getType().equals(oldColumnMetadata.getType())) {
+        if (!getType().equals(oldColumnMetadata.getType())) {
             throw new RuntimeException(String.format("Change in datatype detected. Table: %s, Column: %s, Old Type: %s, New Type: %s", newTable.getName(), getName(), getType(), oldColumnMetadata.getType()));
         }
         return Collections.emptyList();
