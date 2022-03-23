@@ -7,7 +7,6 @@ import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -91,30 +90,29 @@ public class SchemaMetadataRepository {
     }
 
     public void applyChanges(List<Diff> changes) {
-        changes.forEach(change -> {
-            jdbcTemplate.execute(change.getSql());
-        });
+        changes.forEach(change -> jdbcTemplate.execute(change.getSql()));
     }
 
     public void save(SchemaMetadata schemaMetadata) {
         schemaMetadata.setTableMetadata(
                 schemaMetadata.getTableMetadata()
                         .stream()
-                        .map(tableMetadata -> save(tableMetadata))
+                        .map(this::save)
                         .collect(Collectors.toList()));
     }
 
-    private TableMetadata save(TableMetadata tableMetadata) {
-        TableMetadata result = tableMetadata.getId() == null ?
-                insert(tableMetadata) :
-                update(tableMetadata);
-
-        columnMetadataRepository.saveColumns(tableMetadata);
-
-        return result;
+    public TableMetadata save(TableMetadata tableMetadata) {
+        return columnMetadataRepository.saveColumns(
+                saveTable(tableMetadata));
     }
 
-    private TableMetadata update(TableMetadata tableMetadata) {
+    private TableMetadata saveTable(TableMetadata tableMetadata) {
+        return tableMetadata.getId() == null ?
+                insert(tableMetadata) :
+                update(tableMetadata);
+    }
+
+    public TableMetadata update(TableMetadata tableMetadata) {
         String sql = "update table_metadata\n" +
                 "set name              = :name,\n" +
                 "    type              = :type,\n" +
@@ -128,7 +126,7 @@ public class SchemaMetadataRepository {
         return tableMetadata;
     }
 
-    private TableMetadata insert(TableMetadata tableMetadata) {
+    public TableMetadata insert(TableMetadata tableMetadata) {
         Number id = new SimpleJdbcInsert(jdbcTemplate).withTableName("table_metadata")
                 .usingGeneratedKeyColumns("id")
                 .executeAndReturnKey(addParameters(tableMetadata));
