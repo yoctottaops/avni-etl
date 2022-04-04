@@ -38,7 +38,7 @@ public class ContextHolder {
         return organisationIdentity.get().getSchemaName();
     }
 
-    public static Date getStartTime() {
+    public static Date dataSyncBoundaryTime() {
         return startTime;
     }
 }

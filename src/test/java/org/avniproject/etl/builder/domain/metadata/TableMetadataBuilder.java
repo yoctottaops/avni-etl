@@ -28,12 +28,26 @@ public class TableMetadataBuilder {
         return this;
     }
 
+    public TableMetadataBuilder forIndividual() {
+        name = "Individual";
+        type = TableMetadata.Type.Individual;
+        programId = null;
+        encounterTypeId = null;
+
+        return this;
+    }
+
     public TableMetadataBuilder forProgramEnrolment(Integer programId) {
         name = "MyProgram";
         type = TableMetadata.Type.ProgramEnrolment;
         this.programId = programId;
         encounterTypeId = null;
 
+        return this;
+    }
+
+    public TableMetadataBuilder withColumnMetadata(ColumnMetadata columnMetadata) {
+        this.columnMetadataList.add(columnMetadata);
         return this;
     }
 

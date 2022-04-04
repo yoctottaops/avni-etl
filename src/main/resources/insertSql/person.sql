@@ -1,9 +1,10 @@
 --[Data Extract Report] Registration
 insert into ${schema_name}.${table_name} (
-                           id, address_id, uuid, first_name, last_name, gender, date_of_birth, age_in_years,
-                           age_in_months, date_of_birth_verified, registration_date, facility_id, registration_location,
-                           subject_type_id, audit_id, subject_type_name, location_name, is_voided,
-                           ${observations_to_insert_list}
+    "id", "address_id", "uuid", "first_name", "last_name", "gender", "date_of_birth", "age_in_years",
+    "age_in_months", "date_of_birth_verified", "registration_date", "registration_location",
+    "is_voided", "created_by_id", "last_modified_by_id", "created_date_time",
+    "last_modified_date_time", "legacy_id"
+    ${observations_to_insert_list}
 )
 (${concept_maps}
 SELECT individual.id                                                                       as "id",
@@ -17,17 +18,17 @@ SELECT individual.id                                                            
        EXTRACT(year FROM age(date_of_birth)) * 12 + EXTRACT(month FROM age(date_of_birth)) as "age_in_months",
        individual.date_of_birth_verified                                                   as "date_of_birth_verified",
        individual.registration_date                                                        as "registration_date",
-       individual.facility_id                                                              as "facility_id",
        individual.registration_location                                                    as "registration_location",
-       individual.subject_type_id                                                          as "subject_type_id",
-       individual.audit_id                                                                 as "audit_id",
-       ost.name                                                                            as "subject_type_name",
-       a.title                                                                             as "location_name",
-       individual.is_voided                                                                as "is_voided"
+       individual.is_voided                                                                as "is_voided",
+       individual.created_by_id                                                            as "created_by_id",
+       individual.last_modified_by_id                                                      as "last_modified_by_id",
+       individual.created_date_time                                                        as "created_date_time",
+       individual.last_modified_date_time                                                  as "last_modified_date_time",
+       individual.legacy_id                                                                as "legacy_id"
        ${selections}
 FROM public.individual individual
   ${cross_join_concept_maps}
-       LEFT OUTER JOIN public.operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
        LEFT OUTER JOIN public.gender g ON g.id = individual.gender_id
-       LEFT OUTER JOIN public.address_level a ON individual.address_id = a.id
-where ost.id = ${operationalSubjectTypeUuid})
+where individual.subject_type_id = ${subject_type_id}
+       and individual.last_modified_date_time > '${start_time}'
+       and individual.last_modified_date_time <= '${end_time}')

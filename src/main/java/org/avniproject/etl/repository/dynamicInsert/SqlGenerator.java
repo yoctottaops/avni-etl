@@ -8,25 +8,30 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.COMMA;
 
 public class SqlGenerator {
-    public String generateSql(TableMetadata tableMetadata) throws IOException {
+    public String generateSql(TableMetadata tableMetadata, Date startTime, Date endTime) throws IOException {
         switch (tableMetadata.getType()) {
-            case Person: {
-                String template = new BufferedReader(new InputStreamReader(new ClassPathResource("/pivot/registration.sql").getInputStream()))
+            case Individual: {
+                String template = new BufferedReader(new InputStreamReader(new ClassPathResource("/insertSql/individual.sql").getInputStream()))
                         .lines()
                         .collect(Collectors.joining("\n"));
-                return template.replace("${schema_name}", ContextHolder.getDbSchema())
-                        .replace("${table_name}", tableMetadata.getName())
+                return template.replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
+                        .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
                         .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
                         .replace("${concept_maps}", getConceptMaps(tableMetadata))
                         .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
-                        .replace("${operationalSubjectTypeUuid}", tableMetadata.getSubjectTypeId().toString())
-                        .replace("${selections}", tableMetadata.getSubjectTypeId().toString());
+                        .replace("${subject_type_id}", tableMetadata.getSubjectTypeId().toString())
+                        .replace("${selections}", buildObservationSelection("individual", tableMetadata))
+                        .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
+                        .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(endTime));
             }
             default:
         }
@@ -38,91 +43,82 @@ public class SqlGenerator {
     }
 
     private String getConceptMaps(TableMetadata tableMetadata) throws IOException {
-        String template = new BufferedReader(new InputStreamReader(new ClassPathResource("/pivot/conceptMap.sql").getInputStream()))
+        String template = new BufferedReader(new InputStreamReader(new ClassPathResource("/insertSql/conceptMap.sql").getInputStream()))
                 .lines()
                 .collect(Collectors.joining("\n"));
-        List<String> names = tableMetadata.getNonDefaultColumnMetadataList().stream().map(columnMetadata -> wrapInQuotes(columnMetadata.getConceptUuid())).collect(Collectors.toList());
+        List<String> names = new ArrayList<>();
+        names.add("'dummy'");
+        names.addAll(tableMetadata.getNonDefaultColumnMetadataList().stream().map(columnMetadata -> wrapInQuotes(columnMetadata.getConceptUuid())).collect(Collectors.toList()));
 
         return template
                 .replace("${mapName}", getConceptMapName(tableMetadata))
                 .replace("${conceptUuids}", String.join(", ", names));
     }
 
-    private String getListOfObservations(TableMetadata tableMetadata) {
+    private StringBuffer getListOfObservations(TableMetadata tableMetadata) {
         StringBuffer list = new StringBuffer();
         if (tableMetadata.hasNonDefaultColumns()) {
             list.append(COMMA);
         }
-        List<String> names = tableMetadata.getNonDefaultColumnMetadataList().stream().map(columnMetadata -> wrapInQuotes(columnMetadata.getName())).collect(Collectors.toList());
-        String columnNames = String.join(", ", names);
+        List<ColumnMetadata> columns = tableMetadata.getNonDefaultColumnMetadataList();
+        if (columns.isEmpty()) return list;
 
-        return list.append(columnNames).toString();
+        List<String> names = columns.stream().map(columnMetadata -> wrapInQuotes(columnMetadata.getName())).collect(Collectors.toList());
+        String columnNames = String.join(", ", names);
+        return list.append(columnNames);
     }
 
     private String wrapInQuotes(String name) {
         return "\"" + name + "\"";
     }
 
-//    private String buildObservationSelection(String entity, List<ColumnMetadata> elements, boolean spreadMultiSelectObs) {
-//        return buildObservationSelection(entity, elements, spreadMultiSelectObs, "observations");
-//    }
-//
-//    private String buildCancelObservationSelection(String entity, List<ColumnMetadata> elements, boolean spreadMultiSelectObs) {
-//        return buildObservationSelection(entity, elements, spreadMultiSelectObs, "cancel_observations");
-//    }
-//
-//    private String buildExitObservationSelection(List<ColumnMetadata> elements) {
-//        return buildObservationSelection("programEnrolment", elements, false, "program_exit_observations");
-//    }
+    private String buildObservationSelection(String entity, TableMetadata tableMetadata) {
+        return buildObservationSelection(entity, tableMetadata.getNonDefaultColumnMetadataList(), "observations", getConceptMapName(tableMetadata));
+    }
 
-//    private String buildObservationSelection(String entity, List<ColumnMetadata> elements, Boolean spreadMultiSelectObs, String obsColumnName) {
-//        List<ColumnMetadata> viewGenConcepts = elements;
-//        String obsColumn = entity + "." + obsColumnName;
-//        return viewGenConcepts.parallelStream().map(viewGenConcept -> {
-//            Concept concept = viewGenConcept.getConcept();
-//            String conceptUUID = viewGenConcept.getConceptUuid();
-//            String columnName = viewGenConcept.getName();
-//            switch (viewGenConcept.getType()) {
-//                case Coded: {
-//                    if (spreadMultiSelectObs) {
-//                        return spreadMultiSelectSQL(obsColumn, concept);
-//                    }
-//                    return String.format("public.get_coded_string_value(%s->'%s', %s.map)::TEXT as \"%s\"",
-//                            obsColumn, conceptUUID, viewGenConcept.getConceptMapName(), columnName);
-//                }
-//                case Date:
-//                case DateTime: {
-//                    return String.format("(%s->>'%s')::DATE as \"%s\"", obsColumn, conceptUUID, columnName);
-//                }
-//                case Numeric: {
-//                    return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, columnName);
-//                }
-//                case Subject:
-//                case Location: {
-//                    return String.format("(%s->>'%s') as \"%s\"", obsColumn, conceptUUID, columnName);
-//                }
-//                case PhoneNumber: {
-//                    String phoneNumber = String.format("jsonb_extract_path_text(%s->'%s', 'phoneNumber') as \"%s\"", obsColumn, conceptUUID, columnName);
-//                    String verified = String.format("jsonb_extract_path_text(%s->'%s', 'verified') as \"%s\"", obsColumn, conceptUUID, columnName.concat(" Verified"));
-//                    return phoneNumber.concat(",\n").concat(verified);
-//                }
-//                default: {
-//                    return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, columnName);
-//                }
-//            }
-//        }).collect(Collectors.joining(",\n"));
-//    }
+    private String buildCancelObservationSelection(String entity, TableMetadata tableMetadata) {
+        return buildObservationSelection(entity, tableMetadata.getNonDefaultColumnMetadataList(), "cancel_observations", getConceptMapName(tableMetadata));
+    }
 
-//    private boolean skipConcept(List<FormElement> elements, ViewGenConcept viewGenConcept) {
-//        return viewGenConcept.isDecisionConcept() && elements.stream().anyMatch(formElement -> formElement.getConcept().getName().equals(viewGenConcept.getConcept().getName()));
-//    }
-//
-//    private String spreadMultiSelectSQL(String obsColumn, Concept concept) {
-//        String obsSubColumn = String.format("(%s->'%s')", obsColumn, concept.getUuid());
-//        return concept.getConceptAnswers().stream().map(ConceptAnswer::getAnswerConcept)
-//                .map(aConcept -> String.format("boolean_txt(%s ? '%s') as \"%s(%s)\"",
-//                        obsSubColumn, aConcept.getUuid(), aConcept.getName(), concept.getName()))
-//                .collect(Collectors.joining(",\n"));
-//    }
+    private String buildExitObservationSelection(TableMetadata tableMetadata) {
+        return buildObservationSelection("programEnrolment", tableMetadata.getNonDefaultColumnMetadataList(), "program_exit_observations", getConceptMapName(tableMetadata));
+    }
+
+    private String buildObservationSelection(String entity, List<ColumnMetadata> columns, String obsColumnName, String conceptMapName) {
+        String obsColumn = entity + "." + obsColumnName;
+        if (columns.isEmpty()) return "";
+
+        String columnSelects = columns.parallelStream().map(column -> {
+            String conceptUUID = column.getConceptUuid();
+            String columnName = column.getName();
+            switch (column.getConceptType()) {
+                case SingleSelect:
+                case MultiSelect: {
+                    return String.format("public.get_coded_string_value(%s->'%s', %s.map)::TEXT as \"%s\"",
+                            obsColumn, conceptUUID, conceptMapName, column.getName());
+                }
+                case Date:
+                case DateTime: {
+                    return String.format("(%s->>'%s')::DATE as \"%s\"", obsColumn, conceptUUID, columnName);
+                }
+                case Numeric: {
+                    return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, columnName);
+                }
+                case Subject:
+                case Location: {
+                    return String.format("(%s->>'%s') as \"%s\"", obsColumn, conceptUUID, columnName);
+                }
+                case PhoneNumber: {
+                    String phoneNumber = String.format("jsonb_extract_path_text(%s->'%s', 'phoneNumber') as \"%s\"", obsColumn, conceptUUID, columnName);
+                    String verified = String.format("jsonb_extract_path_text(%s->'%s', 'verified') as \"%s\"", obsColumn, conceptUUID, columnName.concat(" Verified"));
+                    return phoneNumber.concat(",\n").concat(verified);
+                }
+                default: {
+                    return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, columnName);
+                }
+            }
+        }).collect(Collectors.joining(",\n"));
+        return "," + columnSelects;
+    }
 
 }

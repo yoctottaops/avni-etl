@@ -22,7 +22,7 @@ public class SubjectTable extends TableStructure {
                         new Column("first_name", Column.Type.text),
                         new Column("last_name", Column.Type.text),
                         new Column("registration_location", Column.Type.point),
-                        new Column("legacy_id", Column.Type.point)
+                        new Column("legacy_id", Column.Type.text)
                 ))
                 .build();
     }

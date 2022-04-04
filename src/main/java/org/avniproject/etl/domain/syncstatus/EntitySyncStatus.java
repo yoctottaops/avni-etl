@@ -11,25 +11,19 @@ public class EntitySyncStatus extends Model {
         Failure
     }
 
-    private final Integer tableMetadataId;
-    private final Date syncStartTime;
-    private final Date syncEndTime;
+    private Integer tableMetadataId;
+    private Date lastSyncTime;
     private Status syncStatus;
 
-    public EntitySyncStatus(Integer id, Integer tableMetadataId, Date syncStartTime, Date syncEndTime, Status syncStatus) {
+    public EntitySyncStatus(Integer id, Integer tableMetadataId, Date lastSyncTime, Status syncStatus) {
         super(id);
         this.tableMetadataId = tableMetadataId;
-        this.syncStartTime = syncStartTime;
-        this.syncEndTime = syncEndTime;
+        this.lastSyncTime = lastSyncTime;
         this.syncStatus = syncStatus;
     }
 
-    public EntitySyncStatus(Integer tableMetadataId, Date syncStartTime, Date syncEndTime, Status syncStatus) {
-        this(null, tableMetadataId, syncStartTime, syncEndTime, syncStatus);
-    }
-
-    public EntitySyncStatus nextStatus(EntitySyncStatus entitySyncStatus, Date tillDate) {
-        return new EntitySyncStatus(getId(), tableMetadataId, entitySyncStatus.syncEndTime, tillDate, Status.Running);
+    public EntitySyncStatus(Integer tableMetadataId, Date lastSyncTime, Status syncStatus) {
+        this(null, tableMetadataId, lastSyncTime, syncStatus);
     }
 
     public void markSuccess() {
@@ -42,5 +36,25 @@ public class EntitySyncStatus extends Model {
 
     public Integer getTableMetadataId() {
         return tableMetadataId;
+    }
+
+    public Status getSyncStatus() {
+        return syncStatus;
+    }
+
+    public void setSyncStatus(Status syncStatus) {
+        this.syncStatus = syncStatus;
+    }
+
+    public void setTableMetadataId(Integer tableMetadataId) {
+        this.tableMetadataId = tableMetadataId;
+    }
+
+    public Date getLastSyncTime() {
+        return lastSyncTime;
+    }
+
+    public void setLastSyncTime(Date lastSyncTime) {
+        this.lastSyncTime = lastSyncTime;
     }
 }

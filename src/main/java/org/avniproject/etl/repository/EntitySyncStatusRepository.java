@@ -20,16 +20,14 @@ public class EntitySyncStatusRepository {
     public SchemaDataSyncStatus getSyncStatus() {
         String sql = "select ash.id                as id,\n" +
                 "       ash.table_metadata_id as table_metadata_id,\n" +
-                "       ash.sync_start_time   as sync_start_time,\n" +
-                "       ash.sync_end_time     as sync_end_time,\n" +
+                "       ash.last_sync_time   as last_sync_time,\n" +
                 "       ash.sync_status       as sync_status\n" +
                 "from entity_sync_status ash;";
 
         List<EntitySyncStatus> entitySyncStatuses = jdbcTemplate.query(sql, (rs, rowNum) -> new EntitySyncStatus(
                 rs.getInt("id"),
                 rs.getInt("table_metadata_id"),
-                rs.getDate("sync_start_time"),
-                rs.getDate("sync_end_time"),
+                rs.getDate("last_sync_time"),
                 EntitySyncStatus.Status.valueOf(rs.getString("sync_status"))));
 
         return new SchemaDataSyncStatus(entitySyncStatuses);

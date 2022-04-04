@@ -68,7 +68,7 @@ public class TableMetadata extends Model {
 
 
     public enum Type {
-        IndividualProfile,
+        Individual,
         Person,
         Household,
         Group,
