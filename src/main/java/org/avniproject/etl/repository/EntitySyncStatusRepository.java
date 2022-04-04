@@ -1,12 +1,19 @@
 package org.avniproject.etl.repository;
 
+import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.syncstatus.EntitySyncStatus;
 import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
 @Repository
 public class EntitySyncStatusRepository {
@@ -24,12 +31,49 @@ public class EntitySyncStatusRepository {
                 "       ash.sync_status       as sync_status\n" +
                 "from entity_sync_status ash;";
 
-        List<EntitySyncStatus> entitySyncStatuses = jdbcTemplate.query(sql, (rs, rowNum) -> new EntitySyncStatus(
+        List<EntitySyncStatus> entitySyncStatuses = runInOrgContext(() -> jdbcTemplate.query(sql, (rs, rowNum) -> new EntitySyncStatus(
                 rs.getInt("id"),
                 rs.getInt("table_metadata_id"),
                 rs.getDate("last_sync_time"),
-                EntitySyncStatus.Status.valueOf(rs.getString("sync_status"))));
+                EntitySyncStatus.Status.valueOf(rs.getString("sync_status")))), jdbcTemplate);
 
         return new SchemaDataSyncStatus(entitySyncStatuses);
+    }
+
+    public EntitySyncStatus save(EntitySyncStatus entitySyncStatus) {
+        return entitySyncStatus.getId() == null ?
+                insert(entitySyncStatus) :
+                update(entitySyncStatus);
+
+    }
+
+    private EntitySyncStatus update(EntitySyncStatus entitySyncStatus) {
+        String sql = "update entity_sync_status\n" +
+                "set sync_status              = :sync_status,\n" +
+                "last_sync_time              = :last_sync_time\n" +
+                "where id = :id;";
+
+        new NamedParameterJdbcTemplate(jdbcTemplate).update(sql, addParameters(entitySyncStatus));
+        return entitySyncStatus;
+    }
+
+    private EntitySyncStatus insert(EntitySyncStatus entitySyncStatus) {
+        Number id = new SimpleJdbcInsert(jdbcTemplate).withTableName("table_metadata")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(addParameters(entitySyncStatus));
+
+        entitySyncStatus.setId(id.intValue());
+        return entitySyncStatus;
+    }
+
+    private Map<String, ?> addParameters(EntitySyncStatus entitySyncStatus) {
+        Map<String, Object> parameters = new HashMap<>(1);
+        parameters.put("id", entitySyncStatus.getId());
+        parameters.put("db_user", ContextHolder.getDbUser());
+        parameters.put("sync_status", entitySyncStatus.getSyncStatus().toString());
+        parameters.put("last_sync_time", entitySyncStatus.getLastSyncTime());
+        parameters.put("table_metadata_id", entitySyncStatus.getTableMetadataId());
+
+        return parameters;
     }
 }

@@ -7,6 +7,7 @@ import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.syncstatus.EntitySyncStatus;
 import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
 import org.avniproject.etl.repository.EntityRepository;
+import org.avniproject.etl.repository.EntitySyncStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,12 @@ import org.springframework.stereotype.Service;
 public class SyncService {
 
     private EntityRepository entityRepository;
+    private EntitySyncStatusRepository entitySyncStatusRepository;
 
     @Autowired
-    public SyncService(EntityRepository entityRepository) {
+    public SyncService(EntityRepository entityRepository, EntitySyncStatusRepository entitySyncStatusRepository) {
         this.entityRepository = entityRepository;
+        this.entitySyncStatusRepository = entitySyncStatusRepository;
     }
 
     public void sync(Organisation organisation) {
@@ -27,16 +30,14 @@ public class SyncService {
 
     private void migrateTable(TableMetadata tableMetadata, SchemaDataSyncStatus syncStatus) {
         if (tableMetadata.getType().equals(TableMetadata.Type.Individual)) {
-                EntitySyncStatus entitySyncStatus = syncStatus.getEntitySyncStatus(tableMetadata);
-                entitySyncStatus.setSyncStatus(EntitySyncStatus.Status.Running);
-                entityRepository.save(entitySyncStatus);
+            EntitySyncStatus entitySyncStatus = syncStatus.getEntitySyncStatus(tableMetadata);
+            entitySyncStatus.setSyncStatus(EntitySyncStatus.Status.Running);
+            entitySyncStatusRepository.save(entitySyncStatus);
 
-                entityRepository.saveEntities(tableMetadata, entitySyncStatus.getLastSyncTime(), ContextHolder.dataSyncBoundaryTime());
+            entityRepository.saveEntities(tableMetadata, entitySyncStatus.getLastSyncTime(), ContextHolder.dataSyncBoundaryTime());
 
-
-                entitySyncStatus.setSyncStatus(EntitySyncStatus.Status.Success);
-                entitySyncStatus.setSyncStatus(EntitySyncStatus.Status.Success);
-                entityRepository.save(entitySyncStatus);
+            entitySyncStatus.markSuccess(ContextHolder.dataSyncBoundaryTime());
+            entitySyncStatusRepository.save(entitySyncStatus);
         }
 
     }

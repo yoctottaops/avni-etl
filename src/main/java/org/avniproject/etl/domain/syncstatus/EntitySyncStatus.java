@@ -26,8 +26,9 @@ public class EntitySyncStatus extends Model {
         this(null, tableMetadataId, lastSyncTime, syncStatus);
     }
 
-    public void markSuccess() {
+    public void markSuccess(Date asOfDate) {
         this.syncStatus = Status.Success;
+        this.lastSyncTime = asOfDate;
     }
 
     public void markFailure() {
