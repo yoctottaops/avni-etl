@@ -32,7 +32,8 @@ public class EtlApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		log.info("Starting application");
+		log.info("Starting ETL job");
 		etlService.run();
+		log.info("ETL job complete");
 	}
 }

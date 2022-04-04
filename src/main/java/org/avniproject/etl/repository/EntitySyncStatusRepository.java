@@ -58,7 +58,7 @@ public class EntitySyncStatusRepository {
     }
 
     private EntitySyncStatus insert(EntitySyncStatus entitySyncStatus) {
-        Number id = new SimpleJdbcInsert(jdbcTemplate).withTableName("table_metadata")
+        Number id = new SimpleJdbcInsert(jdbcTemplate).withTableName("entity_sync_status")
                 .usingGeneratedKeyColumns("id")
                 .executeAndReturnKey(addParameters(entitySyncStatus));
 

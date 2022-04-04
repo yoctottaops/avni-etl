@@ -8,6 +8,8 @@ import org.avniproject.etl.domain.syncstatus.EntitySyncStatus;
 import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
 import org.avniproject.etl.repository.EntityRepository;
 import org.avniproject.etl.repository.EntitySyncStatusRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ public class SyncService {
 
     private EntityRepository entityRepository;
     private EntitySyncStatusRepository entitySyncStatusRepository;
+    private static final Logger log = LoggerFactory.getLogger(SyncService.class);
 
     @Autowired
     public SyncService(EntityRepository entityRepository, EntitySyncStatusRepository entitySyncStatusRepository) {
@@ -29,6 +32,7 @@ public class SyncService {
     }
 
     private void migrateTable(TableMetadata tableMetadata, SchemaDataSyncStatus syncStatus) {
+        log.info(String.format("Migrating table %s.%s", ContextHolder.getDbSchema(), tableMetadata.getName()));
         if (tableMetadata.getType().equals(TableMetadata.Type.Individual)) {
             EntitySyncStatus entitySyncStatus = syncStatus.getEntitySyncStatus(tableMetadata);
             entitySyncStatus.setSyncStatus(EntitySyncStatus.Status.Running);

@@ -3,11 +3,7 @@ package org.avniproject.etl.repository.dynamicInsert;
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
-import org.springframework.core.io.ClassPathResource;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,14 +11,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.COMMA;
+import static org.avniproject.etl.repository.dynamicInsert.SqlFile.*;
 
 public class SqlGenerator {
-    public String generateSql(TableMetadata tableMetadata, Date startTime, Date endTime) throws IOException {
+
+    public String generateSql(TableMetadata tableMetadata, Date startTime, Date endTime) {
         switch (tableMetadata.getType()) {
             case Individual: {
-                String template = new BufferedReader(new InputStreamReader(new ClassPathResource("/insertSql/individual.sql").getInputStream()))
-                        .lines()
-                        .collect(Collectors.joining("\n"));
+                String template = readFile("/insertSql/individual.sql");
                 return template.replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
                         .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
                         .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
@@ -42,10 +38,8 @@ public class SqlGenerator {
         return tableMetadata.getName() + "_" + "concept_maps";
     }
 
-    private String getConceptMaps(TableMetadata tableMetadata) throws IOException {
-        String template = new BufferedReader(new InputStreamReader(new ClassPathResource("/insertSql/conceptMap.sql").getInputStream()))
-                .lines()
-                .collect(Collectors.joining("\n"));
+    private String getConceptMaps(TableMetadata tableMetadata) {
+        String template = readFile("/insertSql/conceptMap.sql");
         List<String> names = new ArrayList<>();
         names.add("'dummy'");
         names.addAll(tableMetadata.getNonDefaultColumnMetadataList().stream().map(columnMetadata -> wrapInQuotes(columnMetadata.getConceptUuid())).collect(Collectors.toList()));
