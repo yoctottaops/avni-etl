@@ -45,13 +45,7 @@ public class TableMetadataMapper {
         tableMetadata.addColumnMetadata(table.columns().stream().map(column -> new ColumnMetadata(new Column(column.getName(), column.getType()), null, null, null)).collect(Collectors.toList()));
         tableMetadata.addColumnMetadata(columns.stream()
                 .filter(stringObjectMap -> stringObjectMap.get("concept_id") != null)
-                .map(
-                        column -> new ColumnMetadata(
-                                null,
-                                (String) column.get("concept_name"),
-                                (Integer) column.get("concept_id"),
-                                ColumnMetadata.ConceptType.valueOf((String) column.get("element_type")),
-                                (String) column.get("concept_uuid"))).collect(Collectors.toList()));
+                .map(column -> new ColumnMetadataMapper().create(column)).collect(Collectors.toList()));
 
         return tableMetadata;
     }

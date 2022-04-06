@@ -3,6 +3,7 @@ package org.avniproject.etl.repository;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.metadata.diff.Diff;
+import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +28,10 @@ public class SchemaMetadataRepository {
     }
 
     public SchemaMetadata getNewSchemaMetadata() {
+        return new SchemaMetadata(getNewSchemaMetadataInternal());
+    }
+
+    private List<TableMetadata> getNewSchemaMetadataInternal() {
         String sql = "select fm.id                                                                  form_mapping_id,\n" +
                 "       f.id                                                                   form_id,\n" +
                 "       ost.name                                                               subject_type_name,\n" +
@@ -59,8 +64,26 @@ public class SchemaMetadataRepository {
 
         Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("form_mapping_id")));
         List<TableMetadata> tables = tableMaps.values().stream().map(mapList -> new TableMetadataMapper().create(mapList)).collect(Collectors.toList());
+        tables.forEach(this::addDecisionConceptColumns);
+        return tables;
+    }
 
-        return new SchemaMetadata(tables);
+    private void addDecisionConceptColumns(TableMetadata tableMetadata) {
+        String sql = "select c.id                                                                      as concept_id,\n" +
+                "       c.uuid                                                                    as concept_uuid,\n" +
+                "       c.name                                                                    as concept_name,\n" +
+                "       (case when c.data_type = 'Coded' then 'MultiSelect' else c.data_type end) as element_type\n" +
+                "from decision_concept dc\n" +
+                "         inner join concept c on dc.concept_id = c.id\n" +
+                "where dc.form_id = ?;";
+
+        List<Map<String, Object>> conceptIds = runInOrgContext(() -> jdbcTemplate.queryForList(sql, tableMetadata.getFormId()), jdbcTemplate);
+
+        tableMetadata.addColumnMetadata(
+                conceptIds
+                        .stream()
+                        .map(column -> new ColumnMetadataMapper().create(column))
+                        .collect(Collectors.toList()));
     }
 
     public SchemaMetadata getExistingSchemaMetadata() {
