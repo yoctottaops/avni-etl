@@ -2,8 +2,6 @@ package org.avniproject.etl.service;
 
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
-import org.avniproject.etl.domain.metadata.SchemaMetadata;
-import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
 import org.avniproject.etl.repository.EntitySyncStatusRepository;
 import org.avniproject.etl.repository.SchemaMetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +19,8 @@ public class OrganisationFactory {
     }
 
     public Organisation create(OrganisationIdentity organisationIdentity) {
-        SchemaMetadata schemaMetadata = schemaMetadataRepository.getExistingSchemaMetadata();
-        SchemaDataSyncStatus schemaDataSyncStatus = entitySyncStatusRepository.getSyncStatus();
-
-        Organisation organisation = new Organisation();
-        organisation.setOrganisationIdentity(organisationIdentity);
-        organisation.setSchemaMetadata(schemaMetadata);
-        organisation.setSyncStatus(schemaDataSyncStatus);
-        return organisation;
+        return new Organisation(organisationIdentity,
+                schemaMetadataRepository.getExistingSchemaMetadata(),
+                entitySyncStatusRepository.getSyncStatus());
     }
 }

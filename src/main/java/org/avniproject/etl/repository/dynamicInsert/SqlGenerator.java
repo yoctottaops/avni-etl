@@ -18,20 +18,27 @@ public class SqlGenerator {
     public String generateSql(TableMetadata tableMetadata, Date startTime, Date endTime) {
         switch (tableMetadata.getType()) {
             case Individual: {
-                String template = readFile("/insertSql/individual.sql");
-                return template.replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
-                        .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
-                        .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
-                        .replace("${concept_maps}", getConceptMaps(tableMetadata))
-                        .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
-                        .replace("${subject_type_id}", tableMetadata.getSubjectTypeId().toString())
-                        .replace("${selections}", buildObservationSelection("individual", tableMetadata))
-                        .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
-                        .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(endTime));
+                return getSql("/insertSql/individual.sql", tableMetadata, startTime, endTime);
+            }
+            case Person: {
+                return getSql("/insertSql/person.sql", tableMetadata, startTime, endTime);
             }
             default:
         }
         return null;
+    }
+
+    private String getSql(String path, TableMetadata tableMetadata, Date startTime, Date endTime) {
+        String template = readFile(path);
+        return template.replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
+                .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
+                .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
+                .replace("${concept_maps}", getConceptMaps(tableMetadata))
+                .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
+                .replace("${subject_type_id}", tableMetadata.getSubjectTypeId().toString())
+                .replace("${selections}", buildObservationSelection("individual", tableMetadata))
+                .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
+                .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(endTime));
     }
 
     private String getConceptMapName(TableMetadata tableMetadata) {

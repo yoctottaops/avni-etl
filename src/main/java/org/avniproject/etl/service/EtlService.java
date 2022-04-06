@@ -1,7 +1,6 @@
 package org.avniproject.etl.service;
 
 import org.avniproject.etl.domain.ContextHolder;
-import org.avniproject.etl.repository.EntityRepository;
 import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.domain.result.EtlResult;
 import org.avniproject.etl.domain.Organisation;
@@ -36,7 +35,7 @@ public class EtlService {
 
     public EtlResult runForOrganisation(OrganisationIdentity organisationIdentity) {
         log.info(String.format("Running ETL for schema %s", organisationIdentity.getSchemaName()));
-        ContextHolder.create(organisationIdentity);
+        ContextHolder.setContext(organisationIdentity);
 
         Organisation organisation = organisationFactory.create(organisationIdentity);
         Organisation newOrganisation = schemaMigrationService.migrate(organisation);

@@ -36,9 +36,9 @@ public class OrganisationRepositoryTest extends BaseIntegrationTest {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     public void test() {
-        ContextHolder.create(new OrganisationIdentity(12, "orgb", "orgb", OrganisationIdentity.OrganisationType.Organisation));
+        ContextHolder.setContext(new OrganisationIdentity(12, "orgb", "orgb", OrganisationIdentity.OrganisationType.Organisation));
         List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
-        ContextHolder.create(organisationList.stream().filter(organisationIdentity -> organisationIdentity.getDbUser().equals("orgb")).findFirst().get());
+        ContextHolder.setContext(organisationList.stream().filter(organisationIdentity -> organisationIdentity.getDbUser().equals("orgb")).findFirst().get());
         assertThat(organisationRepository.getCountOfOrganisationsWithSetRole(), is(1));
     }
 

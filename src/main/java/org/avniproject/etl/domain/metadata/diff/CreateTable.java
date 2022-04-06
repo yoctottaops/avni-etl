@@ -27,20 +27,28 @@ public class CreateTable implements Diff {
                 .append(OPEN_BRACKETS)
                 .append(addColumnsToSql(columns))
                 .append(CLOSE_BRACKETS)
-                .append(END_STATEMENT);
+                .append(END_STATEMENT)
+                .append(NEWLINE);
+
+        sql.append("grant all privileges on all tables in schema ")
+                .append(ContextHolder.getDbSchema())
+                .append(" to ")
+                .append(ContextHolder.getDbUser())
+                .append(END_STATEMENT)
+                .append(NEWLINE);
 
         return sql.toString();
     }
 
     private String addColumnsToSql(List<Column> columns) {
         List<String> defaultColumns = columns.stream().map(column ->
-                String.valueOf(
-                        new StringBuffer()
-                                .append(QUOTE)
-                                .append(column.getName())
-                                .append(QUOTE)
-                                .append(SPACE)
-                                .append(column.getType().typeString())))
+                        String.valueOf(
+                                new StringBuffer()
+                                        .append(QUOTE)
+                                        .append(column.getName())
+                                        .append(QUOTE)
+                                        .append(SPACE)
+                                        .append(column.getType().typeString())))
                 .collect(Collectors.toList());
 
         return String.join(COMMA, defaultColumns);

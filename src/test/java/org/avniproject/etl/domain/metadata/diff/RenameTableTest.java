@@ -11,7 +11,7 @@ public class RenameTableTest {
 
     @Test
     public void shouldRenameTable() {
-        ContextHolder.create(new OrganisationIdentity(1, "dbUser", "schema", OrganisationIdentity.OrganisationType.Organisation));
+        ContextHolder.setContext(new OrganisationIdentity(1, "dbUser", "schema", OrganisationIdentity.OrganisationType.Organisation));
         RenameTable renameTable = new RenameTable("old_name", "new_name");
         assertThat(renameTable.getSql(), is("alter table schema.old_name rename to new_name;"));
     }

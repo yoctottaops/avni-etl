@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SubjectTable extends TableStructure {
+public class SubjectTable extends Table {
     @Override
     public String name(Map<String, Object> tableDetails) {
         return generateTableName("Registration", null, tableDetails, "subject_type_name");

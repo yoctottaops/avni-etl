@@ -17,7 +17,7 @@ public class ContextHolder {
     private ContextHolder() {
     }
 
-    public static void create(OrganisationIdentity identity) {
+    public static void setContext(OrganisationIdentity identity) {
         organisationIdentity.set(identity);
         startTime = toDate(LocalDateTime.now().minus(Duration.ofSeconds(10)));
     }

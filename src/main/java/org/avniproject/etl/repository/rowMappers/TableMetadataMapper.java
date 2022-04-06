@@ -39,7 +39,7 @@ public class TableMetadataMapper {
         TableMetadata tableMetadata = new TableMetadata();
         Map<String, Object> tableDetails = columns.get(0);
         populateCommonColumns(tableMetadata, tableDetails);
-        TableStructure table = getTableStructure(tableMetadata.getType(), tableDetails);
+        Table table = getTableStructure(tableMetadata.getType(), tableDetails);
         tableMetadata.setName(table.name(tableDetails));
 
         tableMetadata.addColumnMetadata(table.columns().stream().map(column -> new ColumnMetadata(new Column(column.getName(), column.getType()), null, null, null)).collect(Collectors.toList()));
@@ -71,7 +71,7 @@ public class TableMetadataMapper {
                 TableMetadata.Type.valueOf(tableType);
     }
 
-    public TableStructure getTableStructure(TableMetadata.Type type, Map<String, Object> tableDetails) {
+    public Table getTableStructure(TableMetadata.Type type, Map<String, Object> tableDetails) {
         switch (type) {
             case Group:
             case Household:

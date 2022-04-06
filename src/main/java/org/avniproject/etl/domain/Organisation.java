@@ -8,32 +8,26 @@ public class Organisation {
     private SchemaMetadata schemaMetadata;
     private SchemaDataSyncStatus syncStatus;
 
-    public OrganisationIdentity getOrganisationIdentity() {
-        return organisationIdentity;
+    public Organisation(OrganisationIdentity organisationIdentity, SchemaMetadata existingSchemaMetadata, SchemaDataSyncStatus syncStatus) {
+        this.organisationIdentity = organisationIdentity;
+        schemaMetadata = existingSchemaMetadata;
+        this.syncStatus = syncStatus;
     }
 
-    public void setOrganisationIdentity(OrganisationIdentity organisationIdentity) {
-        this.organisationIdentity = organisationIdentity;
+    public OrganisationIdentity getOrganisationIdentity() {
+        return organisationIdentity;
     }
 
     public SchemaMetadata getSchemaMetadata() {
         return schemaMetadata;
     }
 
-    public void setSchemaMetadata(SchemaMetadata currentSchemaMetadata) {
-        this.schemaMetadata = currentSchemaMetadata;
-    }
-
     public SchemaDataSyncStatus getSyncStatus() {
         return syncStatus;
     }
 
-    public void setSyncStatus(SchemaDataSyncStatus syncStatus) {
-        this.syncStatus = syncStatus;
-    }
-
     public void applyNewSchema(SchemaMetadata newSchemaMetadata) {
         newSchemaMetadata.mergeWith(schemaMetadata);
-        this.setSchemaMetadata(newSchemaMetadata);
+        this.schemaMetadata = newSchemaMetadata;
     }
 }

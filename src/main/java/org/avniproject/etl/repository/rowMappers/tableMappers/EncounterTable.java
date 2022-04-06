@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class EncounterTable extends TableStructure {
+public class EncounterTable extends Table {
 
     @Override
     public List<Column> columns() {
@@ -15,14 +15,14 @@ public class EncounterTable extends TableStructure {
                 .withColumns(Arrays.asList(
                                 new Column("name", Column.Type.text),
                                 new Column("individual_id", Column.Type.integer),
-                                new Column("encounter_type_name", Column.Type.text),
                                 new Column("address_id", Column.Type.integer),
                                 new Column("earliest_visit_date_time", Column.Type.timestampWithTimezone),
                                 new Column("max_visit_date_time", Column.Type.timestampWithTimezone),
                                 new Column("encounter_date_time", Column.Type.timestampWithTimezone),
                                 new Column("encounter_location", Column.Type.point),
                                 new Column("cancel_date_time", Column.Type.timestampWithTimezone),
-                                new Column("cancel_location", Column.Type.point)
+                                new Column("cancel_location", Column.Type.point),
+                                new Column("legacy_id", Column.Type.integer)
                         )
                 ).build();
     }

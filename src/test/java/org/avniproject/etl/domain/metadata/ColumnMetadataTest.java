@@ -2,7 +2,6 @@ package org.avniproject.etl.domain.metadata;
 
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
-import org.avniproject.etl.domain.metadata.diff.AddColumn;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.domain.metadata.diff.RenameColumn;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ class ColumnMetadataTest {
 
     @Test
     public void shouldRenameColumnIfNecessary() {
-        ContextHolder.create(new OrganisationIdentity(1, "dbUser", "schema", OrganisationIdentity.OrganisationType.Organisation));
+        ContextHolder.setContext(new OrganisationIdentity(1, "dbUser", "schema", OrganisationIdentity.OrganisationType.Organisation));
         String uuid = UUID.randomUUID().toString();
         ColumnMetadata oldColumnMetadata = new ColumnMetadata(new Column("oldName", Column.Type.text), 12, ColumnMetadata.ConceptType.Text, uuid);
         ColumnMetadata newColumnMetadata = new ColumnMetadata(new Column("newName", Column.Type.text), 12, ColumnMetadata.ConceptType.Text, uuid);

@@ -15,7 +15,7 @@ class SqlGeneratorTest {
 
     @Test
     public void shouldGenerateSql() throws IOException {
-        ContextHolder.create(new OrganisationIdentityBuilder().build());
+        ContextHolder.setContext(new OrganisationIdentityBuilder().build());
         TableMetadata tableMetadata = new TableMetadataBuilder()
                 .forIndividual()
                 .withColumnMetadata(new ColumnMetadata(1, "numeric field", 10, ColumnMetadata.ConceptType.Numeric, UUID.randomUUID().toString()))

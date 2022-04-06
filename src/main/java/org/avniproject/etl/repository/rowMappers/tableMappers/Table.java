@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-abstract public class TableStructure {
+abstract public class Table {
     abstract public String name(Map<String, Object> tableDetails);
     abstract public List<Column> columns();
 

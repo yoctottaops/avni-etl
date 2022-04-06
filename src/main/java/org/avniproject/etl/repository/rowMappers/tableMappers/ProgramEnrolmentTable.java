@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ProgramEnrolmentTable extends TableStructure {
+public class ProgramEnrolmentTable extends Table {
 
     @Override
     public String name(Map<String, Object> tableDetails) {
