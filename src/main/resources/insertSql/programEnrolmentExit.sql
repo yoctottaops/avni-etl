@@ -1,22 +1,42 @@
 --[SQL template for auto generated view]
-${concept_maps}
-SELECT individual.id                                                                          "individual_id",
-       op.name                                                                                "program_name",
-       op.program_id                                                                          "program_id",
-       programEnrolment.id                                                                    "id",
-       programEnrolment.uuid                                                                  "uuid",
-       programEnrolment.enrolment_date_time                                                   "enrolment_date_time",
-       programEnrolment.enrolment_location                                                    "enrolment_location",
-       programEnrolment.is_voided                                                             "is_voided",
-       programEnrolment.program_exit_date_time                                                "program_exit_date_time",
-       programEnrolment.exit_location                                                         "exit_location",
-       programEnrolment.audit_id                                                              "audit_id",
-       ${programEnrolmentExit}
-FROM public.program_enrolment programEnrolment
-  ${cross_join_concept_maps}
-         LEFT OUTER JOIN public.operational_program op ON op.program_id = programEnrolment.program_id
-         LEFT OUTER JOIN public.individual individual ON programEnrolment.individual_id = individual.id
-         LEFT OUTER JOIN public.operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
-WHERE op.uuid = '${operationalProgramUuid}'
-  AND ost.uuid = '${operationalSubjectTypeUuid}'
-  AND programEnrolment.program_exit_date_time notnull;
+insert into ${schema_name}.${table_name} (
+    "id",
+    "individual_id",
+    "uuid",
+    "address_id",
+    "enrolment_date_time",
+    "enrolment_location",
+    "is_voided",
+    "program_exit_date_time",
+    "exit_location",
+    "created_by_id",
+    "last_modified_by_id",
+    "created_date_time",
+    "last_modified_date_time",
+    "legacy_id"
+        ${observations_to_insert_list}
+)
+    (${concept_maps}
+        SELECT entity.id                                                                    "id",
+        individual.id                                                                          "individual_id",
+        entity.uuid                                                                  "uuid",
+        entity.address_id                                                            "address_id",
+        entity.enrolment_date_time                                                   "enrolment_date_time",
+        entity.enrolment_location                                                    "enrolment_location",
+        entity.is_voided                                                             "is_voided",
+        entity.program_exit_date_time                                                "program_exit_date_time",
+        entity.exit_location                                                         "exit_location",
+        entity.created_by_id                                                         "created_by_id",
+        entity.last_modified_by_id                                                   "last_modified_by_id",
+        entity.created_date_time                                                     "created_date_time",
+        entity.last_modified_date_time                                               "last_modified_date_time",
+        entity.legacy_id                                                             "legacy_id"
+        ${exit_obs_selections}
+        FROM public.program_enrolment entity
+        ${cross_join_concept_maps}
+        LEFT OUTER JOIN public.individual individual ON entity.individual_id = individual.id
+        WHERE entity.program_id = ${program_id}
+        AND individual.subject_type_id = ${subject_type_id}
+        AND entity.program_exit_date_time is not null
+        and entity.last_modified_date_time > '${start_time}'
+        and entity.last_modified_date_time <= '${end_time}');

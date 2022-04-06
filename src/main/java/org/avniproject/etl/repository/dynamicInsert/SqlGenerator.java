@@ -21,6 +21,7 @@ public class SqlGenerator {
 
     public String generateSql(TableMetadata tableMetadata, Date startTime, Date endTime) {
         switch (tableMetadata.getType()) {
+            case Household:
             case Individual: {
                 return getSql("/insertSql/individual.sql", tableMetadata, startTime, endTime);
             }
@@ -33,9 +34,21 @@ public class SqlGenerator {
             case ProgramEnrolment: {
                 return getSql("/insertSql/programEnrolment.sql", tableMetadata, startTime, endTime);
             }
+            case ProgramExit: {
+                return getSql("/insertSql/programEnrolmentExit.sql", tableMetadata, startTime, endTime);
+            }
+            case ProgramEncounter: {
+                return getSql("/insertSql/programEncounter.sql", tableMetadata, startTime, endTime);
+            }
+            case ProgramEncounterCancellation: {
+                return getSql("/insertSql/programEncounterCancel.sql", tableMetadata, startTime, endTime);
+            }
+            case EncounterCancellation: {
+                return getSql("/insertSql/generalEncounterCancel.sql", tableMetadata, startTime, endTime);
+            }
             default:
+                throw new RuntimeException("Could not generate sql for" + tableMetadata.getType().toString());
         }
-        return null;
     }
 
     private String getSql(String path, TableMetadata tableMetadata, Date startTime, Date endTime) {
@@ -46,7 +59,9 @@ public class SqlGenerator {
                 .replace("${concept_maps}", getConceptMaps(tableMetadata))
                 .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
                 .replace("${subject_type_id}", toString(tableMetadata.getSubjectTypeId()))
-                .replace("${selections}", buildObservationSelection("individual", tableMetadata))
+                .replace("${selections}", buildObservationSelection(tableMetadata, "observations"))
+                .replace("${exit_obs_selections}", buildObservationSelection(tableMetadata, "program_exit_observations"))
+                .replace("${cancel_obs_selections}", buildObservationSelection(tableMetadata, "cancel_observations"))
                 .replace("${encounter_type_id}", toString(tableMetadata.getEncounterTypeId()))
                 .replace("${program_id}", toString(tableMetadata.getProgramId()))
                 .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
@@ -89,20 +104,9 @@ public class SqlGenerator {
         return "'" + name + "'";
     }
 
-    private String buildObservationSelection(String entity, TableMetadata tableMetadata) {
-        return buildObservationSelection(entity, tableMetadata.getNonDefaultColumnMetadataList(), "observations", getConceptMapName(tableMetadata));
-    }
-
-    private String buildCancelObservationSelection(String entity, TableMetadata tableMetadata) {
-        return buildObservationSelection(entity, tableMetadata.getNonDefaultColumnMetadataList(), "cancel_observations", getConceptMapName(tableMetadata));
-    }
-
-    private String buildExitObservationSelection(TableMetadata tableMetadata) {
-        return buildObservationSelection("programEnrolment", tableMetadata.getNonDefaultColumnMetadataList(), "program_exit_observations", getConceptMapName(tableMetadata));
-    }
-
-    private String buildObservationSelection(String entity, List<ColumnMetadata> columns, String obsColumnName, String conceptMapName) {
-        String obsColumn = entity + "." + obsColumnName;
+    private String buildObservationSelection(TableMetadata tableMetadata, String obsColumnName) {
+        List<ColumnMetadata> columns = tableMetadata.getNonDefaultColumnMetadataList();
+        String obsColumn =  "entity." + obsColumnName;
         if (columns.isEmpty()) return "";
 
         String columnSelects = columns.parallelStream().map(column -> {
@@ -112,7 +116,7 @@ public class SqlGenerator {
                 case SingleSelect:
                 case MultiSelect: {
                     return String.format("public.get_coded_string_value(%s->'%s', %s.map)::TEXT as \"%s\"",
-                            obsColumn, conceptUUID, conceptMapName, column.getName());
+                            obsColumn, conceptUUID, getConceptMapName(tableMetadata), column.getName());
                 }
                 case Date:
                 case DateTime: {

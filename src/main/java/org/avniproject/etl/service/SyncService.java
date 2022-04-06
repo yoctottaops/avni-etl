@@ -33,19 +33,13 @@ public class SyncService {
 
     private void migrateTable(TableMetadata tableMetadata, SchemaDataSyncStatus syncStatus) {
         log.info(String.format("Migrating table %s.%s", ContextHolder.getDbSchema(), tableMetadata.getName()));
-        if (tableMetadata.getType().equals(TableMetadata.Type.Individual)
-                || tableMetadata.getType().equals(TableMetadata.Type.Person)
-                || tableMetadata.getType().equals(TableMetadata.Type.Encounter)
-                || tableMetadata.getType().equals(TableMetadata.Type.ProgramEnrolment)) {
-            EntitySyncStatus entitySyncStatus = syncStatus.getEntitySyncStatus(tableMetadata);
-            entitySyncStatus.setSyncStatus(EntitySyncStatus.Status.Running);
-            entitySyncStatusRepository.save(entitySyncStatus);
+        EntitySyncStatus entitySyncStatus = syncStatus.getEntitySyncStatus(tableMetadata);
+        entitySyncStatus.setSyncStatus(EntitySyncStatus.Status.Running);
+        entitySyncStatusRepository.save(entitySyncStatus);
 
-            entityRepository.saveEntities(tableMetadata, entitySyncStatus.getLastSyncTime(), ContextHolder.dataSyncBoundaryTime());
+        entityRepository.saveEntities(tableMetadata, entitySyncStatus.getLastSyncTime(), ContextHolder.dataSyncBoundaryTime());
 
-            entitySyncStatus.markSuccess(ContextHolder.dataSyncBoundaryTime());
-            entitySyncStatusRepository.save(entitySyncStatus);
-        }
-
+        entitySyncStatus.markSuccess(ContextHolder.dataSyncBoundaryTime());
+        entitySyncStatusRepository.save(entitySyncStatus);
     }
 }

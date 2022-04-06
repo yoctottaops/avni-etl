@@ -1,28 +1,52 @@
 --[SQL template for auto generated view]
-${concept_maps}
-SELECT programEnrolment.id                                                                    "program_enrolment_id",
-       oet.name                                                                               "encounter_type_name",
-       oet.encounter_type_id                                                                  "encounter_type_id",
-       programEncounter.id                                                                    "id",
-       programEncounter.earliest_visit_date_time                                              "earliest_visit_date_time",
-       programEncounter.encounter_date_time                                                   "encounter_date_time",
-       programEncounter.uuid                                                                  "uuid",
-       programEncounter.name                                                                  "name",
-       programEncounter.max_visit_date_time                                                   "max_visit_date_time",
-       programEncounter.is_voided                                                             "is_voided",
-       programEncounter.encounter_location                                                    "encounter_location",
-       programEncounter.audit_id                                                              "audit_id",
-       programEncounter.cancel_date_time                                                      "cancel_date_time",
-       programEncounter.cancel_location                                                       "cancel_location",
-       ${programEncounter}
-FROM public.program_encounter programEncounter
+insert into ${schema_name}.${table_name} (
+    "program_enrolment_id",
+    "id",
+    "individual_id",
+    "earliest_visit_date_time",
+    "encounter_date_time",
+    "uuid",
+    "name",
+    "address_id",
+    "max_visit_date_time",
+    "is_voided",
+    "encounter_location",
+    "legacy_id",
+    "cancel_date_time",
+    "cancel_location",
+    "created_by_id",
+    "last_modified_by_id",
+    "created_date_time",
+    "last_modified_date_time"
+    ${observations_to_insert_list}
+)
+(${concept_maps}
+SELECT entity.program_enrolment_id                                                  "program_enrolment_id",
+       entity.id                                                                    "id",
+       entity.individual_id                                                         "individual_id",
+       entity.earliest_visit_date_time                                              "earliest_visit_date_time",
+       entity.encounter_date_time                                                   "encounter_date_time",
+       entity.uuid                                                                  "uuid",
+       entity.name                                                                  "name",
+       entity.address_id                                                            "address_id",
+       entity.max_visit_date_time                                                   "max_visit_date_time",
+       entity.is_voided                                                             "is_voided",
+       entity.encounter_location                                                    "encounter_location",
+       entity.legacy_id                                                             "legacy_id",
+       entity.cancel_date_time                                                      "cancel_date_time",
+       entity.cancel_location                                                       "cancel_location",
+       entity.created_by_id                                                         "created_by_id",
+       entity.last_modified_by_id                                                   "last_modified_by_id",
+       entity.created_date_time                                                     "created_date_time",
+       entity.last_modified_date_time                                               "last_modified_date_time"
+       ${selections}
+FROM public.program_encounter entity
       ${cross_join_concept_maps}
-         LEFT OUTER JOIN public.operational_encounter_type oet on programEncounter.encounter_type_id = oet.encounter_type_id
          LEFT OUTER JOIN public.program_enrolment programEnrolment
-                         ON programEncounter.program_enrolment_id = programEnrolment.id
-         LEFT OUTER JOIN public.operational_program op ON op.program_id = programEnrolment.program_id
-         LEFT OUTER JOIN public.individual individual ON programEnrolment.individual_id = individual.id
-         LEFT OUTER JOIN public.operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
-WHERE op.uuid = '${operationalProgramUuid}'
-  AND oet.uuid = '${operationalEncounterTypeUuid}'
-  AND ost.uuid = '${operationalSubjectTypeUuid}';
+                         ON entity.program_enrolment_id = programEnrolment.id
+         LEFT OUTER JOIN public.individual on programEnrolment.individual_id = individual.id
+WHERE programEnrolment.program_id = ${program_id}
+  AND entity.encounter_type_id = ${encounter_type_id}
+  AND individual.subject_type_id = ${subject_type_id}
+  and entity.last_modified_date_time > '${start_time}'
+  and entity.last_modified_date_time <= '${end_time}');

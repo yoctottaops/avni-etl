@@ -6,30 +6,30 @@ insert into ${schema_name}.${table_name} (
     ${observations_to_insert_list}
 )
 (${concept_maps}
-SELECT encounter.individual_id                                                                "individual_id",
-       encounter.address_id                                                                   "address_id",
-       encounter.id                                                                           "id",
-       encounter.earliest_visit_date_time                                                     "earliest_visit_date_time",
-       encounter.encounter_date_time                                                          "encounter_date_time",
-       encounter.uuid                                                                         "uuid",
-       encounter.name                                                                         "name",
-       encounter.max_visit_date_time                                                          "max_visit_date_time",
-       encounter.is_voided                                                                    "is_voided",
-       encounter.encounter_location                                                           "encounter_location",
-       encounter.audit_id                                                                     "audit_id",
-       encounter.cancel_date_time                                                             "cancel_date_time",
-       encounter.cancel_location                                                              "cancel_location",
-       encounter.created_by_id                                                                "created_by_id",
-       encounter.last_modified_by_id                                                          "last_modified_by_id",
-       encounter.created_date_time                                                            "created_date_time",
-       encounter.last_modified_date_time                                                      "last_modified_date_time",
-       encounter.legacy_id                                                                    "legacy_id"
+SELECT entity.individual_id                                                                "individual_id",
+       entity.address_id                                                                   "address_id",
+       entity.id                                                                           "id",
+       entity.earliest_visit_date_time                                                     "earliest_visit_date_time",
+       entity.encounter_date_time                                                          "encounter_date_time",
+       entity.uuid                                                                         "uuid",
+       entity.name                                                                         "name",
+       entity.max_visit_date_time                                                          "max_visit_date_time",
+       entity.is_voided                                                                    "is_voided",
+       entity.encounter_location                                                           "encounter_location",
+       entity.audit_id                                                                     "audit_id",
+       entity.cancel_date_time                                                             "cancel_date_time",
+       entity.cancel_location                                                              "cancel_location",
+       entity.created_by_id                                                                "created_by_id",
+       entity.last_modified_by_id                                                          "last_modified_by_id",
+       entity.created_date_time                                                            "created_date_time",
+       entity.last_modified_date_time                                                      "last_modified_date_time",
+       entity.legacy_id                                                                    "legacy_id"
        ${selections}
-FROM public.encounter encounter
-    inner join individual subject on encounter.individual_id = individual.id
+FROM public.encounter entity
+    inner join individual subject on entity.individual_id = individual.id
   ${cross_join_concept_maps}
-WHERE encounter.encounter_type_id = '${encounter_type_id}'
-  AND individual.subject_type_id = '${subject_type_id}'
-    and encounter.last_modified_date_time > '${start_time}'
-    and encounter.last_modified_date_time <= '${end_time}'
+WHERE entity.encounter_type_id = ${encounter_type_id}
+  AND individual.subject_type_id = ${subject_type_id}
+    and entity.last_modified_date_time > '${start_time}'
+    and entity.last_modified_date_time <= '${end_time}'
     );
