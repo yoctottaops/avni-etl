@@ -1,6 +1,7 @@
 package org.avniproject.etl.repository;
 
 import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.repository.dynamicInsert.SqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class EntityRepository {
                 .replace("${tableName}", tableName);
         runInOrgContext(() -> {
             jdbcTemplate.execute(sql);
-            return 0;
+            return NullObject.instance();
         }, jdbcTemplate);
     }
 }
