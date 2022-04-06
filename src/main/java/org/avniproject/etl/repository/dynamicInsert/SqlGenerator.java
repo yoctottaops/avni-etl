@@ -15,6 +15,10 @@ import static org.avniproject.etl.repository.dynamicInsert.SqlFile.*;
 
 public class SqlGenerator {
 
+    private static String toString(Integer id) {
+        return id == null ? "" : id.toString();
+    }
+
     public String generateSql(TableMetadata tableMetadata, Date startTime, Date endTime) {
         switch (tableMetadata.getType()) {
             case Individual: {
@@ -22,6 +26,12 @@ public class SqlGenerator {
             }
             case Person: {
                 return getSql("/insertSql/person.sql", tableMetadata, startTime, endTime);
+            }
+            case Encounter: {
+                return getSql("/insertSql/generalEncounter.sql", tableMetadata, startTime, endTime);
+            }
+            case ProgramEnrolment: {
+                return getSql("/insertSql/programEnrolment.sql", tableMetadata, startTime, endTime);
             }
             default:
         }
@@ -35,8 +45,10 @@ public class SqlGenerator {
                 .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
                 .replace("${concept_maps}", getConceptMaps(tableMetadata))
                 .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
-                .replace("${subject_type_id}", tableMetadata.getSubjectTypeId().toString())
+                .replace("${subject_type_id}", toString(tableMetadata.getSubjectTypeId()))
                 .replace("${selections}", buildObservationSelection("individual", tableMetadata))
+                .replace("${encounter_type_id}", toString(tableMetadata.getEncounterTypeId()))
+                .replace("${program_id}", toString(tableMetadata.getProgramId()))
                 .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
                 .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(endTime));
     }
@@ -49,7 +61,7 @@ public class SqlGenerator {
         String template = readFile("/insertSql/conceptMap.sql");
         List<String> names = new ArrayList<>();
         names.add("'dummy'");
-        names.addAll(tableMetadata.getNonDefaultColumnMetadataList().stream().map(columnMetadata -> wrapInQuotes(columnMetadata.getConceptUuid())).collect(Collectors.toList()));
+        names.addAll(tableMetadata.getNonDefaultColumnMetadataList().stream().map(columnMetadata -> wrapInSingleQuotes(columnMetadata.getConceptUuid())).collect(Collectors.toList()));
 
         return template
                 .replace("${mapName}", getConceptMapName(tableMetadata))
@@ -71,6 +83,10 @@ public class SqlGenerator {
 
     private String wrapInQuotes(String name) {
         return "\"" + name + "\"";
+    }
+
+    private String wrapInSingleQuotes(String name) {
+        return "'" + name + "'";
     }
 
     private String buildObservationSelection(String entity, TableMetadata tableMetadata) {

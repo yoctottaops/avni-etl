@@ -34,7 +34,7 @@ public class EntitySyncStatusRepository {
         List<EntitySyncStatus> entitySyncStatuses = runInOrgContext(() -> jdbcTemplate.query(sql, (rs, rowNum) -> new EntitySyncStatus(
                 rs.getInt("id"),
                 rs.getInt("table_metadata_id"),
-                rs.getDate("last_sync_time"),
+                rs.getTimestamp("last_sync_time"),
                 EntitySyncStatus.Status.valueOf(rs.getString("sync_status")))), jdbcTemplate);
 
         return new SchemaDataSyncStatus(entitySyncStatuses);

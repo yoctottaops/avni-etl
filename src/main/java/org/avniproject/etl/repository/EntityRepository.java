@@ -22,7 +22,6 @@ public class EntityRepository {
     }
 
     public void saveEntities(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
-        System.out.println(new SqlGenerator().generateSql(tableMetadata, lastSyncTime, dataSyncBoundaryTime));
         jdbcTemplate.execute(new SqlGenerator().generateSql(tableMetadata, lastSyncTime, dataSyncBoundaryTime));
         deleteDuplicateRows(tableMetadata.getName());
     }

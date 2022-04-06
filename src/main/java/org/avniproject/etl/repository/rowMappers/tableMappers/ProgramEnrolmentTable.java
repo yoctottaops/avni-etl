@@ -21,11 +21,12 @@ public class ProgramEnrolmentTable extends Table {
                         new Column("program_id", Column.Type.integer),
                         new Column("individual_id", Column.Type.integer),
                         new Column("program_outcome_id", Column.Type.integer),
+                        new Column("address_id", Column.Type.integer),
                         new Column("enrolment_date_time", Column.Type.timestampWithTimezone),
                         new Column("program_exit_date_time", Column.Type.timestampWithTimezone),
                         new Column("enrolment_location", Column.Type.point),
                         new Column("exit_location", Column.Type.point),
-                        new Column("legacy_id", Column.Type.integer)
+                        new Column("legacy_id", Column.Type.text)
                 ))
                 .build();
     }

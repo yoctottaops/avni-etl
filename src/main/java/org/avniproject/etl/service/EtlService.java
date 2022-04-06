@@ -39,7 +39,6 @@ public class EtlService {
 
         Organisation organisation = organisationFactory.create(organisationIdentity);
         Organisation newOrganisation = schemaMigrationService.migrate(organisation);
-
         syncService.sync(newOrganisation);
 
         return new EtlResult(true);

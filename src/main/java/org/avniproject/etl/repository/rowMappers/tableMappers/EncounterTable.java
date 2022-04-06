@@ -22,7 +22,7 @@ public class EncounterTable extends Table {
                                 new Column("encounter_location", Column.Type.point),
                                 new Column("cancel_date_time", Column.Type.timestampWithTimezone),
                                 new Column("cancel_location", Column.Type.point),
-                                new Column("legacy_id", Column.Type.integer)
+                                new Column("legacy_id", Column.Type.text)
                         )
                 ).build();
     }

@@ -26,9 +26,10 @@ SELECT encounter.individual_id                                                  
        encounter.legacy_id                                                                    "legacy_id"
        ${selections}
 FROM public.encounter encounter
+    inner join individual subject on encounter.individual_id = individual.id
   ${cross_join_concept_maps}
-WHERE oet.uuid = '${encounterTypeUuid}'
-  AND ost.uuid = '${operationalSubjectTypeUuid}'
+WHERE encounter.encounter_type_id = '${encounter_type_id}'
+  AND individual.subject_type_id = '${subject_type_id}'
     and encounter.last_modified_date_time > '${start_time}'
     and encounter.last_modified_date_time <= '${end_time}'
     );

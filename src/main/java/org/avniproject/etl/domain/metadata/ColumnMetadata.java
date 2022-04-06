@@ -39,7 +39,6 @@ public class ColumnMetadata extends Model {
             switch (this) {
                 case Numeric:
                     return Column.Type.integer;
-                case Duration:
                 case Date:
                     return Column.Type.date;
                 case DateTime:
