@@ -6,15 +6,14 @@ public class ConceptDatatypeMapper {
     public static Column.Type map(String type) {
         switch (type) {
             case "Numeric":
-                return Column.Type.integer;
+                return Column.Type.numeric;
             case "Duration":
             case "Date":
                 return Column.Type.date;
             case "DateTime":
-            case "Time":
                 return Column.Type.timestamp;
-            case "Location":
-                return Column.Type.point;
+            case "Time":
+                return Column.Type.time;
             default:
                 return Column.Type.text;
         }

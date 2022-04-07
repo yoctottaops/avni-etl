@@ -5,6 +5,7 @@ import org.avniproject.etl.domain.metadata.Column.Type;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.domain.metadata.diff.RenameColumn;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,14 +39,13 @@ public class ColumnMetadata extends Model {
         Column.Type getColumnDatatype() {
             switch (this) {
                 case Numeric:
-                    return Column.Type.integer;
+                    return Column.Type.numeric;
                 case Date:
                     return Column.Type.date;
                 case DateTime:
-                case Time:
                     return Column.Type.timestamp;
-                case Location:
-                    return Column.Type.point;
+                case Time:
+                    return Column.Type.time;
                 default:
                     return Column.Type.text;
             }

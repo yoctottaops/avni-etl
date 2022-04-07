@@ -83,7 +83,7 @@ public class TableMetadataMapper {
                 return new ProgramEncounterCancellationTable();
             case Encounter:
                 return new EncounterTable();
-            case EncounterCancellation:
+            case IndividualEncounterCancellation:
                 return new EncounterCancellationTable();
             default:
                 throw new RuntimeException("Cannot create name for table details" + tableDetails);

@@ -8,12 +8,16 @@ public class Column {
         timestamp,
         point,
         timestampWithTimezone,
+        numeric,
+        time,
         integer;
 
         public String typeString() {
             switch (this) {
                 case integer: return "integer";
+                case numeric: return "numeric";
                 case date: return "date";
+                case time: return "time";
                 case text: return "text";
                 case bool: return "boolean";
                 case point: return "point";

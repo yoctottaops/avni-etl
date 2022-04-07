@@ -50,7 +50,7 @@ public class SchemaMetadataRepository {
                 "from form_mapping fm\n" +
                 "         inner join form f on fm.form_id = f.id\n" +
                 "         left outer join form_element_group feg on f.id = feg.form_id\n" +
-                "         left outer join form_element fe on feg.id = fe.form_element_group_id\n" +
+                "         left outer join form_element fe on feg.id = fe.form_element_group_id\n and fe.is_voided is false" +
                 "         left outer join concept c on fe.concept_id = c.id\n" +
                 "         inner join subject_type st on fm.subject_type_id = st.id\n" +
                 "         inner join operational_subject_type ost on st.id = ost.subject_type_id\n" +

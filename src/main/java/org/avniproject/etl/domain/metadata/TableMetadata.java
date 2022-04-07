@@ -77,7 +77,7 @@ public class TableMetadata extends Model {
         ProgramEncounter,
         ProgramEncounterCancellation,
         Encounter,
-        EncounterCancellation,
+        IndividualEncounterCancellation,
         Address;
     }
     private String name;

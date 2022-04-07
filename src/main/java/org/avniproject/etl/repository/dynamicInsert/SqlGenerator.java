@@ -43,7 +43,7 @@ public class SqlGenerator {
             case ProgramEncounterCancellation: {
                 return getSql("/insertSql/programEncounterCancel.sql", tableMetadata, startTime, endTime);
             }
-            case EncounterCancellation: {
+            case IndividualEncounterCancellation: {
                 return getSql("/insertSql/generalEncounterCancel.sql", tableMetadata, startTime, endTime);
             }
             default:
@@ -118,9 +118,14 @@ public class SqlGenerator {
                     return String.format("public.get_coded_string_value(%s->'%s', %s.map)::TEXT as \"%s\"",
                             obsColumn, conceptUUID, getConceptMapName(tableMetadata), column.getName());
                 }
-                case Date:
-                case DateTime: {
+                case Date: {
                     return String.format("(%s->>'%s')::DATE as \"%s\"", obsColumn, conceptUUID, columnName);
+                }
+                case DateTime: {
+                    return String.format("(%s->>'%s')::TIMESTAMP as \"%s\"", obsColumn, conceptUUID, columnName);
+                }
+                case Time: {
+                    return String.format("(%s->>'%s')::TIME as \"%s\"", obsColumn, conceptUUID, columnName);
                 }
                 case Numeric: {
                     return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, columnName);
@@ -128,11 +133,6 @@ public class SqlGenerator {
                 case Subject:
                 case Location: {
                     return String.format("(%s->>'%s') as \"%s\"", obsColumn, conceptUUID, columnName);
-                }
-                case PhoneNumber: {
-                    String phoneNumber = String.format("jsonb_extract_path_text(%s->'%s', 'phoneNumber') as \"%s\"", obsColumn, conceptUUID, columnName);
-                    String verified = String.format("jsonb_extract_path_text(%s->'%s', 'verified') as \"%s\"", obsColumn, conceptUUID, columnName.concat(" Verified"));
-                    return phoneNumber.concat(",\n").concat(verified);
                 }
                 default: {
                     return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, columnName);
