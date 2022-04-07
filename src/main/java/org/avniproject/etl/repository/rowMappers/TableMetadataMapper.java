@@ -85,6 +85,8 @@ public class TableMetadataMapper {
                 return new EncounterTable();
             case IndividualEncounterCancellation:
                 return new EncounterCancellationTable();
+            case Address:
+                return new AddressTable();
             default:
                 throw new RuntimeException("Cannot create name for table details" + tableDetails);
         }

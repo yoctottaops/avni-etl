@@ -1,17 +1,22 @@
 package org.avniproject.etl.repository;
 
+import org.avniproject.etl.domain.metadata.Column;
+import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
+import org.avniproject.etl.repository.rowMappers.tableMappers.AddressTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
@@ -28,10 +33,29 @@ public class SchemaMetadataRepository {
     }
 
     public SchemaMetadata getNewSchemaMetadata() {
-        return new SchemaMetadata(getNewSchemaMetadataInternal());
+        List<TableMetadata> tables = new ArrayList<>();
+        tables.addAll(getFormTables());
+        tables.add(getAddressTable());
+
+        return new SchemaMetadata(tables);
     }
 
-    private List<TableMetadata> getNewSchemaMetadataInternal() {
+    private TableMetadata getAddressTable() {
+        List<Map<String, Object>> addressLevelTypes = runInOrgContext(() -> jdbcTemplate.queryForList("select name from address_level_type;"), jdbcTemplate);
+        List<ColumnMetadata> columns = addressLevelTypes
+                .stream()
+                .map(addressLevelTypeMap -> new ColumnMetadata(new Column((String) addressLevelTypeMap.get("name"), Column.Type.text), null, null, null))
+                .collect(Collectors.toList());
+
+        TableMetadata tableMetadata = new TableMetadata();
+        tableMetadata.setName("address");
+        tableMetadata.setType(TableMetadata.Type.Address);
+        tableMetadata.setColumnMetadataList(columns);
+
+        return tableMetadata;
+    }
+
+    private List<TableMetadata> getFormTables() {
         String sql = "select fm.id                                                                  form_mapping_id,\n" +
                 "       f.id                                                                   form_id,\n" +
                 "       ost.name                                                               subject_type_name,\n" +

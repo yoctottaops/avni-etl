@@ -6,7 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CommonColumns {
-    public static final List<Column> commonColumns = Arrays.asList(new Column("id", Column.Type.integer,true),
+    public static final List<Column> commonColumns = Arrays.asList(
+            new Column("id", Column.Type.integer),
             new Column("uuid", Column.Type.text),
             new Column("is_voided", Column.Type.bool),
             new Column("created_by_id", Column.Type.integer, true),
