@@ -6,7 +6,7 @@ import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.syncstatus.EntitySyncStatus;
 import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
-import org.avniproject.etl.repository.EntityRepository;
+import org.avniproject.etl.repository.sync.EntityRepository;
 import org.avniproject.etl.repository.EntitySyncStatusRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,9 +1,9 @@
-package org.avniproject.etl.repository;
+package org.avniproject.etl.repository.sync;
 
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.TableMetadata;
-import org.avniproject.etl.repository.dynamicInsert.SqlGenerator;
+import org.avniproject.etl.repository.dynamicInsert.TransactionalSyncSqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,21 +13,28 @@ import java.util.Date;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
 @Repository
-public class EntityRepository {
+public class DuplicateRowDeleteAction implements EntitySyncAction {
     private JdbcTemplate jdbcTemplate;
 
-
     @Autowired
-    public EntityRepository(JdbcTemplate jdbcTemplate) {
+    public DuplicateRowDeleteAction(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void saveEntities(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
-        jdbcTemplate.execute(new SqlGenerator().generateSql(tableMetadata, lastSyncTime, dataSyncBoundaryTime));
+    @Override
+    public boolean supports(TableMetadata tableMetadata) {
+        return new TransactionalSyncSqlGenerator().supports(tableMetadata);
+    }
+
+    @Override
+    public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
+        if (!this.supports(tableMetadata)) {
+            return;
+        }
         deleteDuplicateRows(tableMetadata.getName());
     }
 
-    public void deleteDuplicateRows(String tableName) {
+    private void deleteDuplicateRows(String tableName) {
         String schema = ContextHolder.getDbSchema();
         String baseSql = "delete from \"${schemaName}\".\"${tableName}\"\n" +
                 "where id in (\n" +

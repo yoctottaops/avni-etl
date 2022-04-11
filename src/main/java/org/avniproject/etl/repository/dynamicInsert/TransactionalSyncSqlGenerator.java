@@ -5,50 +5,41 @@ import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.COMMA;
 import static org.avniproject.etl.repository.dynamicInsert.SqlFile.*;
 
-public class SqlGenerator {
+public class TransactionalSyncSqlGenerator {
 
     private static String toString(Integer id) {
         return id == null ? "" : id.toString();
     }
 
+    private Map<TableMetadata.Type, String> typeMap = new HashMap();
+
+    public TransactionalSyncSqlGenerator() {
+        typeMap.put(TableMetadata.Type.Household, "/insertSql/individual.sql");
+        typeMap.put(TableMetadata.Type.Individual, "/insertSql/individual.sql");
+        typeMap.put(TableMetadata.Type.Person, "/insertSql/person.sql");
+        typeMap.put(TableMetadata.Type.Encounter, "/insertSql/generalEncounter.sql");
+        typeMap.put(TableMetadata.Type.ProgramEnrolment, "/insertSql/programEnrolment.sql");
+        typeMap.put(TableMetadata.Type.ProgramExit, "/insertSql/programEnrolmentExit.sql");
+        typeMap.put(TableMetadata.Type.ProgramEncounter, "/insertSql/programEncounter.sql");
+        typeMap.put(TableMetadata.Type.ProgramEncounterCancellation, "/insertSql/programEncounterCancel.sql");
+        typeMap.put(TableMetadata.Type.IndividualEncounterCancellation, "/insertSql/generalEncounterCancel.sql");
+    }
+
+    public boolean supports(TableMetadata tableMetadata) {
+        return typeMap.containsKey(tableMetadata.getType());
+    }
+
     public String generateSql(TableMetadata tableMetadata, Date startTime, Date endTime) {
-        switch (tableMetadata.getType()) {
-            case Household:
-            case Individual: {
-                return getSql("/insertSql/individual.sql", tableMetadata, startTime, endTime);
-            }
-            case Person: {
-                return getSql("/insertSql/person.sql", tableMetadata, startTime, endTime);
-            }
-            case Encounter: {
-                return getSql("/insertSql/generalEncounter.sql", tableMetadata, startTime, endTime);
-            }
-            case ProgramEnrolment: {
-                return getSql("/insertSql/programEnrolment.sql", tableMetadata, startTime, endTime);
-            }
-            case ProgramExit: {
-                return getSql("/insertSql/programEnrolmentExit.sql", tableMetadata, startTime, endTime);
-            }
-            case ProgramEncounter: {
-                return getSql("/insertSql/programEncounter.sql", tableMetadata, startTime, endTime);
-            }
-            case ProgramEncounterCancellation: {
-                return getSql("/insertSql/programEncounterCancel.sql", tableMetadata, startTime, endTime);
-            }
-            case IndividualEncounterCancellation: {
-                return getSql("/insertSql/generalEncounterCancel.sql", tableMetadata, startTime, endTime);
-            }
-            default:
-                throw new RuntimeException("Could not generate sql for" + tableMetadata.getType().toString());
+        if (supports(tableMetadata)) {
+            return getSql(typeMap.get(tableMetadata.getType()), tableMetadata, startTime, endTime);
         }
+        throw new RuntimeException("Could not generate sql for" + tableMetadata.getType().toString());
     }
 
     private String getSql(String path, TableMetadata tableMetadata, Date startTime, Date endTime) {
@@ -106,7 +97,7 @@ public class SqlGenerator {
 
     private String buildObservationSelection(TableMetadata tableMetadata, String obsColumnName) {
         List<ColumnMetadata> columns = tableMetadata.getNonDefaultColumnMetadataList();
-        String obsColumn =  "entity." + obsColumnName;
+        String obsColumn = "entity." + obsColumnName;
         if (columns.isEmpty()) return "";
 
         String columnSelects = columns.parallelStream().map(column -> {

@@ -29,7 +29,7 @@ class SqlGeneratorTest {
         Calendar endTime = Calendar.getInstance();
         endTime.set(2021, 10, 11, 13, 23, 4);
 
-        System.out.println(new SqlGenerator().generateSql(tableMetadata, startTime.getTime(), endTime.getTime()));
+        System.out.println(new TransactionalSyncSqlGenerator().generateSql(tableMetadata, startTime.getTime(), endTime.getTime()));
     }
 
 }
