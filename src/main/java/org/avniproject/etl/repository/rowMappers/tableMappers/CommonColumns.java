@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CommonColumns {
-    public static final List<Column> commonColumns = Arrays.asList(new Column("id", Column.Type.integer),
+    public static final List<Column> commonColumns = Arrays.asList(new Column("id", Column.Type.integer,true),
             new Column("uuid", Column.Type.text),
             new Column("is_voided", Column.Type.bool),
-            new Column("created_by_id", Column.Type.integer),
-            new Column("last_modified_by_id", Column.Type.integer),
+            new Column("created_by_id", Column.Type.integer, true),
+            new Column("last_modified_by_id", Column.Type.integer, true),
             new Column("created_date_time", Column.Type.timestampWithTimezone),
             new Column("last_modified_date_time", Column.Type.timestampWithTimezone));
 }

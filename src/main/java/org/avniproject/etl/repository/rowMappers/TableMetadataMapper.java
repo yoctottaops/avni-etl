@@ -42,7 +42,7 @@ public class TableMetadataMapper {
         Table table = getTableStructure(tableMetadata.getType(), tableDetails);
         tableMetadata.setName(table.name(tableDetails));
 
-        tableMetadata.addColumnMetadata(table.columns().stream().map(column -> new ColumnMetadata(new Column(column.getName(), column.getType()), null, null, null)).collect(Collectors.toList()));
+        tableMetadata.addColumnMetadata(table.columns().stream().map(column -> new ColumnMetadata(column, null, null, null)).collect(Collectors.toList()));
         tableMetadata.addColumnMetadata(columns.stream()
                 .filter(stringObjectMap -> stringObjectMap.get("concept_id") != null)
                 .map(column -> new ColumnMetadataMapper().create(column)).collect(Collectors.toList()));

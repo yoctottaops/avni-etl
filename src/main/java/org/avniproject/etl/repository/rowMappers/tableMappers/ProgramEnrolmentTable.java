@@ -18,10 +18,10 @@ public class ProgramEnrolmentTable extends Table {
         return new Columns()
                 .withCommonColumns()
                 .withColumns(Arrays.asList(
-                        new Column("individual_id", Column.Type.integer),
-                        new Column("address_id", Column.Type.integer),
-                        new Column("enrolment_date_time", Column.Type.timestampWithTimezone),
-                        new Column("program_exit_date_time", Column.Type.timestampWithTimezone),
+                        new Column("individual_id", Column.Type.integer, true),
+                        new Column("address_id", Column.Type.integer, true),
+                        new Column("enrolment_date_time", Column.Type.timestampWithTimezone, true),
+                        new Column("program_exit_date_time", Column.Type.timestampWithTimezone, true),
                         new Column("enrolment_location", Column.Type.point),
                         new Column("exit_location", Column.Type.point),
                         new Column("legacy_id", Column.Type.text)

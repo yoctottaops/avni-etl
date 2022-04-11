@@ -21,9 +21,7 @@ public class CreateTable implements Diff {
     @Override
     public String getSql() {
         StringBuffer sql = new StringBuffer("create table ")
-                .append(ContextHolder.getDbSchema())
-                .append(DOT)
-                .append(name)
+                .append(this.getTableName())
                 .append(OPEN_BRACKETS)
                 .append(addColumnsToSql(columns))
                 .append(CLOSE_BRACKETS)
@@ -37,7 +35,16 @@ public class CreateTable implements Diff {
                 .append(END_STATEMENT)
                 .append(NEWLINE);
 
+        sql.append(addIndices(columns));
+
         return sql.toString();
+    }
+
+    private String getTableName() {
+        return new StringBuilder().append(ContextHolder.getDbSchema())
+                .append(DOT)
+                .append(name)
+                .toString();
     }
 
     private String addColumnsToSql(List<Column> columns) {
@@ -52,5 +59,29 @@ public class CreateTable implements Diff {
                 .collect(Collectors.toList());
 
         return String.join(COMMA, defaultColumns);
+    }
+
+    private String addIndices(List<Column> columns) {
+        List<String> indices = columns.stream()
+                    .filter(Column::isIndexed)
+                    .map(column -> String.valueOf(
+                            new StringBuffer()
+                                    .append("create index ")
+                                    .append(ContextHolder.getDbSchema())
+                                    .append(UNDER_SCORE)
+                                    .append(name)
+                                    .append(UNDER_SCORE)
+                                    .append(column.getName())
+                                    .append(UNDER_SCORE)
+                                    .append("index")
+                                    .append(" on ")
+                                    .append(this.getTableName())
+                                    .append(OPEN_BRACKETS)
+                                    .append(column.getName())
+                                    .append(CLOSE_BRACKETS)
+                                    .append(END_STATEMENT)
+                    ))
+                    .collect(Collectors.toList());
+        return String.join(NEWLINE, indices);
     }
 }

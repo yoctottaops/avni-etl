@@ -10,4 +10,5 @@ public class Strings {
    public static final String NEWLINE = "\n";
    public static final String QUOTE = "\"";
    public static final String SPACE = " ";
+   public static final String UNDER_SCORE = "_";
 }
