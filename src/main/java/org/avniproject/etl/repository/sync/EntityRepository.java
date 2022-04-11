@@ -13,8 +13,10 @@ public class EntityRepository {
     private List<EntitySyncAction> entitySyncRepositories = new ArrayList<>();
 
     @Autowired
-    public EntityRepository(TransactionalTablesSyncAction transactionalTablesSyncRepository) {
-        entitySyncRepositories.add(transactionalTablesSyncRepository);
+    public EntityRepository(TransactionalTablesSyncAction transactionalTablesSyncAction, DuplicateRowDeleteAction duplicateRowDeleteAction, AddressTableSyncAction addressTableSyncAction) {
+        entitySyncRepositories.add(transactionalTablesSyncAction);
+        entitySyncRepositories.add(duplicateRowDeleteAction);
+        entitySyncRepositories.add(addressTableSyncAction);
     }
 
     public void saveEntities(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
