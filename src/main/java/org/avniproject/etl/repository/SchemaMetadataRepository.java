@@ -46,7 +46,7 @@ public class SchemaMetadataRepository {
                 .stream()
                 .map(addressLevelTypeMap -> new ColumnMetadata(new Column((String) addressLevelTypeMap.get("name"), Column.Type.text), null, null, null))
                 .collect(Collectors.toList());
-
+        columns.add(new ColumnMetadata(new Column("lowest_level_id", Column.Type.integer), null, null, null));
         TableMetadata tableMetadata = new TableMetadata();
         tableMetadata.setName("address");
         tableMetadata.setType(TableMetadata.Type.Address);
