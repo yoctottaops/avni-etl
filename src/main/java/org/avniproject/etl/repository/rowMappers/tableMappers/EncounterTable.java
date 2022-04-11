@@ -22,7 +22,8 @@ public class EncounterTable extends Table {
                                 new Column("encounter_location", Column.Type.point),
                                 new Column("cancel_date_time", Column.Type.timestampWithTimezone, true),
                                 new Column("cancel_location", Column.Type.point),
-                                new Column("legacy_id", Column.Type.text)
+                                new Column("legacy_id", Column.Type.text),
+                                new Column("latest_approval_status", Column.Type.text)
                         )
                 ).build();
     }

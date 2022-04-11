@@ -24,7 +24,8 @@ public class ProgramEnrolmentTable extends Table {
                         new Column("program_exit_date_time", Column.Type.timestampWithTimezone, true),
                         new Column("enrolment_location", Column.Type.point),
                         new Column("exit_location", Column.Type.point),
-                        new Column("legacy_id", Column.Type.text)
+                        new Column("legacy_id", Column.Type.text),
+                        new Column("latest_approval_status", Column.Type.text)
                 ))
                 .build();
     }

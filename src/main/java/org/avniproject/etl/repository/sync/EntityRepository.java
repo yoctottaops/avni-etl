@@ -14,10 +14,14 @@ public class EntityRepository {
     private List<EntitySyncAction> entitySyncRepositories = new ArrayList<>();
 
     @Autowired
-    public EntityRepository(TransactionalTablesSyncAction transactionalTablesSyncAction, DuplicateRowDeleteAction duplicateRowDeleteAction, AddressTableSyncAction addressTableSyncAction) {
+    public EntityRepository(TransactionalTablesSyncAction transactionalTablesSyncAction,
+                            DuplicateRowDeleteAction duplicateRowDeleteAction,
+                            AddressTableSyncAction addressTableSyncAction,
+                            EntityApprovalStatusSyncAction entityApprovalStatusSyncAction) {
         entitySyncRepositories.add(transactionalTablesSyncAction);
         entitySyncRepositories.add(duplicateRowDeleteAction);
         entitySyncRepositories.add(addressTableSyncAction);
+        entitySyncRepositories.add(entityApprovalStatusSyncAction);
     }
 
     @Transactional
