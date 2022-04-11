@@ -35,7 +35,7 @@ public class TableMetadata extends Model {
 
         getColumnMetadataList().forEach(columnMetadata -> {
             Optional<ColumnMetadata> matchingColumn = currentTable.findMatchingColumn(columnMetadata);
-            if (!matchingColumn.isPresent()) {
+            if (matchingColumn.isEmpty()) {
                 diffs.add(new AddColumn(getName(), columnMetadata.getColumn()));
             } else {
                 diffs.addAll(columnMetadata.findChanges(this, matchingColumn.get()));
@@ -45,27 +45,27 @@ public class TableMetadata extends Model {
     }
 
     private Optional<ColumnMetadata> findMatchingColumn(ColumnMetadata columnMetadata) {
-        return this.columnMetadataList.stream().filter(thisColumn -> thisColumn.matches(columnMetadata)).findFirst();
+        return this.columnMetadataList
+                .stream()
+                .filter(thisColumn -> thisColumn.matches(columnMetadata))
+                .findFirst();
     }
 
     public List<Column> getColumns() {
         return getColumnMetadataList()
                 .stream()
-                .map(columnMetadata -> columnMetadata.getColumn())
+                .map(ColumnMetadata::getColumn)
                 .collect(Collectors.toList());
     }
 
     public void mergeWith(TableMetadata oldTableMetadata) {
         setId(oldTableMetadata.getId());
         getColumnMetadataList()
-                .stream()
                 .forEach(newColumn ->
                         oldTableMetadata
                                 .findMatchingColumn(newColumn)
-                                .ifPresent(oldColumn -> newColumn.mergeWith(oldColumn)));
+                                .ifPresent(newColumn::mergeWith));
     }
-
-
 
     public enum Type {
         Individual,

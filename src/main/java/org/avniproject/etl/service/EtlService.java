@@ -37,9 +37,15 @@ public class EtlService {
         log.info(String.format("Running ETL for schema %s", organisationIdentity.getSchemaName()));
         ContextHolder.setContext(organisationIdentity);
 
-        Organisation organisation = organisationFactory.create(organisationIdentity);
-        Organisation newOrganisation = schemaMigrationService.migrate(organisation);
-        syncService.sync(newOrganisation);
+        try {
+            Organisation organisation = organisationFactory.create(organisationIdentity);
+            Organisation newOrganisation = schemaMigrationService.migrate(organisation);
+            syncService.sync(newOrganisation);
+        } catch (Exception e) {
+            log.error("Could not migrate organisation ", organisationIdentity);
+            log.error("Error message", e);
+            return new EtlResult(false);
+        }
 
         return new EtlResult(true);
     }

@@ -13,7 +13,12 @@ public class SchemaDataSyncStatus extends Model {
         this.entitySyncStatusList = entitySyncStatusList;
     }
 
-    public EntitySyncStatus getEntitySyncStatus(TableMetadata tableMetadata) {
+    public EntitySyncStatus startSync(TableMetadata tableMetadata) {
+        EntitySyncStatus entitySyncStatus = getEntitySyncStatus(tableMetadata);
+        return entitySyncStatus.startSync();
+    }
+
+    private EntitySyncStatus getEntitySyncStatus(TableMetadata tableMetadata) {
         return entitySyncStatusList
                 .stream()
                 .filter(entitySyncStatus -> entitySyncStatus.getTableMetadataId().equals(tableMetadata.getId()))

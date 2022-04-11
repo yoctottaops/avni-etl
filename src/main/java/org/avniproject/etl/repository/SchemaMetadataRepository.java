@@ -7,16 +7,15 @@ import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
-import org.avniproject.etl.repository.rowMappers.tableMappers.AddressTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
@@ -32,6 +31,7 @@ public class SchemaMetadataRepository {
         this.tableMetadataRepository = tableMetadataRepository;
     }
 
+    @Transactional(readOnly = true)
     public SchemaMetadata getNewSchemaMetadata() {
         List<TableMetadata> tables = new ArrayList<>();
         tables.addAll(getFormTables());
@@ -110,6 +110,7 @@ public class SchemaMetadataRepository {
                         .collect(Collectors.toList()));
     }
 
+    @Transactional(readOnly = true)
     public SchemaMetadata getExistingSchemaMetadata() {
         String sql = "select tm.id                table_id,\n" +
                 "       tm.db_user           db_user,\n" +

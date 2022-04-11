@@ -5,12 +5,13 @@ import org.avniproject.etl.domain.Model;
 import java.util.Date;
 
 public class EntitySyncStatus extends Model {
+
+
     public enum Status {
         Running,
         Success,
-        Failure
+        Failure;
     }
-
     private Integer tableMetadataId;
     private Date lastSyncTime;
     private Status syncStatus;
@@ -24,6 +25,11 @@ public class EntitySyncStatus extends Model {
 
     public EntitySyncStatus(Integer tableMetadataId, Date lastSyncTime, Status syncStatus) {
         this(null, tableMetadataId, lastSyncTime, syncStatus);
+    }
+
+    public EntitySyncStatus startSync() {
+        this.setSyncStatus(EntitySyncStatus.Status.Running);
+        return this;
     }
 
     public void markSuccess(Date asOfDate) {

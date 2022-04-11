@@ -57,10 +57,9 @@ public class SchemaMetadata {
 
     public void mergeWith(SchemaMetadata oldSchemaMetadata) {
         getTableMetadata()
-                .stream()
                 .forEach(newTable ->
                         oldSchemaMetadata
                                 .findMatchingTable(newTable)
-                                .ifPresent(oldTable -> newTable.mergeWith(oldTable)));
+                                .ifPresent(newTable::mergeWith));
     }
 }
