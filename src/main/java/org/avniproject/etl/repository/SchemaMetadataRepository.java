@@ -84,7 +84,7 @@ public class SchemaMetadataRepository {
                 "         left outer join form_element_group feg on f.id = feg.form_id\n" +
                 "         left outer join form_element fe on feg.id = fe.form_element_group_id\n and fe.is_voided is false" +
                 "         left outer join form_element gfe on gfe.id = fe.group_id\n and gfe.is_voided is false" +
-                "         left outer join concept c on fe.concept_id = c.id\n" +
+                "         left outer join concept c on fe.concept_id = c.id and c.data_type <> 'QuestionGroup'\n" +
                 "         left outer join concept gc on gfe.concept_id = gc.id\n" +
                 "         inner join subject_type st on fm.subject_type_id = st.id\n" +
                 "         inner join operational_subject_type ost on st.id = ost.subject_type_id\n" +
@@ -92,7 +92,7 @@ public class SchemaMetadataRepository {
                 "         left outer join operational_program op on p.id = op.program_id\n" +
                 "         left outer join encounter_type et on fm.observations_type_entity_id = et.id\n" +
                 "         left outer join operational_encounter_type oet on et.id = oet.encounter_type_id\n" +
-                "where fm.is_voided is false and c.data_type <> 'QuestionGroup';";
+                "where fm.is_voided is false;";
 
         List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
 
