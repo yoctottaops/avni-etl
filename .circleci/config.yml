@@ -83,6 +83,14 @@ jobs:
     - deploy:
         hostname: "ssh.staging.openchs.org"
 
+  PRODUCTION_deploy:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    working_directory: ~/
+    steps:
+      - deploy:
+          hostname: "ssh.etl.avniproject.org"
+
 workflows:
   version: 2
   build_and_deploy:
@@ -94,3 +102,10 @@ workflows:
             only: main
         requires:
           - build
+    - PRODUCTION_approve:
+        type: approval
+        requires:
+          - build
+          - PRODUCTION_deploy:
+              requires:
+                - PRODUCTION_approve
