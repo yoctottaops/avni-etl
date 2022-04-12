@@ -7,6 +7,7 @@ import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
+import org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -42,15 +43,18 @@ public class SchemaMetadataRepository {
 
     private TableMetadata getAddressTable() {
         List<Map<String, Object>> addressLevelTypes = runInOrgContext(() -> jdbcTemplate.queryForList("select name from address_level_type;"), jdbcTemplate);
-        List<ColumnMetadata> columns = addressLevelTypes
+        List<Column> columns = addressLevelTypes
                 .stream()
-                .map(addressLevelTypeMap -> new ColumnMetadata(new Column((String) addressLevelTypeMap.get("name"), Column.Type.text), null, null, null))
+                .map(addressLevelTypeMap -> new Column((String) addressLevelTypeMap.get("name"), Column.Type.text))
                 .collect(Collectors.toList());
-        columns.add(new ColumnMetadata(new Column("lowest_level_id", Column.Type.integer), null, null, null));
+        columns.addAll(CommonColumns.commonColumns);
+        List<ColumnMetadata> columnMetadataList = columns.stream()
+                .map(column -> new ColumnMetadata(column, null, null, null))
+                .collect(Collectors.toList());
         TableMetadata tableMetadata = new TableMetadata();
         tableMetadata.setName("address");
         tableMetadata.setType(TableMetadata.Type.Address);
-        tableMetadata.setColumnMetadataList(columns);
+        tableMetadata.setColumnMetadataList(columnMetadataList);
 
         return tableMetadata;
     }

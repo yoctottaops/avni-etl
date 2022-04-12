@@ -19,8 +19,8 @@ public class EntityRepository {
                             AddressTableSyncAction addressTableSyncAction,
                             EntityApprovalStatusSyncAction entityApprovalStatusSyncAction) {
         entitySyncRepositories.add(transactionalTablesSyncAction);
-        entitySyncRepositories.add(duplicateRowDeleteAction);
         entitySyncRepositories.add(addressTableSyncAction);
+        entitySyncRepositories.add(duplicateRowDeleteAction);
         entitySyncRepositories.add(entityApprovalStatusSyncAction);
     }
 
