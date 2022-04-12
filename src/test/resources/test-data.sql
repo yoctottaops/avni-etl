@@ -14,6 +14,7 @@ delete from form_element_group;
 delete from decision_concept;
 delete from form;
 delete from concept_answer;
+delete from answer_concept_migration;
 delete from concept;
 delete from operational_encounter_type;
 delete from encounter_type;

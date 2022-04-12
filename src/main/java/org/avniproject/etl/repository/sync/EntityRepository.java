@@ -17,11 +17,13 @@ public class EntityRepository {
     public EntityRepository(TransactionalTablesSyncAction transactionalTablesSyncAction,
                             DuplicateRowDeleteAction duplicateRowDeleteAction,
                             AddressTableSyncAction addressTableSyncAction,
-                            EntityApprovalStatusSyncAction entityApprovalStatusSyncAction) {
+                            EntityApprovalStatusSyncAction entityApprovalStatusSyncAction,
+                            AnswerConceptSync answerConceptSync) {
         entitySyncRepositories.add(transactionalTablesSyncAction);
         entitySyncRepositories.add(addressTableSyncAction);
         entitySyncRepositories.add(duplicateRowDeleteAction);
         entitySyncRepositories.add(entityApprovalStatusSyncAction);
+        entitySyncRepositories.add(answerConceptSync);
     }
 
     @Transactional

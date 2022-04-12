@@ -91,7 +91,7 @@ workflows:
     - STAGING_deploy:
         filters:
           branches:
-            only: ciTest
+            only: main
         requires:
           - build
 
