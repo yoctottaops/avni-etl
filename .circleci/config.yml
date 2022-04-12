@@ -106,6 +106,6 @@ workflows:
         type: approval
         requires:
           - build
-          - PRODUCTION_deploy:
-              requires:
-                - PRODUCTION_approve
+    - PRODUCTION_deploy:
+        requires:
+          - PRODUCTION_approve
