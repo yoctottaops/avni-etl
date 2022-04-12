@@ -85,13 +85,12 @@ jobs:
 
 workflows:
   version: 2
-  _build_and_deploy:
+  build_and_deploy:
     jobs:
-    - build:
+    - build
     - STAGING_deploy:
         filters:
           branches:
             only: main
         requires:
           - build
-
