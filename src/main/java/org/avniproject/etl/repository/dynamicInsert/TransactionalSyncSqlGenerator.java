@@ -101,32 +101,31 @@ public class TransactionalSyncSqlGenerator {
         if (columns.isEmpty()) return "";
 
         String columnSelects = columns.parallelStream().map(column -> {
-            String conceptUUID = column.getConceptUuid();
             String columnName = column.getName();
             switch (column.getConceptType()) {
                 case SingleSelect:
                 case MultiSelect: {
-                    return String.format("public.get_coded_string_value(%s->'%s', %s.map)::TEXT as \"%s\"",
-                            obsColumn, conceptUUID, getConceptMapName(tableMetadata), column.getName());
+                    return String.format("public.get_coded_string_value(%s%s, %s.map)::TEXT as \"%s\"",
+                            obsColumn, column.getJsonbExtractor(), getConceptMapName(tableMetadata), column.getName());
                 }
                 case Date: {
-                    return String.format("(%s->>'%s')::DATE as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s)::DATE as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
                 case DateTime: {
-                    return String.format("(%s->>'%s')::TIMESTAMP as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s)::TIMESTAMP as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
                 case Time: {
-                    return String.format("(%s->>'%s')::TIME as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s)::TIME as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
                 case Numeric: {
-                    return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s)::NUMERIC as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
                 case Subject:
                 case Location: {
-                    return String.format("(%s->>'%s') as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s) as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
                 default: {
-                    return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s)::TEXT as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
             }
         }).collect(Collectors.joining(",\n"));

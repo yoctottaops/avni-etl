@@ -68,21 +68,27 @@ public class SchemaMetadataRepository {
                 "       oet.name                                                               encounter_type_name,\n" +
                 "       fm.enable_approval                                                     enable_approval,\n" +
                 "       c.name                                                                 concept_name,\n" +
+                "       gc.name                                                                parent_concept_name,\n" +
                 "       c.id                                                                   concept_id,\n" +
+                "       gc.id                                                                  parent_concept_id,\n" +
                 "       c.uuid                                                                 concept_uuid,\n" +
-                "       (case when c.data_type = 'Coded' then fe.type else c.data_type end) as element_type\n" +
+                "       gc.uuid                                                                parent_concept_uuid,\n" +
+                "       (case when c.data_type = 'Coded' then fe.type else c.data_type end) as element_type,\n" +
+                "       (case when gc.data_type = 'Coded' then gfe.type else gc.data_type end) as parent_element_type\n" +
                 "from form_mapping fm\n" +
                 "         inner join form f on fm.form_id = f.id\n" +
                 "         left outer join form_element_group feg on f.id = feg.form_id\n" +
                 "         left outer join form_element fe on feg.id = fe.form_element_group_id\n and fe.is_voided is false" +
+                "         left outer join form_element gfe on gfe.id = fe.group_id\n and gfe.is_voided is false" +
                 "         left outer join concept c on fe.concept_id = c.id\n" +
+                "         left outer join concept gc on gfe.concept_id = gc.id\n" +
                 "         inner join subject_type st on fm.subject_type_id = st.id\n" +
                 "         inner join operational_subject_type ost on st.id = ost.subject_type_id\n" +
                 "         left outer join program p on fm.entity_id = p.id\n" +
                 "         left outer join operational_program op on p.id = op.program_id\n" +
                 "         left outer join encounter_type et on fm.observations_type_entity_id = et.id\n" +
                 "         left outer join operational_encounter_type oet on et.id = oet.encounter_type_id\n" +
-                "where fm.is_voided is false;";
+                "where fm.is_voided is false and c.data_type <> 'QuestionGroup';";
 
         List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
 

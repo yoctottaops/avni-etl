@@ -29,7 +29,8 @@ public class TableMetadataMapper {
                                 ),
                                 (Integer) column.get("concept_id"),
                                 column.get("concept_type") == null ? null : ColumnMetadata.ConceptType.valueOf((String) column.get("concept_type")),
-                                (String) column.get("concept_uuid")))
+                                (String) column.get("concept_uuid"),
+                                null))
                 .collect(Collectors.toList()));
 
         return tableMetadata;

@@ -9,11 +9,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class ColumnMetadata extends Model {
     private final Column column;
     private Integer conceptId;
     private ConceptType conceptType;
     private String conceptUuid;
+    private String parentConceptUuid;
 
     public enum ConceptType {
         Audio,
@@ -53,20 +56,25 @@ public class ColumnMetadata extends Model {
 
     }
 
-    public ColumnMetadata(Integer id, Column column, Integer conceptId, ConceptType conceptType, String conceptUuid) {
+    public ColumnMetadata(Integer id, Column column, Integer conceptId, ConceptType conceptType, String conceptUuid, String parentConceptUuid) {
         super(id);
         this.column = column;
         this.conceptId = conceptId;
         this.conceptType = conceptType;
         this.conceptUuid = conceptUuid;
+        this.parentConceptUuid = parentConceptUuid;
     }
 
     public ColumnMetadata(Integer id, String name, Integer conceptId, ConceptType conceptType, String conceptUuid) {
-        this(id, conceptType == null ? new Column(name, null) : new Column(name, conceptType.getColumnDatatype()), conceptId, conceptType, conceptUuid);
+        this(id, conceptType == null ? new Column(name, null) : new Column(name, conceptType.getColumnDatatype()), conceptId, conceptType, conceptUuid, null);
+    }
+
+    public ColumnMetadata(Integer id, String name, Integer conceptId, ConceptType conceptType, String conceptUuid, String parentConceptUuid) {
+        this(id, conceptType == null ? new Column(name, null) : new Column(name, conceptType.getColumnDatatype()), conceptId, conceptType, conceptUuid, parentConceptUuid);
     }
 
     public ColumnMetadata(Column column, Integer conceptId, ConceptType conceptType, String conceptUuid) {
-        this(null, column, conceptId, conceptType, conceptUuid);
+        this(null, column, conceptId, conceptType, conceptUuid, null);
     }
 
     public Integer getConceptId() {
@@ -93,6 +101,10 @@ public class ColumnMetadata extends Model {
         return conceptUuid;
     }
 
+    public String getParentConceptUuid() {
+        return parentConceptUuid;
+    }
+
     public boolean matches(ColumnMetadata realColumn) {
         if (realColumn == null) return false;
         if (realColumn.getConceptId() == null && getConceptId() == null) {
@@ -113,5 +125,19 @@ public class ColumnMetadata extends Model {
 
     public void mergeWith(ColumnMetadata oldColumnMetadata) {
         setId(oldColumnMetadata.getId());
+    }
+
+    public String getJsonbExtractor() {
+        if (parentConceptUuid != null) {
+            return format("-> '%s' -> '%s'", parentConceptUuid, conceptUuid);
+        }
+        return format("-> '%s'", conceptUuid);
+    }
+
+    public String getTextExtractor() {
+        if (parentConceptUuid != null) {
+            return format("-> '%s' ->> '%s'", parentConceptUuid, conceptUuid);
+        }
+        return format("->> '%s'", conceptUuid);
     }
 }
