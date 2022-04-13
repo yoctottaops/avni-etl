@@ -2,6 +2,8 @@ package org.avniproject.etl.repository.sync;
 
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.NullObject;
+import org.avniproject.etl.domain.metadata.Column;
+import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.repository.dynamicInsert.TransactionalSyncSqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +11,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
@@ -36,12 +41,11 @@ public class AnswerConceptSync implements EntitySyncAction {
         if (!this.supports(tableMetadata)) {
             return;
         }
-        String query = format("select acm.old_answer_concept_name, acm.new_answer_concept_name, cm.name\n" +
+        String query = format("select acm.old_answer_concept_name, acm.new_answer_concept_name, cm.name, cm.concept_type\n" +
                         "from answer_concept_migration acm\n" +
                         "         join column_metadata cm on acm.concept_id = cm.concept_id\n" +
-                        "         join table_metadata tm on cm.table_id = tm.id\n" +
                         "where acm.is_voided = false\n" +
-                        "  and tm.id = %d\n" +
+                        "  and cm.table_id = %d\n" +
                         "  and acm.last_modified_date_time > '%s'\n" +
                         "  and acm.last_modified_date_time <= '%s'\n" +
                         "order by acm.last_modified_date_time asc;",
@@ -53,12 +57,32 @@ public class AnswerConceptSync implements EntitySyncAction {
     }
 
     private void performMigration(Map<String, Object> acm, TableMetadata tableMetadata) {
-        String query = format("update \"%s\".\"%s\" set \"%s\" = '%s' where \"%s\" = '%s';",
-                ContextHolder.getDbSchema(), tableMetadata.getName(), acm.get("name"),
-                acm.get("new_answer_concept_name"), acm.get("name"), acm.get("old_answer_concept_name"));
+        String columnName = (String) acm.get("name");
+        String newAnswerConceptName = (String) acm.get("new_answer_concept_name");
+        String oldAnswerConceptName = (String) acm.get("old_answer_concept_name");
+        String updateTemplate = format("update \"%s\".\"%s\" set \"%s\" = ${updateCondition} where \"%s\" ${whereCondition};",
+                ContextHolder.getDbSchema(), tableMetadata.getName(), columnName, columnName);
+        String query = ColumnMetadata.ConceptType.MultiSelect.name().equals(acm.get("concept_type")) ?
+                getMultiSelectUpdateQuery(updateTemplate, oldAnswerConceptName, newAnswerConceptName, columnName) :
+                getSingleSelectUpdateQuery(updateTemplate, oldAnswerConceptName, newAnswerConceptName);
         runInOrgContext(() -> {
             jdbcTemplate.execute(query);
             return NullObject.instance();
         }, jdbcTemplate);
+    }
+
+    private String getMultiSelectUpdateQuery(String baseQuery, String oldName, String newName, String columnName) {
+        String startPositionUpdate = baseQuery.replace("${updateCondition}", format("regexp_replace(\"%s\", '^%s,', '%s,')", columnName, oldName, newName))
+                .replace("${whereCondition}", format(" ~ '^%s,'", oldName));
+        String endPositionUpdate = baseQuery.replace("${updateCondition}", format("regexp_replace(\"%s\", ', %s$', ', %s')", columnName, oldName, newName))
+                .replace("${whereCondition}", format(" ~ ', %s$'", oldName));
+        String middlePositionUpdate = baseQuery.replace("${updateCondition}", format("regexp_replace(\"%s\", ', %s,', ', %s,')", columnName, oldName, newName))
+                .replace("${whereCondition}", format(" ~ ', %s,'", oldName));
+        return String.join("\n", startPositionUpdate, endPositionUpdate, middlePositionUpdate);
+    }
+
+    private String getSingleSelectUpdateQuery(String baseQuery, String oldName, String newName) {
+        return baseQuery.replace("${updateCondition}", format("'%s'", newName))
+                .replace("${whereCondition}", format(" = '%s'", oldName));
     }
 }
