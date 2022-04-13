@@ -10,7 +10,7 @@ public class EntitySyncStatus extends Model {
     public enum Status {
         Running,
         Success,
-        Failure;
+        Failure
     }
     private Integer tableMetadataId;
     private Date lastSyncTime;

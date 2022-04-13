@@ -17,7 +17,7 @@ import static org.avniproject.etl.repository.dynamicInsert.SqlFile.readFile;
 
 @Repository
 public class AddressTableSyncAction implements EntitySyncAction {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public AddressTableSyncAction(JdbcTemplate jdbcTemplate) {

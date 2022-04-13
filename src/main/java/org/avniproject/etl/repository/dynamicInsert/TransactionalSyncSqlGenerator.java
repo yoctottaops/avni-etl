@@ -17,7 +17,7 @@ public class TransactionalSyncSqlGenerator {
         return id == null ? "" : id.toString();
     }
 
-    private Map<TableMetadata.Type, String> typeMap = new HashMap();
+    private final Map<TableMetadata.Type, String> typeMap = new HashMap();
 
     public TransactionalSyncSqlGenerator() {
         typeMap.put(TableMetadata.Type.Household, "/insertSql/individual.sql");

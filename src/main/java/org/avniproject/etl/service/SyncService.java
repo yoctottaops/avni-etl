@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SyncService {
 
-    private EntityRepository entityRepository;
-    private EntitySyncStatusRepository entitySyncStatusRepository;
+    private final EntityRepository entityRepository;
+    private final EntitySyncStatusRepository entitySyncStatusRepository;
     private static final Logger log = LoggerFactory.getLogger(SyncService.class);
 
     @Autowired

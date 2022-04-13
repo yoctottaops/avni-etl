@@ -17,8 +17,8 @@ import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 @Repository
 public class EntityApprovalStatusSyncAction implements EntitySyncAction {
 
-    private JdbcTemplate jdbcTemplate;
-    private Map<TableMetadata.Type, String> typeMap = new HashMap<>();
+    private final JdbcTemplate jdbcTemplate;
+    private final Map<TableMetadata.Type, String> typeMap = new HashMap<>();
 
     @Autowired
     public EntityApprovalStatusSyncAction(JdbcTemplate jdbcTemplate) {

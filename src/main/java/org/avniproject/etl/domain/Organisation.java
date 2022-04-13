@@ -4,9 +4,9 @@ import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
 
 public class Organisation {
-    private OrganisationIdentity organisationIdentity;
+    private final OrganisationIdentity organisationIdentity;
     private SchemaMetadata schemaMetadata;
-    private SchemaDataSyncStatus syncStatus;
+    private final SchemaDataSyncStatus syncStatus;
 
     public Organisation(OrganisationIdentity organisationIdentity, SchemaMetadata existingSchemaMetadata, SchemaDataSyncStatus syncStatus) {
         this.organisationIdentity = organisationIdentity;

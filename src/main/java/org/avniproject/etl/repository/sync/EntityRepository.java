@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public class EntityRepository {
-    private List<EntitySyncAction> entitySyncRepositories = new ArrayList<>();
+    private final List<EntitySyncAction> entitySyncRepositories = new ArrayList<>();
 
     @Autowired
     public EntityRepository(TransactionalTablesSyncAction transactionalTablesSyncAction,

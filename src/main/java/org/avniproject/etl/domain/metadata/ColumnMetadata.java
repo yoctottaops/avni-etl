@@ -13,10 +13,10 @@ import static java.lang.String.format;
 
 public class ColumnMetadata extends Model {
     private final Column column;
-    private Integer conceptId;
-    private ConceptType conceptType;
-    private String conceptUuid;
-    private String parentConceptUuid;
+    private final Integer conceptId;
+    private final ConceptType conceptType;
+    private final String conceptUuid;
+    private final String parentConceptUuid;
 
     public enum ConceptType {
         Audio,

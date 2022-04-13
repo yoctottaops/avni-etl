@@ -14,7 +14,7 @@ import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
 @Repository
 public class TransactionalTablesSyncAction implements EntitySyncAction {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public TransactionalTablesSyncAction(JdbcTemplate jdbcTemplate) {

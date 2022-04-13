@@ -16,7 +16,7 @@ import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
 @Repository
 public class DuplicateRowDeleteAction implements EntitySyncAction {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public DuplicateRowDeleteAction(JdbcTemplate jdbcTemplate) {
