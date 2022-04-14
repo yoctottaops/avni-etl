@@ -1,7 +1,9 @@
 drop schema if exists orgb cascade ;
 drop schema if exists orgc cascade ;
 drop schema if exists og cascade;
+drop schema if exists org_group cascade;
 
+delete from entity_approval_status;
 delete from encounter;
 delete from program_encounter;
 delete from program_enrolment;

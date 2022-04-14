@@ -34,7 +34,7 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     @Test
     public void shouldGetAllTablesForAnOrganisation() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
-        assertThat(schemaMetadata.getTableMetadata().size(), is(8));
+        assertThat(schemaMetadata.getTableMetadata().size(), is(10));
     }
 
     @Test
