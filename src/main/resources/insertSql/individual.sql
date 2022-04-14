@@ -21,9 +21,10 @@ insert into ${schema_name}.${table_name} (
         entity.legacy_id                                                                as "legacy_id"
         ${selections}
         FROM public.individual entity
+        LEFT OUTER JOIN public.subject_type st on st.id = entity.subject_type_id
         ${cross_join_concept_maps}
         LEFT OUTER JOIN public.gender g ON g.id = entity.gender_id
         LEFT OUTER JOIN public.address_level a ON entity.address_id = a.id
-        where entity.subject_type_id = ${subject_type_id}
+        where st.uuid = '${subject_type_uuid}'
         and entity.last_modified_date_time > '${start_time}'
         and entity.last_modified_date_time <= '${end_time}')

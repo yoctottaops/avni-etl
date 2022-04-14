@@ -19,13 +19,12 @@ public class OrganisationRepositoryTest extends BaseIntegrationTest {
     private OrganisationRepository organisationRepository;
 
     @Test
-    @Sql({"/test-data.sql"})
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
     @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldRetrieveAllOrganisationsWithAnalyticsDbTurnedOn() {
         List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
         assertThat(organisationList, hasItem(hasProperty("dbUser", equalTo("orgb") )));
         assertThat(organisationList, hasItem(hasProperty("schemaName", equalTo("orgb") )));
-        assertThat(organisationList, not(hasItem(hasProperty("dbUser", equalTo("orga") ))));
     }
 
     @Test
@@ -40,6 +39,8 @@ public class OrganisationRepositoryTest extends BaseIntegrationTest {
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     public void test() {
         ContextHolder.setContext(new OrganisationIdentity("orgb", "orgb"));

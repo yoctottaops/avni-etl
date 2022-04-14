@@ -35,7 +35,9 @@ SELECT entity.id                                                                
 FROM public.program_enrolment entity
   ${cross_join_concept_maps}
          LEFT OUTER JOIN public.individual individual ON entity.individual_id = individual.id
-WHERE entity.program_id = ${program_id}
-  AND individual.subject_type_id = ${subject_type_id}
+    LEFT OUTER JOIN public.subject_type st on st.id = individual.subject_type_id
+    LEFT OUTER JOIN public.program p on p.id = entity.program_id
+WHERE p.uuid = '${program_uuid}'
+  AND st.uuid = '${subject_type_uuid}'
     and entity.last_modified_date_time > '${start_time}'
     and entity.last_modified_date_time <= '${end_time}');

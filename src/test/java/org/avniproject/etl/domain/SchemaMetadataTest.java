@@ -20,9 +20,9 @@ public class SchemaMetadataTest {
     public void shouldCreateTableForSubjectTypeWhenItDoesNotExist() {
         TableMetadata subjectTable = new TableMetadata();
         subjectTable.setName("OperationalSubjectTypeName");
-        subjectTable.setEncounterTypeId(null);
-        subjectTable.setFormId(1);
-        subjectTable.setProgramId(null);
+        subjectTable.setEncounterTypeUuid(null);
+        subjectTable.setFormUuid("1");
+        subjectTable.setProgramUuid(null);
         subjectTable.setType(TableMetadata.Type.Person);
         SchemaMetadata newSchema = new SchemaMetadata(Arrays.asList(subjectTable));
         SchemaMetadata currentSchema = new SchemaMetadata(new ArrayList<>());
@@ -37,9 +37,9 @@ public class SchemaMetadataTest {
     public void shouldNotCreateSubjectTableWhenItAlreadyExists() {
         TableMetadata subjectTable = new TableMetadata();
         subjectTable.setName("OperationalSubjectTypeName");
-        subjectTable.setEncounterTypeId(null);
-        subjectTable.setFormId(1);
-        subjectTable.setProgramId(null);
+        subjectTable.setEncounterTypeUuid(null);
+        subjectTable.setFormUuid("1");
+        subjectTable.setProgramUuid(null);
         subjectTable.setType(TableMetadata.Type.Person);
         SchemaMetadata newSchema = new SchemaMetadata(Arrays.asList(subjectTable));
 

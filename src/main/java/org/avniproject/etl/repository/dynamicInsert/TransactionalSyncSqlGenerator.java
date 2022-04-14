@@ -13,10 +13,6 @@ import static org.avniproject.etl.repository.dynamicInsert.SqlFile.*;
 
 public class TransactionalSyncSqlGenerator {
 
-    private static String toString(Integer id) {
-        return id == null ? "" : id.toString();
-    }
-
     private final Map<TableMetadata.Type, String> typeMap = new HashMap();
 
     public TransactionalSyncSqlGenerator() {
@@ -29,6 +25,10 @@ public class TransactionalSyncSqlGenerator {
         typeMap.put(TableMetadata.Type.ProgramEncounter, "/insertSql/programEncounter.sql");
         typeMap.put(TableMetadata.Type.ProgramEncounterCancellation, "/insertSql/programEncounterCancel.sql");
         typeMap.put(TableMetadata.Type.IndividualEncounterCancellation, "/insertSql/generalEncounterCancel.sql");
+    }
+
+    private static String toString(String uuid) {
+        return uuid == null ? "" : uuid;
     }
 
     public boolean supports(TableMetadata tableMetadata) {
@@ -49,12 +49,12 @@ public class TransactionalSyncSqlGenerator {
                 .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
                 .replace("${concept_maps}", getConceptMaps(tableMetadata))
                 .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
-                .replace("${subject_type_id}", toString(tableMetadata.getSubjectTypeId()))
+                .replace("${subject_type_uuid}", toString(tableMetadata.getSubjectTypeUuid()))
                 .replace("${selections}", buildObservationSelection(tableMetadata, "observations"))
                 .replace("${exit_obs_selections}", buildObservationSelection(tableMetadata, "program_exit_observations"))
                 .replace("${cancel_obs_selections}", buildObservationSelection(tableMetadata, "cancel_observations"))
-                .replace("${encounter_type_id}", toString(tableMetadata.getEncounterTypeId()))
-                .replace("${program_id}", toString(tableMetadata.getProgramId()))
+                .replace("${encounter_type_uuid}", toString(tableMetadata.getEncounterTypeUuid()))
+                .replace("${program_uuid}", toString(tableMetadata.getProgramUuid()))
                 .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
                 .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(endTime));
     }

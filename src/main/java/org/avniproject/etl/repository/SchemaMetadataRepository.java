@@ -61,15 +61,15 @@ public class SchemaMetadataRepository {
     }
 
     private List<TableMetadata> getFormTables() {
-        String sql = "select fm.id                                                                  form_mapping_id,\n" +
-                "       f.id                                                                   form_id,\n" +
+        String sql = "select fm.uuid                                                           form_mapping_uuid,\n" +
+                "       f.uuid                                                                 form_uuid,\n" +
                 "       ost.name                                                               subject_type_name,\n" +
-                "       st.id                                                                  subject_type_id,\n" +
+                "       st.uuid                                                                subject_type_uuid,\n" +
                 "       st.type                                                                subject_type_type,\n" +
                 "       f.form_type                                                            table_type,\n" +
-                "       p.id                                                                   program_id,\n" +
+                "       p.uuid                                                                 program_uuid,\n" +
                 "       op.name                                                                program_name,\n" +
-                "       et.id                                                                  encounter_type_id,\n" +
+                "       et.uuid                                                                encounter_type_uuid,\n" +
                 "       oet.name                                                               encounter_type_name,\n" +
                 "       fm.enable_approval                                                     enable_approval,\n" +
                 "       c.name                                                                 concept_name,\n" +
@@ -97,7 +97,7 @@ public class SchemaMetadataRepository {
 
         List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
 
-        Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("form_mapping_id")));
+        Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("form_mapping_uuid")));
         List<TableMetadata> tables = tableMaps.values().stream().map(mapList -> new TableMetadataMapper().create(mapList)).collect(Collectors.toList());
         tables.forEach(this::addDecisionConceptColumns);
         return tables;
@@ -110,32 +110,37 @@ public class SchemaMetadataRepository {
                 "       (case when c.data_type = 'Coded' then 'MultiSelect' else c.data_type end) as element_type\n" +
                 "from decision_concept dc\n" +
                 "         inner join concept c on dc.concept_id = c.id\n" +
-                "where dc.form_id = ?;";
+                "         inner join form f on f.id = dc.form_id\n" +
+                "where f.uuid = ?;";
 
-        List<Map<String, Object>> conceptIds = runInOrgContext(() -> jdbcTemplate.queryForList(sql, tableMetadata.getFormId()), jdbcTemplate);
+        List<Map<String, Object>> conceptIds = runInOrgContext(() -> jdbcTemplate.queryForList(sql, tableMetadata.getFormUuid()), jdbcTemplate);
 
         tableMetadata.addColumnMetadata(
-                conceptIds
+                new ArrayList<>(conceptIds
                         .stream()
                         .map(column -> new ColumnMetadataMapper().create(column))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toMap(
+                                ColumnMetadata::getName,
+                                obj -> obj,
+                                (first, second) -> first
+                        )).values()));
     }
 
     @Transactional(readOnly = true)
     public SchemaMetadata getExistingSchemaMetadata() {
         String sql = String.format("select tm.id                table_id,\n" +
-                "       tm.type              table_type,\n" +
-                "       tm.name              table_name,\n" +
-                "       tm.form_id           form_id,\n" +
-                "       tm.encounter_type_id encounter_type_id,\n" +
-                "       tm.program_id        program_id,\n" +
-                "       tm.subject_type_id   subject_type_id,\n" +
-                "       cm.id                column_id,\n" +
-                "       cm.type              column_type,\n" +
-                "       cm.concept_type      concept_type,\n" +
-                "       cm.concept_id        concept_id,\n" +
-                "       cm.name              concept_name,\n" +
-                "       cm.concept_uuid      concept_uuid\n" +
+                "       tm.type                                 table_type,\n" +
+                "       tm.name                                 table_name,\n" +
+                "       tm.form_uuid                            form_uuid,\n" +
+                "       tm.encounter_type_uuid                  encounter_type_uuid,\n" +
+                "       tm.program_uuid                         program_uuid,\n" +
+                "       tm.subject_type_uuid                    subject_type_uuid,\n" +
+                "       cm.id                                   column_id,\n" +
+                "       cm.type                                 column_type,\n" +
+                "       cm.concept_type                         concept_type,\n" +
+                "       cm.concept_id                           concept_id,\n" +
+                "       cm.name                                 concept_name,\n" +
+                "       cm.concept_uuid                         concept_uuid\n" +
                 "from table_metadata tm\n" +
                 "         left outer join column_metadata cm on tm.id = cm.table_id\n" +
                 "     where tm.schema_name = '%s';", ContextHolder.getDbSchema());

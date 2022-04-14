@@ -107,10 +107,10 @@ public class ColumnMetadata extends Model {
 
     public boolean matches(ColumnMetadata realColumn) {
         if (realColumn == null) return false;
-        if (realColumn.getConceptId() == null && getConceptId() == null) {
+        if (realColumn.getConceptUuid() == null && getConceptUuid() == null) {
             return getName().equals(realColumn.getName());
         }
-        return equalsIgnoreNulls(realColumn.getConceptId(), getConceptId());
+        return equalsIgnoreNulls(realColumn.getConceptUuid(), getConceptUuid());
     }
 
     public List<Diff> findChanges(TableMetadata newTable, ColumnMetadata oldColumnMetadata) {

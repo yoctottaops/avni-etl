@@ -11,6 +11,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TableMetadata extends Model {
+    private String name;
+    private Type type;
+    private String subjectTypeUuid;
+    private String programUuid;
+    private String encounterTypeUuid;
+    private String formUuid;
+    private List<ColumnMetadata> columnMetadataList = new ArrayList<>();
+
     public TableMetadata(Integer id) {
         super(id);
     }
@@ -20,11 +28,11 @@ public class TableMetadata extends Model {
 
     public boolean matches(TableMetadata realTable) {
         if (realTable == null) return false;
-        return  equalsIgnoreNulls(realTable.getType(), this.getType())
-                && equalsIgnoreNulls(realTable.getSubjectTypeId(), this.subjectTypeId)
-                && equalsIgnoreNulls(realTable.getFormId(), this.formId)
-                && equalsIgnoreNulls(realTable.getEncounterTypeId(), this.encounterTypeId)
-                && equalsIgnoreNulls(realTable.getProgramId(), this.programId);
+        return equalsIgnoreNulls(realTable.getType(), this.getType())
+                && equalsIgnoreNulls(realTable.getSubjectTypeUuid(), this.subjectTypeUuid)
+                && equalsIgnoreNulls(realTable.getFormUuid(), this.formUuid)
+                && equalsIgnoreNulls(realTable.getEncounterTypeUuid(), this.encounterTypeUuid)
+                && equalsIgnoreNulls(realTable.getProgramUuid(), this.programUuid);
     }
 
     public List<Diff> findChanges(TableMetadata currentTable) {
@@ -67,27 +75,6 @@ public class TableMetadata extends Model {
                                 .ifPresent(newColumn::mergeWith));
     }
 
-    public enum Type {
-        Individual,
-        Person,
-        Household,
-        Group,
-        ProgramEnrolment,
-        ProgramExit,
-        ProgramEncounter,
-        ProgramEncounterCancellation,
-        Encounter,
-        IndividualEncounterCancellation,
-        Address
-    }
-    private String name;
-
-    private Type type;
-    private Integer subjectTypeId;
-    private Integer programId;
-    private Integer encounterTypeId;
-    private Integer formId;
-    private List<ColumnMetadata> columnMetadataList = new ArrayList<>();
     public String getName() {
         return name;
     }
@@ -104,48 +91,48 @@ public class TableMetadata extends Model {
         this.type = type;
     }
 
-    public Integer getSubjectTypeId() {
-        return subjectTypeId;
+    public String getSubjectTypeUuid() {
+        return subjectTypeUuid;
     }
 
-    public void setSubjectTypeId(Integer subjectTypeId) {
-        this.subjectTypeId = subjectTypeId;
+    public void setSubjectTypeUuid(String subjectTypeUuid) {
+        this.subjectTypeUuid = subjectTypeUuid;
     }
 
-    public Integer getProgramId() {
-        return programId;
+    public String getProgramUuid() {
+        return programUuid;
     }
 
-    public void setProgramId(Integer programId) {
-        this.programId = programId;
+    public void setProgramUuid(String programUuid) {
+        this.programUuid = programUuid;
     }
 
-    public Integer getEncounterTypeId() {
-        return encounterTypeId;
+    public String getEncounterTypeUuid() {
+        return encounterTypeUuid;
     }
 
-    public void setEncounterTypeId(Integer encounterTypeId) {
-        this.encounterTypeId = encounterTypeId;
+    public void setEncounterTypeUuid(String encounterTypeUuid) {
+        this.encounterTypeUuid = encounterTypeUuid;
     }
 
-    public Integer getFormId() {
-        return formId;
+    public String getFormUuid() {
+        return formUuid;
     }
 
-    public void setFormId(Integer formId) {
-        this.formId = formId;
+    public void setFormUuid(String formUuid) {
+        this.formUuid = formUuid;
     }
 
     public List<ColumnMetadata> getColumnMetadataList() {
         return columnMetadataList;
     }
 
-    public List<ColumnMetadata> getNonDefaultColumnMetadataList() {
-        return getColumnMetadataList().stream().filter(columnMetadata -> columnMetadata.getConceptId() != null).collect(Collectors.toList());
-    }
-
     public void setColumnMetadataList(List<ColumnMetadata> columnMetadataList) {
         this.columnMetadataList = columnMetadataList;
+    }
+
+    public List<ColumnMetadata> getNonDefaultColumnMetadataList() {
+        return getColumnMetadataList().stream().filter(columnMetadata -> columnMetadata.getConceptId() != null).collect(Collectors.toList());
     }
 
     public void addColumnMetadata(List<ColumnMetadata> columnMetadataList) {
@@ -154,5 +141,19 @@ public class TableMetadata extends Model {
 
     public boolean hasNonDefaultColumns() {
         return !getNonDefaultColumnMetadataList().isEmpty();
+    }
+
+    public enum Type {
+        Individual,
+        Person,
+        Household,
+        Group,
+        ProgramEnrolment,
+        ProgramExit,
+        ProgramEncounter,
+        ProgramEncounterCancellation,
+        Encounter,
+        IndividualEncounterCancellation,
+        Address
     }
 }

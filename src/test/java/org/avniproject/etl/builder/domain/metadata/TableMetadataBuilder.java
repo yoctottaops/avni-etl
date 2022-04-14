@@ -13,17 +13,17 @@ public class TableMetadataBuilder {
     private final Integer id = Math.toIntExact(round(random() * 1000));
     private String name = "Person";
     private TableMetadata.Type type = TableMetadata.Type.Person;
-    private Integer subjectTypeId = 1;
-    private Integer programId = null;
-    private Integer encounterTypeId = null;
-    private Integer formId = 1;
+    private String subjectTypeUuid = "1";
+    private String programUuid = null;
+    private String encounterTypeUuid = null;
+    private String formUuid = "1";
     private final List<ColumnMetadata> columnMetadataList = new ArrayList<>();
 
     public TableMetadataBuilder forPerson() {
         name = "Person";
         type = TableMetadata.Type.Person;
-        programId = null;
-        encounterTypeId = null;
+        programUuid = null;
+        encounterTypeUuid = null;
 
         return this;
     }
@@ -31,17 +31,17 @@ public class TableMetadataBuilder {
     public TableMetadataBuilder forIndividual() {
         name = "Individual";
         type = TableMetadata.Type.Individual;
-        programId = null;
-        encounterTypeId = null;
+        programUuid = null;
+        encounterTypeUuid = null;
 
         return this;
     }
 
-    public TableMetadataBuilder forProgramEnrolment(Integer programId) {
+    public TableMetadataBuilder forProgramEnrolment(String programUuid) {
         name = "MyProgram";
         type = TableMetadata.Type.ProgramEnrolment;
-        this.programId = programId;
-        encounterTypeId = null;
+        this.programUuid = programUuid;
+        encounterTypeUuid = null;
 
         return this;
     }
@@ -51,8 +51,8 @@ public class TableMetadataBuilder {
         return this;
     }
 
-    public TableMetadataBuilder forProgramExit(Integer programId) {
-        return forProgramEnrolment(programId).withType(TableMetadata.Type.ProgramExit);
+    public TableMetadataBuilder forProgramExit(String programUuid) {
+        return forProgramEnrolment(programUuid).withType(TableMetadata.Type.ProgramExit);
     }
 
     public TableMetadataBuilder withType(TableMetadata.Type type) {
@@ -60,17 +60,17 @@ public class TableMetadataBuilder {
         return this;
     }
 
-    public TableMetadataBuilder forProgramEncounter(Integer programId, Integer encounterTypeId) {
+    public TableMetadataBuilder forProgramEncounter(String programUuid, String encounterTypeUuid) {
         name = "MyProgram";
         type = TableMetadata.Type.ProgramEncounter;
-        this.programId = programId;
-        this.encounterTypeId = encounterTypeId;
+        this.programUuid = programUuid;
+        this.encounterTypeUuid = encounterTypeUuid;
 
         return this;
     }
 
-    public TableMetadataBuilder forProgramEncounterCancellation(Integer programId, Integer encounterTypeId) {
-        return forProgramEncounter(programId, encounterTypeId).withType(TableMetadata.Type.ProgramEncounterCancellation);
+    public TableMetadataBuilder forProgramEncounterCancellation(String programUuid, String encounterTypeUuid) {
+        return forProgramEncounter(programUuid, encounterTypeUuid).withType(TableMetadata.Type.ProgramEncounterCancellation);
     }
 
 
@@ -79,18 +79,18 @@ public class TableMetadataBuilder {
         tableMetadata.setId(this.id);
         tableMetadata.setName(this.name);
         tableMetadata.setType(this.type);
-        tableMetadata.setSubjectTypeId(this.subjectTypeId);
-        tableMetadata.setProgramId(this.programId);
-        tableMetadata.setEncounterTypeId(this.encounterTypeId);
-        tableMetadata.setFormId(this.formId);
+        tableMetadata.setSubjectTypeUuid(this.subjectTypeUuid);
+        tableMetadata.setProgramUuid(this.programUuid);
+        tableMetadata.setEncounterTypeUuid(this.encounterTypeUuid);
+        tableMetadata.setFormUuid(this.formUuid);
         tableMetadata.setColumnMetadataList(this.columnMetadataList);
         return tableMetadata;
     }
 
     public TableMetadataBuilder forAddress() {
         name = "Address";
-        subjectTypeId = null;
-        formId = null;
+        subjectTypeUuid = null;
+        formUuid = null;
         return withType(TableMetadata.Type.Address);
     }
 }

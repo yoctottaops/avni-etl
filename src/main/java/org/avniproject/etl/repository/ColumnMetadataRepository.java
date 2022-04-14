@@ -58,7 +58,7 @@ public class ColumnMetadataRepository {
     private Map<String, Object> addParameters(Integer tableId, ColumnMetadata columnMetadata) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("id", columnMetadata.getId());
-        parameters.put("db_user", ContextHolder.getDbUser());
+        parameters.put("schema_name", ContextHolder.getDbSchema());
         parameters.put("table_id", tableId);
         parameters.put("name", columnMetadata.getName());
         parameters.put("type", columnMetadata.getType().toString());

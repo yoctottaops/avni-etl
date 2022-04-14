@@ -45,9 +45,12 @@ insert into ${schema_name}.${table_name} (
         LEFT OUTER JOIN public.program_enrolment programEnrolment
         ON entity.program_enrolment_id = programEnrolment.id
         LEFT OUTER JOIN public.individual on programEnrolment.individual_id = individual.id
-        WHERE programEnrolment.program_id = ${program_id}
-        AND entity.encounter_type_id = ${encounter_type_id}
-        AND individual.subject_type_id = ${subject_type_id}
+        LEFT OUTER JOIN public.encounter_type et on entity.encounter_type_id = et.id
+        LEFT OUTER JOIN public.subject_type st on st.id = individual.subject_type_id
+        LEFT OUTER JOIN public.program p on p.id = programEnrolment.program_id
+        WHERE p.uuid = '${program_uuid}'
+        AND et.uuid = '${encounter_type_uuid}'
+        AND st.uuid = '${subject_type_uuid}'
         AND entity.cancel_date_time is not null
         and entity.last_modified_date_time > '${start_time}'
         and entity.last_modified_date_time <= '${end_time}');

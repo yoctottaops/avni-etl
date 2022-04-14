@@ -31,6 +31,9 @@ public class TransactionalTablesSyncAction implements EntitySyncAction {
         if (!this.supports(tableMetadata)) {
             return;
         }
-        jdbcTemplate.execute(new TransactionalSyncSqlGenerator().generateSql(tableMetadata, lastSyncTime, dataSyncBoundaryTime));
+        runInOrgContext(() -> {
+            jdbcTemplate.execute(new TransactionalSyncSqlGenerator().generateSql(tableMetadata, lastSyncTime, dataSyncBoundaryTime));
+            return NullObject.instance();
+        }, jdbcTemplate);
     }
 }

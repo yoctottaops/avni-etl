@@ -52,11 +52,11 @@ public class TableMetadataMapper {
     }
 
     private void populateCommonColumns(TableMetadata tableMetadata, Map<String, Object> tableDetails) {
-        tableMetadata.setFormId(((Integer) tableDetails.get("form_id")));
+        tableMetadata.setFormUuid(((String) tableDetails.get("form_uuid")));
         tableMetadata.setType(getTableType(tableDetails));
-        tableMetadata.setSubjectTypeId((Integer) tableDetails.get("subject_type_id"));
-        tableMetadata.setEncounterTypeId((Integer) tableDetails.get("encounter_type_id"));
-        tableMetadata.setProgramId((Integer) tableDetails.get("program_id"));
+        tableMetadata.setSubjectTypeUuid((String) tableDetails.get("subject_type_uuid"));
+        tableMetadata.setEncounterTypeUuid((String) tableDetails.get("encounter_type_uuid"));
+        tableMetadata.setProgramUuid((String) tableDetails.get("program_uuid"));
     }
 
     private TableMetadata.Type getTableType(Map<String, Object> tableDetails) {

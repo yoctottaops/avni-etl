@@ -31,14 +31,14 @@ public class TableMetadataTest {
     @Test
     public void matches_shouldHandleDifferentTypesOfTables() {
         TableMetadata person = new TableMetadataBuilder().forPerson().build();
-        TableMetadata programEnrolment = new TableMetadataBuilder().forProgramEnrolment(1).build();
-        TableMetadata anotherProgramEnrolment = new TableMetadataBuilder().forProgramEnrolment(2).build();
-        TableMetadata programExit = new TableMetadataBuilder().forProgramExit(1).build();
-        TableMetadata anotherProgramExit = new TableMetadataBuilder().forProgramExit(2).build();
-        TableMetadata programEncounter = new TableMetadataBuilder().forProgramEncounter(1, 1).build();
-        TableMetadata programEncounterCancellation = new TableMetadataBuilder().forProgramEncounterCancellation(1, 1).build();
-        TableMetadata anotherProgramProgramEncounter = new TableMetadataBuilder().forProgramEncounter(2, 1).build();
-        TableMetadata anotherProgramProgramEncounterCancellation = new TableMetadataBuilder().forProgramEncounterCancellation(2, 1).build();
+        TableMetadata programEnrolment = new TableMetadataBuilder().forProgramEnrolment("1").build();
+        TableMetadata anotherProgramEnrolment = new TableMetadataBuilder().forProgramEnrolment("2").build();
+        TableMetadata programExit = new TableMetadataBuilder().forProgramExit("1").build();
+        TableMetadata anotherProgramExit = new TableMetadataBuilder().forProgramExit("2").build();
+        TableMetadata programEncounter = new TableMetadataBuilder().forProgramEncounter("1", "1").build();
+        TableMetadata programEncounterCancellation = new TableMetadataBuilder().forProgramEncounterCancellation("1", "1").build();
+        TableMetadata anotherProgramProgramEncounter = new TableMetadataBuilder().forProgramEncounter("2", "1").build();
+        TableMetadata anotherProgramProgramEncounterCancellation = new TableMetadataBuilder().forProgramEncounterCancellation("2", "1").build();
         TableMetadata addressTable = new TableMetadataBuilder().forAddress().build();
 
         List<TableMetadata> tables = Arrays.asList(person, programEnrolment, anotherProgramEnrolment,

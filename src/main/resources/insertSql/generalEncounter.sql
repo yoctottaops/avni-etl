@@ -25,10 +25,13 @@ SELECT entity.individual_id                                                     
        entity.legacy_id                                                                    "legacy_id"
        ${selections}
 FROM public.encounter entity
-    inner join individual subject on entity.individual_id = subject.id
+    LEFT OUTER JOIN public.individual subject on entity.individual_id = subject.id
+    LEFT OUTER JOIN public.encounter_type et on entity.encounter_type_id = et.id
+    LEFT OUTER JOIN public.subject_type st on st.id = subject.subject_type_id
   ${cross_join_concept_maps}
-WHERE entity.encounter_type_id = ${encounter_type_id}
-  AND subject.subject_type_id = ${subject_type_id}
+WHERE st.uuid = '${subject_type_uuid}'
+  AND et.uuid = '${encounter_type_uuid}'
+  AND entity.cancel_date_time isnull
     and entity.last_modified_date_time > '${start_time}'
     and entity.last_modified_date_time <= '${end_time}'
     );

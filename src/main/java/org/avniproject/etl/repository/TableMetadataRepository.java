@@ -38,10 +38,10 @@ public class TableMetadataRepository {
         String sql = "update table_metadata\n" +
                 "set name              = :name,\n" +
                 "    type              = :type,\n" +
-                "    subject_type_id   = :subject_type_id,\n" +
-                "    program_id        = :program_id,\n" +
-                "    encounter_type_id = :encounter_type_id,\n" +
-                "    form_id           = :form_id\n" +
+                "    subject_type_uuid   = :subject_type_uuid,\n" +
+                "    program_uuid        = :program_uuid,\n" +
+                "    encounter_type_uuid = :encounter_type_uuid,\n" +
+                "    form_uuid           = :form_uuid\n" +
                 "where id = :id;";
 
         new NamedParameterJdbcTemplate(jdbcTemplate).update(sql, addParameters(tableMetadata));
@@ -61,13 +61,12 @@ public class TableMetadataRepository {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("id", tableMetadata.getId());
         parameters.put("schema_name", ContextHolder.getDbSchema());
-        parameters.put("db_user", ContextHolder.getDbUser());
         parameters.put("name", tableMetadata.getName());
         parameters.put("type", tableMetadata.getType().toString());
-        parameters.put("subject_type_id", tableMetadata.getSubjectTypeId());
-        parameters.put("program_id", tableMetadata.getProgramId());
-        parameters.put("encounter_type_id", tableMetadata.getEncounterTypeId());
-        parameters.put("form_id", tableMetadata.getFormId());
+        parameters.put("subject_type_uuid", tableMetadata.getSubjectTypeUuid());
+        parameters.put("program_uuid", tableMetadata.getProgramUuid());
+        parameters.put("encounter_type_uuid", tableMetadata.getEncounterTypeUuid());
+        parameters.put("form_uuid", tableMetadata.getFormUuid());
 
         return parameters;
     }
