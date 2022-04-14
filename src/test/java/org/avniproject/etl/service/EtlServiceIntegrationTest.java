@@ -14,7 +14,7 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldNotFailWhenRunTwice() {
-        etlService.runForOrganisation(new OrganisationIdentity(12, "orgc", "orgc", OrganisationIdentity.OrganisationType.Organisation));
-        etlService.runForOrganisation(new OrganisationIdentity(12, "orgc", "orgc", OrganisationIdentity.OrganisationType.Organisation));
+        etlService.runForOrganisation(new OrganisationIdentity("orgc", "orgc"));
+        etlService.runForOrganisation(new OrganisationIdentity("orgc", "orgc"));
     }
 }

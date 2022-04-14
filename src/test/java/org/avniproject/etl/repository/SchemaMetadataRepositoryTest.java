@@ -26,7 +26,7 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
 
     @BeforeEach
     public void before() {
-        OrganisationIdentity orgb = new OrganisationIdentity(12, "orgc", "orgc", OrganisationIdentity.OrganisationType.Organisation);
+        OrganisationIdentity orgb = new OrganisationIdentity("orgc", "orgc");
         ContextHolder.setContext(orgb);
     }
 

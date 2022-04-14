@@ -6,7 +6,6 @@ public class OrganisationIdentityBuilder {
     private Integer id = 1;
     private String dbUser = "dbUser";
     private final String schemaName = "schema";
-    private final OrganisationIdentity.OrganisationType organisationType = OrganisationIdentity.OrganisationType.Organisation;
 
     public OrganisationIdentityBuilder withId(Integer id) {
         this.id = id;
@@ -14,7 +13,7 @@ public class OrganisationIdentityBuilder {
     }
 
     public OrganisationIdentity build() {
-        return new OrganisationIdentity(id, dbUser, schemaName, organisationType);
+        return new OrganisationIdentity(dbUser, schemaName);
     }
 
     public OrganisationIdentityBuilder withDbUser(String dbUser) {

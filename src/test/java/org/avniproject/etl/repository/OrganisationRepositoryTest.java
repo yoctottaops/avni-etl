@@ -8,17 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@Sql("/test-data.sql")
+@Sql({"/test-data.sql"})
+@Sql(scripts = "/organisation-repository-test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class OrganisationRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
     private OrganisationRepository organisationRepository;
 
-    @Test
     public void shouldRetrieveAllOrganisationsWithAnalyticsDbTurnedOn() {
         List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
         assertThat(organisationList, hasItem(hasProperty("dbUser", equalTo("orgb") )));
@@ -27,16 +28,20 @@ public class OrganisationRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldRetrieveAllOrganisationGroupsWithAnalyticsDbTurnedOn() {
+    @Sql({"/organisation-repository-test-data.sql"})
+    @Sql(scripts = "/organisation-repository-test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void shouldRetrieveAllOrganisationsSeparatelyForOrganisationGroup() {
         List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
-        assertThat(organisationList, not(hasItem(hasProperty("dbUser", equalTo("org_group_b") ))));
-        assertThat(organisationList, hasItem(hasProperty("dbUser", equalTo("org_group_a") )));
+        List<OrganisationIdentity> groupOrganisation = organisationList.stream().filter(organisationIdentity -> organisationIdentity.getSchemaName().equals("og")).collect(Collectors.toList());
+        assertThat(groupOrganisation.size(), equalTo(2));
+        assertThat(groupOrganisation, hasItem(allOf(hasProperty("dbUser", equalTo("ogi1")),hasProperty("schemaName", equalTo("og")))));
+        assertThat(groupOrganisation, hasItem(allOf(hasProperty("dbUser", equalTo("ogi2")),hasProperty("schemaName", equalTo("og")))));
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     public void test() {
-        ContextHolder.setContext(new OrganisationIdentity(12, "orgb", "orgb", OrganisationIdentity.OrganisationType.Organisation));
+        ContextHolder.setContext(new OrganisationIdentity("orgb", "orgb"));
         List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
         ContextHolder.setContext(organisationList.stream().filter(organisationIdentity -> organisationIdentity.getDbUser().equals("orgb")).findFirst().get());
         assertThat(organisationRepository.getCountOfOrganisationsWithSetRole(), is(1));

@@ -21,13 +21,16 @@ public class OrganisationRepository {
     }
 
     public List<OrganisationIdentity> getOrganisationList() {
-        String query = "select id, db_user, 'Organisation' organisation_type, schema_name schema_name\n" +
+        String query = "select db_user, schema_name schema_name\n" +
                 "from organisation\n" +
                 "where has_analytics_db = true\n" +
                 "union all\n" +
-                "select id, db_user, 'OrganisationGroup' organisation_type, schema_name schema_name\n" +
-                "from organisation_group\n" +
-                "where has_analytics_db = true;";
+                "select o.db_user, og.schema_name schema_name\n" +
+                "from organisation_group og\n" +
+                "         inner join organisation_group_organisation ogo on og.id = ogo.organisation_group_id\n" +
+                "         inner join organisation o on ogo.organisation_id = o.id\n" +
+                "where og.has_analytics_db = true;";
+        System.out.println(query);
 
         List<OrganisationIdentity> organisationIdentityMapper = jdbcTemplate.query(query, new OrganisationIdentityRowMapper());
         return organisationIdentityMapper;

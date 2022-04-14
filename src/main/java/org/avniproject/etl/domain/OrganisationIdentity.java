@@ -1,35 +1,24 @@
 package org.avniproject.etl.domain;
 
-public class OrganisationIdentity extends Model{
+public class OrganisationIdentity {
     public String getSchemaName() {
         return schemaName;
     }
 
-    public enum OrganisationType {
-        Organisation,
-        OrganisationGroup
-    }
     private final String dbUser;
     private final String schemaName;
-    private final OrganisationType organisationType;
 
-    public OrganisationIdentity(Integer id, String dbUser, String schemaName, OrganisationType organisationType) {
-        super(id);
+    public OrganisationIdentity(String dbUser, String schemaName) {
         this.dbUser = dbUser;
         this.schemaName = schemaName;
-        this.organisationType = organisationType;
     }
 
     @Override
     public String toString() {
-        return String.format("Id: %s, DB User: %s, DB Type: %s", getId(), dbUser, organisationType);
+        return String.format("Schema: %s DB User: %s", schemaName, dbUser);
     }
 
     public String getDbUser() {
         return dbUser;
-    }
-
-    public OrganisationType getOrganisationType() {
-        return organisationType;
     }
 }
