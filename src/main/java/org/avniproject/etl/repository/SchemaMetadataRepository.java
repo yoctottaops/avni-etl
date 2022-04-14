@@ -1,5 +1,6 @@
 package org.avniproject.etl.repository;
 
+import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.metadata.Column;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
@@ -122,8 +123,7 @@ public class SchemaMetadataRepository {
 
     @Transactional(readOnly = true)
     public SchemaMetadata getExistingSchemaMetadata() {
-        String sql = "select tm.id                table_id,\n" +
-                "       tm.db_user           db_user,\n" +
+        String sql = String.format("select tm.id                table_id,\n" +
                 "       tm.type              table_type,\n" +
                 "       tm.name              table_name,\n" +
                 "       tm.form_id           form_id,\n" +
@@ -137,9 +137,10 @@ public class SchemaMetadataRepository {
                 "       cm.name              concept_name,\n" +
                 "       cm.concept_uuid      concept_uuid\n" +
                 "from table_metadata tm\n" +
-                "         left outer join column_metadata cm on tm.id = cm.table_id;";
+                "         left outer join column_metadata cm on tm.id = cm.table_id\n" +
+                "     where tm.schema_name = '%s';", ContextHolder.getDbSchema());
 
-        List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql);
         Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("table_id")));
         List<TableMetadata> tables = tableMaps.values().stream().map(mapList -> new TableMetadataMapper().createFromExistingSchema(mapList)).collect(Collectors.toList());
         return new SchemaMetadata(tables);

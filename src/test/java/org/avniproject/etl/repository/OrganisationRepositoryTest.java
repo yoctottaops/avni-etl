@@ -13,13 +13,14 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@Sql({"/test-data.sql"})
-@Sql(scripts = "/organisation-repository-test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class OrganisationRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
     private OrganisationRepository organisationRepository;
 
+    @Test
+    @Sql({"/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldRetrieveAllOrganisationsWithAnalyticsDbTurnedOn() {
         List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
         assertThat(organisationList, hasItem(hasProperty("dbUser", equalTo("orgb") )));
@@ -28,8 +29,8 @@ public class OrganisationRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Sql({"/organisation-repository-test-data.sql"})
-    @Sql(scripts = "/organisation-repository-test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldRetrieveAllOrganisationsSeparatelyForOrganisationGroup() {
         List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
         List<OrganisationIdentity> groupOrganisation = organisationList.stream().filter(organisationIdentity -> organisationIdentity.getSchemaName().equals("og")).collect(Collectors.toList());

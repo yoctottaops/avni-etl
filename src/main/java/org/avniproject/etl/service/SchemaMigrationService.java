@@ -46,6 +46,7 @@ public class SchemaMigrationService {
     private void ensureSchemaExists(OrganisationIdentity organisationIdentity) {
         log.debug("Adding schema if not exists");
         organisationRepository.createDBUser(organisationIdentity.getDbUser(), "password");
+        //todo: how do permissions work for groups here?
         organisationRepository.createImplementationSchema(organisationIdentity.getSchemaName(), organisationIdentity.getDbUser());
     }
 }

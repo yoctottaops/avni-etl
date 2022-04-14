@@ -18,7 +18,8 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@Sql("/test-data.sql")
+@Sql({"/test-data-teardown.sql", "/test-data.sql"})
+@Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
 
     @Autowired

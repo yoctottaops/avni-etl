@@ -1,35 +1,3 @@
-drop schema if exists orgb cascade ;
-drop schema if exists orgc cascade ;
-delete from encounter;
-delete from program_encounter;
-delete from program_enrolment;
-delete from individual;
-delete from gender where id > 3;
-delete from entity_sync_status;
-delete from column_metadata;
-delete from table_metadata;
-delete from form_mapping;
-delete from form_element;
-delete from form_element_group;
-delete from decision_concept;
-delete from form;
-delete from concept_answer;
-delete from answer_concept_migration;
-delete from concept;
-delete from operational_encounter_type;
-delete from encounter_type;
-delete from operational_program;
-delete from program;
-delete from operational_subject_type;
-delete from subject_type;
-delete from address_level;
-delete from address_level_type;
-delete from users where organisation_id >= 10;
-
-delete from organisation_group_organisation where organisation_id >= 10;
-delete from organisation_group where id >= 10;
-delete from organisation where id >= 10;
-
 select create_db_user('orga', 'password');
 select create_db_user('orgb', 'password');
 select create_db_user('orgc', 'password');

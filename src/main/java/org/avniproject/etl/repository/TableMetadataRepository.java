@@ -60,6 +60,7 @@ public class TableMetadataRepository {
     private Map<String, Object> addParameters(TableMetadata tableMetadata) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("id", tableMetadata.getId());
+        parameters.put("schema_name", ContextHolder.getDbSchema());
         parameters.put("db_user", ContextHolder.getDbUser());
         parameters.put("name", tableMetadata.getName());
         parameters.put("type", tableMetadata.getType().toString());
