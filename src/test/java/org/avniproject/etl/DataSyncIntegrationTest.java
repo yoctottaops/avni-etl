@@ -160,7 +160,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         assertThat(address.containsKey("District"), is(true));
         assertThat(address.containsKey("Block"), is(true));
         assertThat(address.containsKey("Gram Panchayat"), is(true));
-        assertThat(addresses.size() == 2, is(true));
+        assertThat(addresses.size() == 6, is(true));
     }
 
     @Test

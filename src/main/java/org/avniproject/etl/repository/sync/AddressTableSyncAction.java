@@ -40,7 +40,7 @@ public class AddressTableSyncAction implements EntitySyncAction {
     }
 
     private void insertLowestLevelAddresses(Date lastSyncTime, Date dataSyncBoundaryTime, String template) {
-        List<Map<String, Object>> lowestLevelsMap = runInOrgContext(() -> jdbcTemplate.queryForList("select name, id, parent_id from address_level_type where level = (select min(level) from address_level_type) and not is_voided;"), jdbcTemplate);
+        List<Map<String, Object>> lowestLevelsMap = runInOrgContext(() -> jdbcTemplate.queryForList("select name, id, parent_id from address_level_type where not is_voided;"), jdbcTemplate);
         lowestLevelsMap.forEach(lowestLevel -> {
             String levelName = (String) lowestLevel.get("name");
             String query = template.replace("${schema_name}", String.format("\"%s\"", ContextHolder.getDbSchema()))
