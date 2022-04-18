@@ -1,6 +1,9 @@
 package org.avniproject.etl.domain.metadata;
 
 public class Column {
+    private static final int POSTGRES_MAX_COLUMN_NAME_LENGTH = 63;
+    private static final int NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE = 14;
+
     private final String name;
     private final Type type;
     private boolean isIndexed;
@@ -17,7 +20,14 @@ public class Column {
     }
 
     public String getName() {
+        if (isColumnNameTruncated()) {
+            return String.format("%s (%s)", this.name.substring(0, POSTGRES_MAX_COLUMN_NAME_LENGTH - NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE), Math.abs(this.name.hashCode()));
+        }
         return name;
+    }
+
+    private boolean isColumnNameTruncated() {
+        return this.name.length() > POSTGRES_MAX_COLUMN_NAME_LENGTH;
     }
 
     public Type getType() {
