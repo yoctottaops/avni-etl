@@ -27,9 +27,6 @@ public class EtlServiceTest {
     private OrganisationFactory organisationFactory;
 
     @Mock
-    private SchemaMetadataRepository schemaMetadataRepository;
-
-    @Mock
     private SchemaMigrationService schemaMigrationService;
 
     @Mock

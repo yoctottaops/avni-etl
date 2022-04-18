@@ -33,11 +33,19 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
     public void shouldNotFailWhenRunTwice() {
         etlService.runForOrganisation(new OrganisationIdentity("orgc", "orgc"));
         etlService.runForOrganisation(new OrganisationIdentity("orgc", "orgc"));
+
+        assertThat(countOfRowsIn("orgc.goat"), equalTo(1L));
+        assertThat(countOfRowsIn("orgc.household"), equalTo(1L));
+        assertThat(countOfRowsIn("orgc.person"), equalTo(1L));
+        assertThat(countOfRowsIn("orgc.person_nutrition"), equalTo(2L));
+        assertThat(countOfRowsIn("orgc.person_nutrition_exit"), equalTo(1L));
+        assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring"), equalTo(1L));
+        assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring_cancel"), equalTo(1L));
     }
 
     @Test
     @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
-//    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldRunForOrganisationGroup() {
         etlService.run();
         assertThat(countOfRowsIn("og.goat"), equalTo(2L));
