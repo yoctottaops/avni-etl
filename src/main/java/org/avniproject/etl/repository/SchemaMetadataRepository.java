@@ -19,12 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
 @Repository
 public class SchemaMetadataRepository {
     private final JdbcTemplate jdbcTemplate;
-
+    private static final String PLACEHOLDER_CONCEPT_UUID = "b4e5a662-97bf-4846-b9b7-9baeab4d89c4";
     private final TableMetadataRepository tableMetadataRepository;
 
     @Autowired
@@ -61,7 +62,7 @@ public class SchemaMetadataRepository {
     }
 
     private List<TableMetadata> getFormTables() {
-        String sql = "select fm.uuid                                                           form_mapping_uuid,\n" +
+        String sql = format("select fm.uuid                                                           form_mapping_uuid,\n" +
                 "       f.uuid                                                                 form_uuid,\n" +
                 "       ost.name                                                               subject_type_name,\n" +
                 "       st.uuid                                                                subject_type_uuid,\n" +
@@ -93,7 +94,7 @@ public class SchemaMetadataRepository {
                 "         left outer join operational_program op on p.id = op.program_id\n" +
                 "         left outer join encounter_type et on fm.observations_type_entity_id = et.id\n" +
                 "         left outer join operational_encounter_type oet on et.id = oet.encounter_type_id\n" +
-                "where fm.is_voided is false;";
+                "where fm.is_voided is false and c.uuid <> '%s';", PLACEHOLDER_CONCEPT_UUID);
 
         List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
 
@@ -128,7 +129,7 @@ public class SchemaMetadataRepository {
 
     @Transactional(readOnly = true)
     public SchemaMetadata getExistingSchemaMetadata() {
-        String sql = String.format("select tm.id                table_id,\n" +
+        String sql = format("select tm.id                table_id,\n" +
                 "       tm.type                                 table_type,\n" +
                 "       tm.name                                 table_name,\n" +
                 "       tm.form_uuid                            form_uuid,\n" +
