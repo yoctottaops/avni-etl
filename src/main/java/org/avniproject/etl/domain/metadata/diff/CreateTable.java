@@ -6,6 +6,7 @@ import org.avniproject.etl.domain.metadata.Column;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.*;
@@ -78,10 +79,13 @@ public class CreateTable implements Diff {
                 .map(column -> String.valueOf(
                         new StringBuffer()
                                 .append("create index ")
+                                .append(QUOTE)
                                 .append(ContextHolder.getDbSchema())
-                                .append(name)
-                                .append(column.getName())
+                                .append(UNDER_SCORE)
+                                .append(UUID.randomUUID().toString())
+                                .append(UNDER_SCORE)
                                 .append("idx")
+                                .append(QUOTE)
                                 .append(" on ")
                                 .append(this.getTableName())
                                 .append(OPEN_BRACKETS)
