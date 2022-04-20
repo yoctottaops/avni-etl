@@ -37,6 +37,10 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(toDate(LocalDateTime.now().minus(Duration.ofSeconds(10))));
     }
 
+    private String getCurrentTime(long subtractSeconds) {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(toDate(LocalDateTime.now().minus(Duration.ofSeconds(10)).minus(Duration.ofSeconds(subtractSeconds))));
+    }
+
     private void runDataSync() {
         etlService.runForOrganisation(new OrganisationIdentity("orgc", "orgc"));
     }
@@ -106,6 +110,22 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         runDataSync();
         Map<String, Object> updatedPerson = getPersonById(574170);
         assertThat(Objects.equals(updatedPerson.get("Single Select Question"), "alpha"), is(true));
+    }
+
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql", "/new-form-element.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void multipleChangesOfConceptAnswersShouldBeRunOneAfterAnother() {
+        runDataSync();
+        Map<String, Object> person = getPersonById(574170);
+        assertThat(Objects.equals(person.get("Single Select Question"), "Alpha"), is(true));
+        jdbcTemplate.execute(format("update concept set name = 'secondChange', last_modified_date_time = '%s' where name = 'Alpha'", getCurrentTime()));
+        jdbcTemplate.execute(format("insert into answer_concept_migration (id, uuid, concept_id, old_answer_concept_name, new_answer_concept_name,organisation_id, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time) values (100, 'babf6656-c731-414a-96cd-30ebd00c6bfd', 107565, 'Alpha', 'firstChange', 12, 0, 1, 1, '%s', '%s')", getCurrentTime(), getCurrentTime(15)));
+        jdbcTemplate.execute(format("insert into answer_concept_migration (id, uuid, concept_id, old_answer_concept_name, new_answer_concept_name,organisation_id, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time) values (101, 'babf6656-c731-414a-96cd-30ebd00c6bfc', 107565, 'firstChange', 'secondChange', 12, 0, 1, 1, '%s', '%s')", getCurrentTime(), getCurrentTime(10)));
+        runDataSync();
+        Map<String, Object> updatedPerson = getPersonById(574170);
+        assertThat(Objects.equals(updatedPerson.get("Single Select Question"), "secondChange"), is(true));
     }
 
     @Test
