@@ -3,9 +3,7 @@ package org.avniproject.etl.repository;
 import org.avniproject.etl.BaseIntegrationTest;
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
-import org.avniproject.etl.domain.metadata.ColumnMetadata;
-import org.avniproject.etl.domain.metadata.SchemaMetadata;
-import org.avniproject.etl.domain.metadata.TableMetadata;
+import org.avniproject.etl.domain.metadata.*;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,10 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
-@Sql({"/test-data-teardown.sql", "/test-data.sql"})
-@Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
@@ -32,12 +28,15 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetAllTablesForAnOrganisation() {
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)    public void shouldGetAllTablesForAnOrganisation() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
         assertThat(schemaMetadata.getTableMetadata().size(), is(10));
     }
 
     @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldGetDecisionConcepts() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
         TableMetadata growthMonitoringEncounterTable = schemaMetadata.getTableMetadata().stream().filter(tableMetadata1 -> tableMetadata1.getName().equals("person_nutrition_growth_monitoring")).findFirst().get();
@@ -48,6 +47,8 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldGetAddressTable() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
         Optional<TableMetadata> addressTableOptional = schemaMetadata.getTableMetadata().stream().filter(tableMetadata1 -> tableMetadata1.getName().equals("address")).findFirst();
@@ -63,10 +64,34 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
 
 
     @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldNotHaveAnySchemaDiffsIfSchemaMetadataHasBeenSavedOnce() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
         schemaMetadataRepository.save(schemaMetadata);
         List<Diff> changes = schemaMetadata.findChanges(schemaMetadataRepository.getNewSchemaMetadata());
         assertThat(changes.size(), is(0));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql", "/with-metadata.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void shouldGetIndexMetadataWhenItExists() {
+        SchemaMetadata schemaMetadata = schemaMetadataRepository.getExistingSchemaMetadata();
+
+        List<IndexMetadata> personTableIndexMetadata = schemaMetadata.getTableMetadata().stream().filter(tableMetadata -> tableMetadata.getName().equals("person")).findFirst().get().getIndexMetadataList();
+        assertThat(personTableIndexMetadata, hasSize(2));
+        assertThat(personTableIndexMetadata, hasItem(hasProperty("name", equalTo("orgc_12344_idx"))));
+        IndexMetadata idIndex = personTableIndexMetadata.stream().filter(indexMetadata -> indexMetadata.getName().equals("orgc_12344_idx")).findFirst().get();
+        assertThat(idIndex.matches(new IndexMetadata(new ColumnMetadata(new Column("id", Column.Type.numeric), null, null, null))), equalTo(true));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void shouldGetIndicesWhenGettingNewSchemaMetadata() {
+        SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
+        List<IndexMetadata> personTableIndexMetadata = schemaMetadata.getTableMetadata().stream().filter(tableMetadata -> tableMetadata.getName().equals("person")).findFirst().get().getIndexMetadataList();
+        assertThat(personTableIndexMetadata, hasSize(6));
     }
 }

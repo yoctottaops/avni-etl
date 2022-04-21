@@ -10,6 +10,7 @@ delete from program_enrolment;
 delete from individual;
 delete from gender where id > 3;
 delete from entity_sync_status;
+delete from index_metadata;
 delete from column_metadata;
 delete from table_metadata;
 delete from form_mapping;

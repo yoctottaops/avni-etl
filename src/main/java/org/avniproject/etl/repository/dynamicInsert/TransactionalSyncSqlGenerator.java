@@ -13,7 +13,7 @@ import static org.avniproject.etl.repository.dynamicInsert.SqlFile.*;
 
 public class TransactionalSyncSqlGenerator {
 
-    private final Map<TableMetadata.Type, String> typeMap = new HashMap();
+    private final Map<TableMetadata.Type, String> typeMap = new HashMap<>();
 
     public TransactionalSyncSqlGenerator() {
         typeMap.put(TableMetadata.Type.Household, "/insertSql/individual.sql");

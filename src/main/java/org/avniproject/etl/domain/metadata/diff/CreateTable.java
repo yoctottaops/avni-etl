@@ -37,7 +37,6 @@ public class CreateTable implements Diff {
                 .collect(Collectors.toList());
 
         sql.append(String.join("", permissions));
-        sql.append(addIndices(columns));
 
         return sql.toString();
     }
@@ -71,29 +70,5 @@ public class CreateTable implements Diff {
                 .collect(Collectors.toList());
 
         return String.join(COMMA, defaultColumns);
-    }
-
-    private String addIndices(List<Column> columns) {
-        List<String> indices = columns.stream()
-                .filter(Column::isIndexed)
-                .map(column -> String.valueOf(
-                        new StringBuffer()
-                                .append("create index ")
-                                .append(QUOTE)
-                                .append(ContextHolder.getDbSchema())
-                                .append(UNDER_SCORE)
-                                .append(UUID.randomUUID().toString())
-                                .append(UNDER_SCORE)
-                                .append("idx")
-                                .append(QUOTE)
-                                .append(" on ")
-                                .append(this.getTableName())
-                                .append(OPEN_BRACKETS)
-                                .append(column.getName())
-                                .append(CLOSE_BRACKETS)
-                                .append(END_STATEMENT)
-                ))
-                .collect(Collectors.toList());
-        return String.join(NEWLINE, indices);
     }
 }

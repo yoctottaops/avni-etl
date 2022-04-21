@@ -82,4 +82,9 @@ public class TableMetadataTest {
         assertThat(diff, instanceOf(AddColumn.class));
         assertThat(diff.getSql(), containsString("newColumn"));
     }
+
+    @Test
+    public void shouldAddIndexIfMissing() {
+
+    }
 }

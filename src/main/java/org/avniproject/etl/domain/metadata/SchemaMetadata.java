@@ -25,24 +25,25 @@ public class SchemaMetadata {
 
     public List<Diff> findChanges(SchemaMetadata currentSchema) {
         List<TableMetadata> newTables = this.getTableMetadata();
-
-        return newTables.stream().reduce(
-                new ArrayList<>(),
-                (diffs, newTable) -> findChanges(diffs, currentSchema, newTable),
-                arrayListCombiner());
+        List<Diff> diffs = new ArrayList<>();
+        newTables.forEach(newTable -> {
+            diffs.addAll(findChanges(currentSchema, newTable));
+        });
+        return diffs;
     }
 
     public Optional<TableMetadata> findMatchingTable(TableMetadata newTable) {
         return this.getTableMetadata().stream().filter(currentTable -> currentTable.matches(newTable)).findFirst();
     }
 
-    private ArrayList<Diff> findChanges(ArrayList<Diff> diffs, SchemaMetadata currentSchema, TableMetadata newTable) {
+    private List<Diff> findChanges(SchemaMetadata currentSchema, TableMetadata newTable) {
+        List<Diff> diffs = new ArrayList<>();
         Optional<TableMetadata> optionalMatchingTable = currentSchema.findMatchingTable(newTable);
         if (optionalMatchingTable.isPresent()) {
             TableMetadata matchingTable = optionalMatchingTable.get();
             diffs.addAll(newTable.findChanges(matchingTable));
         } else {
-            diffs.add(new CreateTable(newTable.getName(), newTable.getColumns()));
+            diffs.addAll(newTable.createNew());
         }
         return diffs;
     }

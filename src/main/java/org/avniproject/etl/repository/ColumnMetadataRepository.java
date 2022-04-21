@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,13 +21,12 @@ public class ColumnMetadataRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public TableMetadata saveColumns(TableMetadata tableMetadata) {
-        tableMetadata.setColumnMetadataList(tableMetadata
+    public List<ColumnMetadata> saveColumns(TableMetadata tableMetadata) {
+        return tableMetadata
                 .getColumnMetadataList()
                 .stream()
                 .map(columnMetadata -> saveColumn(tableMetadata.getId(), columnMetadata))
-                .collect(Collectors.toList()));
-        return tableMetadata;
+                .collect(Collectors.toList());
     }
 
     private ColumnMetadata saveColumn(Integer tableId, ColumnMetadata columnMetadata) {

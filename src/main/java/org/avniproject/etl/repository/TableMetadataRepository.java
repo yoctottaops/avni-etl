@@ -16,16 +16,21 @@ public class TableMetadataRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private final ColumnMetadataRepository columnMetadataRepository;
+    private IndexMetadataRepository indexMetadataRepository;
 
     @Autowired
-    public TableMetadataRepository(JdbcTemplate jdbcTemplate, ColumnMetadataRepository columnMetadataRepository) {
+    public TableMetadataRepository(JdbcTemplate jdbcTemplate, ColumnMetadataRepository columnMetadataRepository, IndexMetadataRepository indexMetadataRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.columnMetadataRepository = columnMetadataRepository;
+        this.indexMetadataRepository = indexMetadataRepository;
     }
 
     public TableMetadata save(TableMetadata tableMetadata) {
-        return columnMetadataRepository.saveColumns(
-                saveTable(tableMetadata));
+        TableMetadata savedTableMetadata = saveTable(tableMetadata);
+        savedTableMetadata.setColumnMetadataList(columnMetadataRepository.saveColumns(savedTableMetadata));
+        savedTableMetadata.setIndexMetadataList(indexMetadataRepository.save(tableMetadata));
+
+        return savedTableMetadata;
     }
 
     private TableMetadata saveTable(TableMetadata tableMetadata) {

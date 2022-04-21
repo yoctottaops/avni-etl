@@ -129,7 +129,8 @@ public class SchemaMetadataRepository {
 
     @Transactional(readOnly = true)
     public SchemaMetadata getExistingSchemaMetadata() {
-        String sql = format("select tm.id                table_id,\n" +
+        String getTablesAndColumnsSql = format(
+                "select tm.id                table_id,\n" +
                 "       tm.type                                 table_type,\n" +
                 "       tm.name                                 table_name,\n" +
                 "       tm.form_uuid                            form_uuid,\n" +
@@ -146,9 +147,32 @@ public class SchemaMetadataRepository {
                 "         left outer join column_metadata cm on tm.id = cm.table_id\n" +
                 "     where tm.schema_name = '%s';", ContextHolder.getDbSchema());
 
-        List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql);
-        Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("table_id")));
-        List<TableMetadata> tables = tableMaps.values().stream().map(mapList -> new TableMetadataMapper().createFromExistingSchema(mapList)).collect(Collectors.toList());
+        String getIndicesSql = format(
+                "select tm.id                  table_id,\n" +
+                "       tm.type                table_type,\n" +
+                "       tm.name                table_name,\n" +
+                "       im.id                  index_id,\n" +
+                "       im.name                index_name,\n" +
+                "       tm.form_uuid           form_uuid,\n" +
+                "       tm.encounter_type_uuid encounter_type_uuid,\n" +
+                "       tm.program_uuid        program_uuid,\n" +
+                "       tm.subject_type_uuid   subject_type_uuid,\n" +
+                "       cm.id                  column_id,\n" +
+                "       cm.type                column_type,\n" +
+                "       cm.concept_type        concept_type,\n" +
+                "       cm.concept_id          concept_id,\n" +
+                "       cm.name                concept_name,\n" +
+                "       cm.concept_uuid        concept_uuid\n" +
+                "from table_metadata tm\n" +
+                "         inner join index_metadata im on tm.id = im.table_metadata_id\n" +
+                "         inner join column_metadata cm on im.column_id = cm.id\n" +
+                "where tm.schema_name = '%s';", ContextHolder.getDbSchema());
+
+        List<Map<String, Object>> tableAndColumnMaps = jdbcTemplate.queryForList(getTablesAndColumnsSql);
+        List<Map<String, Object>> indexMaps = jdbcTemplate.queryForList(getIndicesSql);
+        Map<Object, List<Map<String, Object>>> tableMaps = tableAndColumnMaps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("table_id")));
+        Map<Object, List<Map<String, Object>>> indices = indexMaps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("table_id")));
+        List<TableMetadata> tables = tableMaps.entrySet().stream().map(table -> new TableMetadataMapper().createFromExistingSchema(table.getValue(), indices.getOrDefault(table.getKey(), new ArrayList<>()))).collect(Collectors.toList());
         return new SchemaMetadata(tables);
     }
 

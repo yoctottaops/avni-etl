@@ -2,6 +2,7 @@ package org.avniproject.etl.repository.rowMappers;
 
 import org.avniproject.etl.domain.metadata.Column;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
+import org.avniproject.etl.domain.metadata.IndexMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.repository.rowMappers.tableMappers.*;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TableMetadataMapper {
-    public TableMetadata createFromExistingSchema(List<Map<String, Object>> columns) {
+    public TableMetadata createFromExistingSchema(List<Map<String, Object>> columns, List<Map<String, Object>> indices) {
         TableMetadata tableMetadata = new TableMetadata();
         Map<String, Object> tableDetails = columns.get(0);
         populateCommonColumns(tableMetadata, tableDetails);
@@ -33,6 +34,21 @@ public class TableMetadataMapper {
                                 null))
                 .collect(Collectors.toList()));
 
+        tableMetadata.addIndexMetadata(indices.stream().map(index -> new IndexMetadata(
+                (Integer) index.get("index_id"),
+                (String) index.get("index_name"),
+                new ColumnMetadata(
+                        (Integer) index.get("column_id"),
+                        new Column(
+                                (String) index.get("concept_name"),
+                                Column.Type.valueOf((String) index.get("column_type"))
+                        ),
+                        (Integer) index.get("concept_id"),
+                        index.get("concept_type") == null ? null : ColumnMetadata.ConceptType.valueOf((String) index.get("concept_type")),
+                        (String) index.get("concept_uuid"),
+                        null)
+        )).collect(Collectors.toList()));
+
         return tableMetadata;
     }
 
@@ -47,6 +63,12 @@ public class TableMetadataMapper {
         tableMetadata.addColumnMetadata(columns.stream()
                 .filter(stringObjectMap -> stringObjectMap.get("concept_id") != null)
                 .map(column -> new ColumnMetadataMapper().create(column)).collect(Collectors.toList()));
+
+        table.columns().forEach(column -> {
+            if (column.isIndexed()) {
+                tableMetadata.addIndexMetadata(column);
+            }
+        });
 
         return tableMetadata;
     }

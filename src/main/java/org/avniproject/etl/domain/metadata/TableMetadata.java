@@ -1,9 +1,7 @@
 package org.avniproject.etl.domain.metadata;
 
 import org.avniproject.etl.domain.Model;
-import org.avniproject.etl.domain.metadata.diff.AddColumn;
-import org.avniproject.etl.domain.metadata.diff.Diff;
-import org.avniproject.etl.domain.metadata.diff.RenameTable;
+import org.avniproject.etl.domain.metadata.diff.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +16,8 @@ public class TableMetadata extends Model {
     private String encounterTypeUuid;
     private String formUuid;
     private List<ColumnMetadata> columnMetadataList = new ArrayList<>();
+
+    private List<IndexMetadata> indexMetadataList = new ArrayList<>();
 
     public TableMetadata(Integer id) {
         super(id);
@@ -49,7 +49,22 @@ public class TableMetadata extends Model {
                 diffs.addAll(columnMetadata.findChanges(this, matchingColumn.get()));
             }
         });
+
+        getIndexMetadataList().forEach(indexMetadata -> {
+            Optional<IndexMetadata> matchingIndex = currentTable.findMatchingIndex(indexMetadata);
+            if (matchingIndex.isEmpty()) {
+                diffs.add(indexMetadata.createIndex(getName()));
+            }
+        });
+
         return diffs;
+    }
+
+    private Optional<IndexMetadata> findMatchingIndex(IndexMetadata indexMetadata) {
+        return this.indexMetadataList
+                .stream()
+                .filter(index -> index.matches(indexMetadata))
+                .findFirst();
     }
 
     private Optional<ColumnMetadata> findMatchingColumn(ColumnMetadata columnMetadata) {
@@ -73,6 +88,11 @@ public class TableMetadata extends Model {
                         oldTableMetadata
                                 .findMatchingColumn(newColumn)
                                 .ifPresent(newColumn::mergeWith));
+        getIndexMetadataList()
+                .forEach(newIndex ->
+                        oldTableMetadata.findMatchingIndex(newIndex)
+                                .ifPresent(newIndex::mergeWith)
+                        );
     }
 
     public String getName() {
@@ -127,6 +147,10 @@ public class TableMetadata extends Model {
         return columnMetadataList;
     }
 
+    public List<ColumnMetadata> getIndexedColumnMetadataList() {
+        return columnMetadataList.stream().filter(columnMetadata -> columnMetadata.getColumn().isIndexed()).collect(Collectors.toList());
+    }
+
     public void setColumnMetadataList(List<ColumnMetadata> columnMetadataList) {
         this.columnMetadataList = columnMetadataList;
     }
@@ -143,6 +167,32 @@ public class TableMetadata extends Model {
         return !getNonDefaultColumnMetadataList().isEmpty();
     }
 
+    public List<IndexMetadata> getIndexMetadataList() {
+        return indexMetadataList;
+    }
+
+    public void addIndexMetadata(Column column) {
+        addIndexMetadata(new IndexMetadata(findMatchingColumn(new ColumnMetadata(column, null, null, null)).get()));
+    }
+
+    public void addIndexMetadata(List<IndexMetadata> indexMetadataList) {
+        this.indexMetadataList.addAll(indexMetadataList);
+    }
+
+    public void setIndexMetadataList(List<IndexMetadata> indexMetadataList) {
+        this.indexMetadataList = indexMetadataList;
+    }
+
+    public List<Diff> createNew() {
+        List<Diff> diffs = new ArrayList<>();
+        diffs.add(new CreateTable(name, getColumns()));
+        diffs.addAll(getIndexMetadataList()
+                .stream()
+                .map(indexMetadata -> new AddIndex(indexMetadata.getName(), getName(), indexMetadata.getColumnName()))
+                .collect(Collectors.toList()));
+        return diffs;
+    }
+
     public enum Type {
         Individual,
         Person,
@@ -154,6 +204,11 @@ public class TableMetadata extends Model {
         ProgramEncounterCancellation,
         Encounter,
         IndividualEncounterCancellation,
-        Address
+        Address;
+
+    }
+
+    private void addIndexMetadata(IndexMetadata indexMetadata) {
+        this.indexMetadataList.add(indexMetadata);
     }
 }
