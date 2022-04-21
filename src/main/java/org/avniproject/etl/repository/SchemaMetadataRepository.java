@@ -44,7 +44,7 @@ public class SchemaMetadataRepository {
     }
 
     private TableMetadata getAddressTable() {
-        List<Map<String, Object>> addressLevelTypes = runInOrgContext(() -> jdbcTemplate.queryForList("select name from address_level_type;"), jdbcTemplate);
+        List<Map<String, Object>> addressLevelTypes = runInOrgContext(() -> jdbcTemplate.queryForList("select name from address_level_type where not is_voided;"), jdbcTemplate);
         List<Column> columns = addressLevelTypes
                 .stream()
                 .map(addressLevelTypeMap -> new Column((String) addressLevelTypeMap.get("name"), Column.Type.text))
