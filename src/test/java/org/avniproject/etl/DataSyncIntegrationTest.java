@@ -198,6 +198,17 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void approvalStatusFromChildOrgsShouldUpdateCorrectly() {
+        etlService.run();
+        Map<String, Object> org1Person = jdbcTemplate.queryForMap("select * from og.person where id = 674170;");
+        Map<String, Object> org2Person = jdbcTemplate.queryForMap("select * from og.person where id = 574170;");;
+        assertThat(org1Person.get("latest_approval_status"), is("Pending"));
+        assertThat(org2Person.get("latest_approval_status"), is("Approved"));
+    }
+
+    @Test
     @Sql({"/test-data-teardown.sql", "/test-data.sql", "/new-form-element.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void allTablesHaveAddressIdAndIndividualIdColumns() {
