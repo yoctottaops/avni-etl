@@ -26,6 +26,7 @@ public class EntityApprovalStatusSyncAction implements EntitySyncAction {
         typeMap.put(TableMetadata.Type.Household, "Subject");
         typeMap.put(TableMetadata.Type.Individual, "Subject");
         typeMap.put(TableMetadata.Type.Person, "Subject");
+        typeMap.put(TableMetadata.Type.Group, "Subject");
         typeMap.put(TableMetadata.Type.Encounter, "Encounter");
         typeMap.put(TableMetadata.Type.ProgramEnrolment, "ProgramEnrolment");
         typeMap.put(TableMetadata.Type.ProgramExit, "ProgramEnrolment");
@@ -49,14 +50,19 @@ public class EntityApprovalStatusSyncAction implements EntitySyncAction {
 
     private void updateEntitySyncStatus(TableMetadata tableMetadata) {
         String baseSql = "update \"${schemaName}\".\"${tableName}\" t1\n" +
-                "set latest_approval_status = (select \"as\".status\n" +
-                "                                 from entity_approval_status eas\n" +
-                "                                   join approval_status \"as\" on eas.approval_status_id = \"as\".id\n" +
-                "                                 where eas.entity_id = t1.id\n" +
-                "                                   and eas.is_voided is false\n" +
-                "                                   and eas.entity_type = '${entityType}'\n" +
-                "                                 order by eas.last_modified_date_time desc\n" +
-                "                                 limit 1);";
+                "set latest_approval_status = status\n" +
+                "from (select eas.entity_id                                                               as entity_id,\n" +
+                "             approval_status.status                                                      as status,\n" +
+                "             row_number()\n" +
+                "             over (partition by eas.entity_id order by eas.last_modified_date_time desc) as row_number\n" +
+                "      from entity_approval_status eas\n" +
+                "               join approval_status on eas.approval_status_id = approval_status.id\n" +
+                "      where eas.is_voided = false\n" +
+                "        and eas.entity_type = '${entityType}'\n" +
+                "     ) eas\n" +
+                "where eas.entity_id = t1.id\n" +
+                "  and row_number = 1\n" +
+                "  and status notnull;";
         String sql = baseSql
                 .replace("${schemaName}", ContextHolder.getDbSchema())
                 .replace("${tableName}", tableMetadata.getName())
