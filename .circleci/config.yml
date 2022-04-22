@@ -35,6 +35,50 @@ commands:
           EOF
 
 jobs:
+  test:
+    docker:
+      - image: circleci/openjdk:11-jdk
+
+      - image: circleci/postgres:12.7
+        environment:
+          - POSTGRES_USER: openchs
+          - POSTGRES_DB: openchs_test
+          - POSTGRES_PASSWORD: password
+
+    working_directory: ~/avni-etl
+
+    environment:
+      MAVEN_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      - run: sudo apt-get update
+
+      - run: sudo apt-get install make postgresql-client
+
+      - run: make create-extensions
+
+      - run: wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.5.9/flyway-commandline-8.5.9-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-8.5.9/flyway /usr/local/bin
+
+      - run: curl -L https://github.com/avniproject/avni-server/archive/master.zip >> ~/server.zip
+
+      - run: |
+          cd ~/
+          unzip server.zip
+          mv avni-server-master avni-server
+          rm -rf server.zip
+      - run: |
+          pwd
+          cd ~/avni-server
+          make deploy_test_schema
+      - run: |
+          cd ~/avni-etl
+          make test
+      - store_artifacts:
+          path: ~/avni-etl/build/reports/tests/test
+          destination: testReports
+
   build:
     docker:
     - image: circleci/openjdk:11-jdk
@@ -47,21 +91,9 @@ jobs:
     steps:
     - checkout
 
-    - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "avni-etl/build.gradle" }}
-        - v1-dependencies-
-
     - run: sudo apt-get install make openssl
 
     - run: make build_jar
-
-    - save_cache:
-        paths:
-        - ~/.m2
-        - ~/.gradle
-        - ~/avni-etl/.gradle
-        key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "avni-etl-api/build.gradle" }}
 
     - run: mkdir -p ~/artifacts;
 
