@@ -181,6 +181,23 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void allTheDBUserOfOrgGroupAreAbleToQueryTables() {
+        etlService.run();
+        jdbcTemplate.execute("set role og;");
+        List<Map<String, Object>> groupList = jdbcTemplate.queryForList("select * from og.person;");
+        jdbcTemplate.execute("set role ogi1;");
+        List<Map<String, Object>> child1List = jdbcTemplate.queryForList("select * from og.person;");
+        jdbcTemplate.execute("set role ogi2;");
+        List<Map<String, Object>> child2List = jdbcTemplate.queryForList("select * from og.person;");
+        jdbcTemplate.execute("reset role;");
+        assertThat(groupList.size(), is(2));
+        assertThat(child1List.size(), is(2));
+        assertThat(child2List.size(), is(2));
+    }
+
+    @Test
     @Sql({"/test-data-teardown.sql", "/test-data.sql", "/new-form-element.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void allTablesHaveAddressIdAndIndividualIdColumns() {
