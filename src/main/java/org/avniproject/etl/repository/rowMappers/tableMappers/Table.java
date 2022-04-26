@@ -15,9 +15,6 @@ abstract public class Table {
     protected String generateTableName(String tableType, String suffix, Map<String, Object> tableDetails, String... partKeys) {
         TableNameGenerator tableNameGenerator = new TableNameGenerator();
         List<String> parts = Arrays.stream(partKeys).map(s -> (String) tableDetails.get(s)).collect(Collectors.toList());
-        if (suffix != null && !suffix.isBlank()) {
-            parts.add(suffix);
-        }
-        return tableNameGenerator.generateName(parts, tableType);
+        return tableNameGenerator.generateName(parts, tableType, suffix);
     }
 }
