@@ -31,7 +31,7 @@ public class TableMetadataMapper {
                                 (Integer) column.get("concept_id"),
                                 column.get("concept_type") == null ? null : ColumnMetadata.ConceptType.valueOf((String) column.get("concept_type")),
                                 (String) column.get("concept_uuid"),
-                                null))
+                                (String) column.get("parent_concept_uuid")))
                 .collect(Collectors.toList()));
 
         tableMetadata.addIndexMetadata(indices.stream().map(index -> new IndexMetadata(
@@ -46,7 +46,7 @@ public class TableMetadataMapper {
                         (Integer) index.get("concept_id"),
                         index.get("concept_type") == null ? null : ColumnMetadata.ConceptType.valueOf((String) index.get("concept_type")),
                         (String) index.get("concept_uuid"),
-                        null)
+                        (String) index.get("parent_concept_uuid"))
         )).collect(Collectors.toList()));
 
         return tableMetadata;

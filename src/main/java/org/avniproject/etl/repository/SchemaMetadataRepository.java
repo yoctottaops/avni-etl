@@ -142,7 +142,8 @@ public class SchemaMetadataRepository {
                 "       cm.concept_type                         concept_type,\n" +
                 "       cm.concept_id                           concept_id,\n" +
                 "       cm.name                                 concept_name,\n" +
-                "       cm.concept_uuid                         concept_uuid\n" +
+                "       cm.concept_uuid                         concept_uuid,\n" +
+                "       cm.parent_concept_uuid                  parent_concept_uuid\n" +
                 "from table_metadata tm\n" +
                 "         left outer join column_metadata cm on tm.id = cm.table_id\n" +
                 "     where tm.schema_name = '%s';", ContextHolder.getDbSchema());
@@ -162,7 +163,8 @@ public class SchemaMetadataRepository {
                 "       cm.concept_type        concept_type,\n" +
                 "       cm.concept_id          concept_id,\n" +
                 "       cm.name                concept_name,\n" +
-                "       cm.concept_uuid        concept_uuid\n" +
+                "       cm.concept_uuid        concept_uuid,\n" +
+                "       cm.parent_concept_uuid parent_concept_uuid\n" +
                 "from table_metadata tm\n" +
                 "         inner join index_metadata im on tm.id = im.table_metadata_id\n" +
                 "         inner join column_metadata cm on im.column_id = cm.id\n" +
