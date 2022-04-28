@@ -49,6 +49,9 @@ public class SchemaMetadataRepository {
                 .stream()
                 .map(addressLevelTypeMap -> new Column((String) addressLevelTypeMap.get("name"), Column.Type.text))
                 .collect(Collectors.toList());
+        List<Column> idColumns = columns.stream().map(c -> new Column(format("%s id", c.getName()), Column.Type.integer, true))
+                .collect(Collectors.toList());
+        columns.addAll(idColumns);
         columns.addAll(CommonColumns.commonColumns);
         List<ColumnMetadata> columnMetadataList = columns.stream()
                 .map(column -> new ColumnMetadata(column, null, null, null))
