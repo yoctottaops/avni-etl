@@ -3,6 +3,7 @@ package org.avniproject.etl.repository.sync;
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.TableMetadata;
+import org.avniproject.etl.repository.dynamicInsert.TransactionalSyncSqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -36,19 +37,17 @@ public class AddressTableSyncAction implements EntitySyncAction {
         if (!this.supports(tableMetadata)) {
             return;
         }
-        String template = readFile("/insertSql/address.sql");
-        insertLowestLevelAddresses(lastSyncTime, dataSyncBoundaryTime, template);
+        insertLowestLevelAddresses(tableMetadata, lastSyncTime, dataSyncBoundaryTime);
     }
 
-    private void insertLowestLevelAddresses(Date lastSyncTime, Date dataSyncBoundaryTime, String template) {
+    private void insertLowestLevelAddresses(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
+        String templatePath = "/insertSql/address.sql";
         List<Map<String, Object>> lowestLevelsMap = runInOrgContext(() -> jdbcTemplate.queryForList("select name, id, parent_id from address_level_type where not is_voided;"), jdbcTemplate);
         lowestLevelsMap.forEach(lowestLevel -> {
             String levelName = (String) lowestLevel.get("name");
-            String query = template.replace("${schema_name}", format("\"%s\"", ContextHolder.getDbSchema()))
-                    .replace("${titleColumnName}", levelName)
-                    .replace("${idColumnName}", format("%s id", levelName))
-                    .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(lastSyncTime))
-                    .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(dataSyncBoundaryTime));
+            String sql = new TransactionalSyncSqlGenerator().getSql(templatePath, tableMetadata, lastSyncTime, dataSyncBoundaryTime);
+            String query = sql.replace("${titleColumnName}", levelName)
+                    .replace("${idColumnName}", format("%s id", levelName));
             runAddressQuery(query);
             insertParents((Integer) lowestLevel.get("id"), levelName, (Integer) lowestLevel.get("parent_id"));
         });

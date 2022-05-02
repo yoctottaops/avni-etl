@@ -42,15 +42,16 @@ public class TransactionalSyncSqlGenerator {
         throw new RuntimeException("Could not generate sql for" + tableMetadata.getType().toString());
     }
 
-    private String getSql(String path, TableMetadata tableMetadata, Date startTime, Date endTime) {
+    public String getSql(String path, TableMetadata tableMetadata, Date startTime, Date endTime) {
         String template = readFile(path);
+        String obsColumnName = tableMetadata.getType().equals(TableMetadata.Type.Address) ? "location_properties" : "observations";
         return template.replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
                 .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
                 .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
                 .replace("${concept_maps}", getConceptMaps(tableMetadata))
                 .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
                 .replace("${subject_type_uuid}", toString(tableMetadata.getSubjectTypeUuid()))
-                .replace("${selections}", buildObservationSelection(tableMetadata, "observations"))
+                .replace("${selections}", buildObservationSelection(tableMetadata, obsColumnName))
                 .replace("${exit_obs_selections}", buildObservationSelection(tableMetadata, "program_exit_observations"))
                 .replace("${cancel_obs_selections}", buildObservationSelection(tableMetadata, "cancel_observations"))
                 .replace("${encounter_type_uuid}", toString(tableMetadata.getEncounterTypeUuid()))

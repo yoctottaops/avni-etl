@@ -9,6 +9,7 @@ import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns;
+import org.avniproject.etl.repository.rowMappers.tableMappers.LocationTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -24,8 +25,8 @@ import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 
 @Repository
 public class SchemaMetadataRepository {
-    private final JdbcTemplate jdbcTemplate;
     private static final String PLACEHOLDER_CONCEPT_UUID = "b4e5a662-97bf-4846-b9b7-9baeab4d89c4";
+    private final JdbcTemplate jdbcTemplate;
     private final TableMetadataRepository tableMetadataRepository;
 
     @Autowired
@@ -44,23 +45,23 @@ public class SchemaMetadataRepository {
     }
 
     private TableMetadata getAddressTable() {
+        String fomSql = "select (case when c.data_type = 'Coded' then fe.type else c.data_type end) as element_type,\n" +
+                "       c.id                                                                   concept_id,\n" +
+                "       c.uuid                                                                 concept_uuid,\n" +
+                "       c.name                                                                 concept_name\n" +
+                "from form f\n" +
+                "         join form_element_group feg on f.id = feg.form_id\n" +
+                "         join form_element fe on feg.id = fe.form_element_group_id and fe.is_voided = false\n" +
+                "         join concept c on fe.concept_id = c.id\n" +
+                "where f.form_type = 'Location'\n" +
+                "  and f.is_voided = false";
         List<Map<String, Object>> addressLevelTypes = runInOrgContext(() -> jdbcTemplate.queryForList("select name from address_level_type where not is_voided;"), jdbcTemplate);
-        List<Column> columns = addressLevelTypes
-                .stream()
-                .map(addressLevelTypeMap -> new Column((String) addressLevelTypeMap.get("name"), Column.Type.text))
-                .collect(Collectors.toList());
-        List<Column> idColumns = columns.stream().map(c -> new Column(format("%s id", c.getName()), Column.Type.integer, true))
-                .collect(Collectors.toList());
-        columns.addAll(idColumns);
-        columns.addAll(CommonColumns.commonColumns);
-        List<ColumnMetadata> columnMetadataList = columns.stream()
-                .map(column -> new ColumnMetadata(column, null, null, null))
-                .collect(Collectors.toList());
+        List<Map<String, Object>> formColumns = runInOrgContext(() -> jdbcTemplate.queryForList(fomSql), jdbcTemplate);
+        LocationTable locationTable = new LocationTable(addressLevelTypes, formColumns);
         TableMetadata tableMetadata = new TableMetadata();
-        tableMetadata.setName("address");
+        tableMetadata.setName(locationTable.name(null));
         tableMetadata.setType(TableMetadata.Type.Address);
-        tableMetadata.setColumnMetadataList(columnMetadataList);
-
+        tableMetadata.setColumnMetadataList(locationTable.columnMetadata());
         return tableMetadata;
     }
 
@@ -134,44 +135,44 @@ public class SchemaMetadataRepository {
     public SchemaMetadata getExistingSchemaMetadata() {
         String getTablesAndColumnsSql = format(
                 "select tm.id                table_id,\n" +
-                "       tm.type                                 table_type,\n" +
-                "       tm.name                                 table_name,\n" +
-                "       tm.form_uuid                            form_uuid,\n" +
-                "       tm.encounter_type_uuid                  encounter_type_uuid,\n" +
-                "       tm.program_uuid                         program_uuid,\n" +
-                "       tm.subject_type_uuid                    subject_type_uuid,\n" +
-                "       cm.id                                   column_id,\n" +
-                "       cm.type                                 column_type,\n" +
-                "       cm.concept_type                         concept_type,\n" +
-                "       cm.concept_id                           concept_id,\n" +
-                "       cm.name                                 concept_name,\n" +
-                "       cm.concept_uuid                         concept_uuid,\n" +
-                "       cm.parent_concept_uuid                  parent_concept_uuid\n" +
-                "from table_metadata tm\n" +
-                "         left outer join column_metadata cm on tm.id = cm.table_id\n" +
-                "     where tm.schema_name = '%s';", ContextHolder.getDbSchema());
+                        "       tm.type                                 table_type,\n" +
+                        "       tm.name                                 table_name,\n" +
+                        "       tm.form_uuid                            form_uuid,\n" +
+                        "       tm.encounter_type_uuid                  encounter_type_uuid,\n" +
+                        "       tm.program_uuid                         program_uuid,\n" +
+                        "       tm.subject_type_uuid                    subject_type_uuid,\n" +
+                        "       cm.id                                   column_id,\n" +
+                        "       cm.type                                 column_type,\n" +
+                        "       cm.concept_type                         concept_type,\n" +
+                        "       cm.concept_id                           concept_id,\n" +
+                        "       cm.name                                 concept_name,\n" +
+                        "       cm.concept_uuid                         concept_uuid,\n" +
+                        "       cm.parent_concept_uuid                  parent_concept_uuid\n" +
+                        "from table_metadata tm\n" +
+                        "         left outer join column_metadata cm on tm.id = cm.table_id\n" +
+                        "     where tm.schema_name = '%s';", ContextHolder.getDbSchema());
 
         String getIndicesSql = format(
                 "select tm.id                  table_id,\n" +
-                "       tm.type                table_type,\n" +
-                "       tm.name                table_name,\n" +
-                "       im.id                  index_id,\n" +
-                "       im.name                index_name,\n" +
-                "       tm.form_uuid           form_uuid,\n" +
-                "       tm.encounter_type_uuid encounter_type_uuid,\n" +
-                "       tm.program_uuid        program_uuid,\n" +
-                "       tm.subject_type_uuid   subject_type_uuid,\n" +
-                "       cm.id                  column_id,\n" +
-                "       cm.type                column_type,\n" +
-                "       cm.concept_type        concept_type,\n" +
-                "       cm.concept_id          concept_id,\n" +
-                "       cm.name                concept_name,\n" +
-                "       cm.concept_uuid        concept_uuid,\n" +
-                "       cm.parent_concept_uuid parent_concept_uuid\n" +
-                "from table_metadata tm\n" +
-                "         inner join index_metadata im on tm.id = im.table_metadata_id\n" +
-                "         inner join column_metadata cm on im.column_id = cm.id\n" +
-                "where tm.schema_name = '%s';", ContextHolder.getDbSchema());
+                        "       tm.type                table_type,\n" +
+                        "       tm.name                table_name,\n" +
+                        "       im.id                  index_id,\n" +
+                        "       im.name                index_name,\n" +
+                        "       tm.form_uuid           form_uuid,\n" +
+                        "       tm.encounter_type_uuid encounter_type_uuid,\n" +
+                        "       tm.program_uuid        program_uuid,\n" +
+                        "       tm.subject_type_uuid   subject_type_uuid,\n" +
+                        "       cm.id                  column_id,\n" +
+                        "       cm.type                column_type,\n" +
+                        "       cm.concept_type        concept_type,\n" +
+                        "       cm.concept_id          concept_id,\n" +
+                        "       cm.name                concept_name,\n" +
+                        "       cm.concept_uuid        concept_uuid,\n" +
+                        "       cm.parent_concept_uuid parent_concept_uuid\n" +
+                        "from table_metadata tm\n" +
+                        "         inner join index_metadata im on tm.id = im.table_metadata_id\n" +
+                        "         inner join column_metadata cm on im.column_id = cm.id\n" +
+                        "where tm.schema_name = '%s';", ContextHolder.getDbSchema());
 
         List<Map<String, Object>> tableAndColumnMaps = jdbcTemplate.queryForList(getTablesAndColumnsSql);
         List<Map<String, Object>> indexMaps = jdbcTemplate.queryForList(getIndicesSql);
