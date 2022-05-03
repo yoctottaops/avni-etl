@@ -25,9 +25,9 @@ insert into ${schema_name}.${table_name} (
         entity.legacy_id                                                                    "legacy_id"
         ${cancel_obs_selections}
         FROM public.encounter entity
-        LEFT OUTER JOIN public.individual subject on entity.individual_id = subject.id
+        LEFT OUTER JOIN public.individual ind on entity.individual_id = ind.id
         LEFT OUTER JOIN public.encounter_type et on entity.encounter_type_id = et.id
-        LEFT OUTER JOIN public.subject_type st on st.id = subject.subject_type_id
+        LEFT OUTER JOIN public.subject_type st on st.id = ind.subject_type_id
         ${cross_join_concept_maps}
         WHERE st.uuid = '${subject_type_uuid}'
         AND et.uuid = '${encounter_type_uuid}'

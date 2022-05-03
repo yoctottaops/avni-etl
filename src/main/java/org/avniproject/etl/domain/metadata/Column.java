@@ -6,17 +6,18 @@ public class Column {
 
     private final String name;
     private final Type type;
-    private boolean isIndexed;
+    private final ColumnType columnType;
 
     public Column(String name, Type type) {
         this.name = name;
         this.type = type;
+        this.columnType = null;
     }
 
-    public Column(String name, Type type, boolean isIndexed) {
+    public Column(String name, Type type, ColumnType columnType) {
         this.name = name;
         this.type = type;
-        this.isIndexed = isIndexed;
+        this.columnType = columnType;
     }
 
     public String getName() {
@@ -35,7 +36,18 @@ public class Column {
     }
 
     public boolean isIndexed() {
-        return isIndexed;
+        return ColumnType.index.equals(this.columnType);
+    }
+
+    public boolean isSyncAttributeColumn() {
+        return ColumnType.syncAttribute1.equals(this.columnType) ||
+                ColumnType.syncAttribute2.equals(this.columnType);
+    }
+
+    public enum ColumnType {
+        index,
+        syncAttribute1,
+        syncAttribute2
     }
 
     public enum Type {

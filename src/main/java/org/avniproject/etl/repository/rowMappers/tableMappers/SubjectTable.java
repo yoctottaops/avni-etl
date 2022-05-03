@@ -17,8 +17,8 @@ public class SubjectTable extends Table {
         return new Columns()
                 .withCommonColumns()
                 .withColumns(Arrays.asList(
-                        new Column("address_id", Column.Type.integer, true),
-                        new Column("registration_date", Column.Type.date, true),
+                        new Column("address_id", Column.Type.integer, Column.ColumnType.index),
+                        new Column("registration_date", Column.Type.date, Column.ColumnType.index),
                         new Column("first_name", Column.Type.text),
                         new Column("last_name", Column.Type.text),
                         new Column("registration_location", Column.Type.point),

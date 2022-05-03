@@ -69,8 +69,8 @@ public class ColumnMetadata extends Model {
         this(id, conceptType == null ? new Column(name, null) : new Column(name, conceptType.getColumnDatatype()), conceptId, conceptType, conceptUuid, null);
     }
 
-    public ColumnMetadata(Integer id, String name, Integer conceptId, ConceptType conceptType, String conceptUuid, String parentConceptUuid) {
-        this(id, conceptType == null ? new Column(name, null) : new Column(name, conceptType.getColumnDatatype()), conceptId, conceptType, conceptUuid, parentConceptUuid);
+    public ColumnMetadata(Integer id, String name, Integer conceptId, ConceptType conceptType, String conceptUuid, String parentConceptUuid, Column.ColumnType columnType) {
+        this(id, conceptType == null ? new Column(name, null, columnType) : new Column(name, conceptType.getColumnDatatype(), columnType), conceptId, conceptType, conceptUuid, parentConceptUuid);
     }
 
     public ColumnMetadata(Column column, Integer conceptId, ConceptType conceptType, String conceptUuid) {

@@ -31,7 +31,7 @@ public class LocationTable extends Table {
                 .stream()
                 .map(addressLevelTypeMap -> new Column((String) addressLevelTypeMap.get("name"), Column.Type.text))
                 .collect(Collectors.toList());
-        List<Column> idColumns = columns.stream().map(c -> new Column(format("%s id", c.getName()), Column.Type.integer, true))
+        List<Column> idColumns = columns.stream().map(c -> new Column(format("%s id", c.getName()), Column.Type.integer, Column.ColumnType.index))
                 .collect(Collectors.toList());
         return new Columns()
                 .withColumns(columns)

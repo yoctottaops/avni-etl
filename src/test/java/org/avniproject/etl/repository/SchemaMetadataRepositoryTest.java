@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -40,9 +41,9 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     public void shouldGetDecisionConcepts() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
         TableMetadata growthMonitoringEncounterTable = schemaMetadata.getTableMetadata().stream().filter(tableMetadata1 -> tableMetadata1.getName().equals("person_nutrition_growth_monitoring")).findFirst().get();
-
-        assertThat(growthMonitoringEncounterTable.getNonDefaultColumnMetadataList().size(), is(1));
-        ColumnMetadata decisionConceptColumn = growthMonitoringEncounterTable.getNonDefaultColumnMetadataList().get(0);
+        List<ColumnMetadata> decisionColumns = growthMonitoringEncounterTable.getNonDefaultColumnMetadataList().stream().filter(c -> !c.getColumn().isSyncAttributeColumn()).collect(Collectors.toList());
+        assertThat(decisionColumns.size(), is(1));
+        ColumnMetadata decisionConceptColumn = decisionColumns.get(0);
         assertThat(decisionConceptColumn.getName(), is("Goat Color"));
     }
 
@@ -97,6 +98,6 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     public void shouldGetIndicesWhenGettingNewSchemaMetadata() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
         List<IndexMetadata> personTableIndexMetadata = schemaMetadata.getTableMetadata().stream().filter(tableMetadata -> tableMetadata.getName().equals("person")).findFirst().get().getIndexMetadataList();
-        assertThat(personTableIndexMetadata, hasSize(6));
+        assertThat(personTableIndexMetadata, hasSize(7));
     }
 }

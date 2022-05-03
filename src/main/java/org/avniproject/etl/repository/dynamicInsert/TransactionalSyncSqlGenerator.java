@@ -98,10 +98,12 @@ public class TransactionalSyncSqlGenerator {
 
     private String buildObservationSelection(TableMetadata tableMetadata, String obsColumnName) {
         List<ColumnMetadata> columns = tableMetadata.getNonDefaultColumnMetadataList();
-        String obsColumn = "entity." + obsColumnName;
         if (columns.isEmpty()) return "";
 
         String columnSelects = columns.parallelStream().map(column -> {
+            String obsColumn = column.getColumn().isSyncAttributeColumn() ?
+                    "ind.observations"
+                    : String.format("entity.%s", obsColumnName);
             String columnName = column.getName();
             switch (column.getConceptType()) {
                 case SingleSelect:

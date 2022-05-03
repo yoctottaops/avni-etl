@@ -4,6 +4,7 @@ import org.avniproject.etl.domain.Model;
 import org.avniproject.etl.domain.metadata.diff.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -206,6 +207,10 @@ public class TableMetadata extends Model {
         IndividualEncounterCancellation,
         Address;
 
+    }
+
+    public boolean isSubjectTable() {
+        return Arrays.asList(Type.Individual, Type.Person, Type.Household, Type.Group).contains(this.type);
     }
 
     private void addIndexMetadata(IndexMetadata indexMetadata) {

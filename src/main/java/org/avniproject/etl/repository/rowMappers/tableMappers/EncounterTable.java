@@ -14,13 +14,13 @@ public class EncounterTable extends Table {
                 .withCommonColumns()
                 .withColumns(Arrays.asList(
                                 new Column("name", Column.Type.text),
-                                new Column("individual_id", Column.Type.integer, true),
-                                new Column("address_id", Column.Type.integer, true),
+                                new Column("individual_id", Column.Type.integer, Column.ColumnType.index),
+                                new Column("address_id", Column.Type.integer, Column.ColumnType.index),
                                 new Column("earliest_visit_date_time", Column.Type.timestampWithTimezone),
                                 new Column("max_visit_date_time", Column.Type.timestampWithTimezone),
-                                new Column("encounter_date_time", Column.Type.timestampWithTimezone, true),
+                                new Column("encounter_date_time", Column.Type.timestampWithTimezone, Column.ColumnType.index),
                                 new Column("encounter_location", Column.Type.point),
-                                new Column("cancel_date_time", Column.Type.timestampWithTimezone, true),
+                                new Column("cancel_date_time", Column.Type.timestampWithTimezone, Column.ColumnType.index),
                                 new Column("cancel_location", Column.Type.point),
                                 new Column("legacy_id", Column.Type.text),
                                 new Column("latest_approval_status", Column.Type.text)

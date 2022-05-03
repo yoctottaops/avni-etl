@@ -18,7 +18,7 @@ insert into ${schema_name}.${table_name} (
 )
 (${concept_maps}
 SELECT entity.id                                                                    "id",
-       individual.id                                                                          "individual_id",
+       ind.id                                                                          "individual_id",
        entity.uuid                                                                  "uuid",
        entity.address_id                                                            "address_id",
        entity.enrolment_date_time                                                   "enrolment_date_time",
@@ -34,8 +34,8 @@ SELECT entity.id                                                                
        ${selections}
 FROM public.program_enrolment entity
   ${cross_join_concept_maps}
-         LEFT OUTER JOIN public.individual individual ON entity.individual_id = individual.id
-    LEFT OUTER JOIN public.subject_type st on st.id = individual.subject_type_id
+         LEFT OUTER JOIN public.individual ind ON entity.individual_id = ind.id
+    LEFT OUTER JOIN public.subject_type st on st.id = ind.subject_type_id
     LEFT OUTER JOIN public.program p on p.id = entity.program_id
 WHERE p.uuid = '${program_uuid}'
   AND st.uuid = '${subject_type_uuid}'

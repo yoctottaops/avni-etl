@@ -11,7 +11,7 @@ public class ProgramEncounterTable extends EncounterTable {
     public List<Column> columns() {
         return new Columns()
                 .withColumns(super.columns())
-                .withColumn(new Column("program_enrolment_id", Column.Type.integer, true)).build();
+                .withColumn(new Column("program_enrolment_id", Column.Type.integer, Column.ColumnType.index)).build();
     }
 
     @Override

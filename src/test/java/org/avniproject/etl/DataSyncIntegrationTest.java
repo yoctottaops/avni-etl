@@ -170,6 +170,23 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     @Test
     @Sql({"/test-data-teardown.sql", "/test-data.sql", "/new-form-element.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void syncAttributeColumnShouldGetAdded() {
+        runDataSync();
+        Map<String, Object> programEncounter = jdbcTemplate.queryForMap("select * from orgc.person_nutrition_growth_monitoring where id = 877067");
+        Map<String, Object> programEncounterCancel = jdbcTemplate.queryForMap("select * from orgc.person_nutrition_growth_monitoring_cancel where id = 877068");
+        Map<String, Object> generalEncounter = jdbcTemplate.queryForMap("select * from orgc.person_general_encounter where id = 1900");
+        Map<String, Object> generalEncounterCancel = jdbcTemplate.queryForMap("select * from orgc.person_general_encounter_cancel where id = 1901");
+        Map<String, Object> enrolment = jdbcTemplate.queryForMap("select * from orgc.person_nutrition where id = 150708");
+        Map<String, Object> exit = jdbcTemplate.queryForMap("select * from orgc.person_nutrition_exit where id = 150709");
+        Arrays.asList(programEncounter, programEncounterCancel, generalEncounter, generalEncounterCancel, enrolment, exit).forEach(entity -> {
+            assertThat(entity.containsKey("Text Question"), is(true));
+            assertThat(Objects.equals(entity.get("Text Question"), "This is a text"), is(true));
+        });
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql", "/new-form-element.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void addressLevelColumnsAreCreated() {
         runDataSync();
         List<Map<String, Object>> addresses = jdbcTemplate.queryForList("select * from orgc.address;");

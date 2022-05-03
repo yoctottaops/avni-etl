@@ -12,7 +12,7 @@ public class PersonTable extends SubjectTable {
         return new Columns()
                 .withColumns(super.columns())
                 .withColumns(Arrays.asList(
-                        new Column("date_of_birth", Column.Type.date, true),
+                        new Column("date_of_birth", Column.Type.date, Column.ColumnType.index),
                         new Column("date_of_birth_verified", Column.Type.bool),
                         new Column("gender", Column.Type.text)
                 ))

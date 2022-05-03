@@ -105,6 +105,7 @@ public class SchemaMetadataRepository {
         Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("form_mapping_uuid")));
         List<TableMetadata> tables = tableMaps.values().stream().map(mapList -> new TableMetadataMapper().create(mapList)).collect(Collectors.toList());
         tables.forEach(this::addDecisionConceptColumns);
+        tables.stream().filter(t -> !t.isSubjectTable()).forEach(this::addSyncAttributeColumns);
         return tables;
     }
 
@@ -129,6 +130,41 @@ public class SchemaMetadataRepository {
                                 obj -> obj,
                                 (first, second) -> first
                         )).values()));
+    }
+
+    private void addSyncAttributeColumns(TableMetadata tableMetadata) {
+        List<Map<String, Object>> syncRegistrationConcept1 = runInOrgContext(() -> jdbcTemplate.queryForList(getSyncAttributeSql("sync_registration_concept_1")), jdbcTemplate);
+        List<Map<String, Object>> syncRegistrationConcept2 = runInOrgContext(() -> jdbcTemplate.queryForList(getSyncAttributeSql("sync_registration_concept_2")), jdbcTemplate);
+        addSyncAttribute(tableMetadata, syncRegistrationConcept1, Column.ColumnType.syncAttribute1);
+        addSyncAttribute(tableMetadata, syncRegistrationConcept2, Column.ColumnType.syncAttribute2);
+    }
+
+    private void addSyncAttribute(TableMetadata tableMetadata, List<Map<String, Object>> syncRegistrationConcept, Column.ColumnType columnType) {
+        tableMetadata.addColumnMetadata(
+                new ArrayList<>(syncRegistrationConcept
+                        .stream()
+                        .map(column -> new ColumnMetadataMapper().createSyncColumnMetadata(column, columnType))
+                        .collect(Collectors.toMap(
+                                ColumnMetadata::getName,
+                                obj -> obj,
+                                (first, second) -> first
+                        )).values()));
+    }
+
+    private String getSyncAttributeSql(String columnName) {
+        return format("select c.id                                                             concept_id,\n" +
+                "       c.name                                                                 concept_name,\n" +
+                "       c.uuid                                                                 concept_uuid,\n" +
+                "       (case when c.data_type = 'Coded' then fe.type else c.data_type end) as element_type\n" +
+                "from form_mapping fm\n" +
+                "         join subject_type st on fm.subject_type_id = st.id\n" +
+                "         join form f on f.id = fm.form_id\n" +
+                "         join form_element_group feg on feg.form_id = f.id and feg.is_voided = false\n" +
+                "         join form_element fe on fe.form_element_group_id = feg.id and fe.is_voided = false\n" +
+                "         join concept c on c.uuid = st.%s and c.id = fe.concept_id\n" +
+                "where c.id notnull\n" +
+                "  and fm.is_voided = false\n" +
+                "  and f.form_type = 'IndividualProfile'", columnName);
     }
 
     @Transactional(readOnly = true)
