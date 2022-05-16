@@ -98,7 +98,10 @@ public class SchemaMetadataRepository {
                 "         left outer join operational_program op on p.id = op.program_id\n" +
                 "         left outer join encounter_type et on fm.observations_type_entity_id = et.id\n" +
                 "         left outer join operational_encounter_type oet on et.id = oet.encounter_type_id\n" +
-                "where fm.is_voided is false;", PLACEHOLDER_CONCEPT_UUID);
+                "         left outer join non_applicable_form_element nafe on fe.id = nafe.form_element_id\n\n" +
+                "where fm.is_voided is false" +
+                " and (p.id is null or op.id is not null) and (et.id is null or oet.id is not null)" +
+                " and nafe.id is null;", PLACEHOLDER_CONCEPT_UUID);
 
         List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
 
