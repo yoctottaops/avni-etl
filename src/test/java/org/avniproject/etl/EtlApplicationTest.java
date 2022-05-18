@@ -3,6 +3,7 @@ package org.avniproject.etl;
 import org.avniproject.etl.service.EtlService;
 import org.junit.jupiter.api.Test;
 
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -12,6 +13,6 @@ public class EtlApplicationTest {
         EtlService etlService = mock(EtlService.class);
         EtlApplication etlApplication = new EtlApplication(etlService);
         etlApplication.run();
-        verify(etlService).run();
+        verify(etlService).runForOrganisationSchemaNames(anyList());
     }
 }
