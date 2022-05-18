@@ -7,6 +7,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 //Pesky little thing runs every time an integration test is added. This property is the only thing
@@ -17,7 +22,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 		havingValue = "true",
 		matchIfMissing = true)
 public class EtlApplication implements CommandLineRunner {
-
+	private List<String> organisationSchemaNameFilter = new ArrayList<>();
+	public static final String ORG_SCHEMA_NAMES = "orgSchemaNames";
+	public static final String SCHEMA_NAME_SEPARATOR = "\\s*,\\s*";
 	private static final Logger log = LoggerFactory.getLogger(EtlApplication.class);
 
 	private final EtlService etlService;
@@ -33,7 +40,16 @@ public class EtlApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		log.info("Starting ETL job");
-		etlService.run();
+ 		extractJobParametersFromArgs();
+		etlService.runForOrganisationSchemaNames(organisationSchemaNameFilter);
 		log.info("ETL job complete");
+	}
+
+	private void extractJobParametersFromArgs() {
+		String orgSchemaNames = System.getProperty(ORG_SCHEMA_NAMES);
+		if(StringUtils.hasText(orgSchemaNames)) {
+			organisationSchemaNameFilter = Arrays.asList(orgSchemaNames.split(SCHEMA_NAME_SEPARATOR));
+			log.info("ETL job will be run only for following schemas: "+ organisationSchemaNameFilter);
+		}
 	}
 }

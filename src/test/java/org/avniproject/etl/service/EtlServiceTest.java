@@ -52,6 +52,20 @@ public class EtlServiceTest {
     }
 
     @Test
+    public void callsOrganisationFactoryToCreateOnlyTheSelectedOrganisation() {
+        List<OrganisationIdentity> listOfOrganisations = Arrays.asList(
+                new OrganisationIdentityBuilder().withId(1).withDbUser("a").withSchemaName("a").build(),
+                new OrganisationIdentityBuilder().withId(2).withDbUser("b").build());
+        OrganisationRepository organisationRepository = mock(OrganisationRepository.class);
+        when(organisationRepository.getOrganisationList()).thenReturn(listOfOrganisations);
+        OrganisationFactory organisationFactory = mock(OrganisationFactory.class);
+        EtlService etlService = new EtlService(organisationRepository, organisationFactory, schemaMigrationService, syncService);
+        etlService.runForOrganisationSchemaNames(List.of("a"));
+        verify(organisationRepository).getOrganisationList();
+        verify(organisationFactory).create(any());
+    }
+
+    @Test
     public void callsOrganisationFactoryToCreateAllOrganisations() {
         List<OrganisationIdentity> listOfOrganisations = Arrays.asList(
                 new OrganisationIdentityBuilder().withId(1).withDbUser("a").build(),
