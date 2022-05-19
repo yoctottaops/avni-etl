@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class EtlService {
@@ -37,11 +39,18 @@ public class EtlService {
 
     public void runForOrganisationSchemaNames(@Nonnull List<String> organisationSchemaNameFilter) {
         boolean runForAll = organisationSchemaNameFilter.isEmpty();
+        Set<String> nonProcessedSchemaNames = new HashSet<>(organisationSchemaNameFilter);
         organisationRepository
-                .getOrganisationList()
-                .stream()
-                .filter(oi -> runForAll || organisationSchemaNameFilter.contains(oi.getSchemaName()))
-                .forEach(this::runForOrganisation);
+            .getOrganisationList()
+            .stream()
+            .filter(oi -> runForAll || organisationSchemaNameFilter.contains(oi.getSchemaName()))
+            .forEach(organisationIdentity -> {
+                nonProcessedSchemaNames.remove(organisationIdentity.getSchemaName());
+                runForOrganisation(organisationIdentity);
+            });
+        if(!nonProcessedSchemaNames.isEmpty()) {
+            log.error("Failed to perform ETL job for schemas: "+nonProcessedSchemaNames);
+        }
     }
 
     public EtlResult runForOrganisation(OrganisationIdentity organisationIdentity) {
