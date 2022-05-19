@@ -55,7 +55,7 @@ public class EtlServiceTest {
     public void callsOrganisationFactoryToCreateOnlyTheSelectedOrganisation() {
         List<OrganisationIdentity> listOfOrganisations = Arrays.asList(
                 new OrganisationIdentityBuilder().withId(1).withDbUser("a").withSchemaName("a").build(),
-                new OrganisationIdentityBuilder().withId(2).withDbUser("b").build());
+                new OrganisationIdentityBuilder().withId(2).withDbUser("b").withSchemaName("b").build());
         OrganisationRepository organisationRepository = mock(OrganisationRepository.class);
         when(organisationRepository.getOrganisationList()).thenReturn(listOfOrganisations);
         OrganisationFactory organisationFactory = mock(OrganisationFactory.class);
