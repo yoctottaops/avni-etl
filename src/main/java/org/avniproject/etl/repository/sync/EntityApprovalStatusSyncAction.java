@@ -54,7 +54,7 @@ public class EntityApprovalStatusSyncAction implements EntitySyncAction {
                 "from (select eas.entity_id                                                               as entity_id,\n" +
                 "             approval_status.status                                                      as status,\n" +
                 "             row_number()\n" +
-                "             over (partition by eas.entity_id order by eas.last_modified_date_time desc) as row_number\n" +
+                "             over (partition by eas.entity_id order by eas.status_date_time desc) as row_number\n" +
                 "      from entity_approval_status eas\n" +
                 "               join approval_status on eas.approval_status_id = approval_status.id\n" +
                 "      where eas.is_voided = false\n" +
