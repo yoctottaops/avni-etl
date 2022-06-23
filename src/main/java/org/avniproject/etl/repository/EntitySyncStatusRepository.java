@@ -30,9 +30,12 @@ public class EntitySyncStatusRepository {
                 "       ash.table_metadata_id as table_metadata_id,\n" +
                 "       ash.last_sync_time   as last_sync_time,\n" +
                 "       ash.sync_status       as sync_status\n" +
-                "from entity_sync_status ash;";
+                "from entity_sync_status ash\n" +
+                "where ash.schema_name = :schema";
 
-        List<EntitySyncStatus> entitySyncStatuses = runInOrgContext(() -> jdbcTemplate.query(sql, (rs, rowNum) -> new EntitySyncStatus(
+        Map<String, Object> parameters = new HashMap<>(1);
+        parameters.put("schema", ContextHolder.getDbSchema());
+        List<EntitySyncStatus> entitySyncStatuses = runInOrgContext(() -> new NamedParameterJdbcTemplate(jdbcTemplate).query(sql, parameters, (rs, rowNum) -> new EntitySyncStatus(
                 rs.getInt("id"),
                 rs.getInt("table_metadata_id"),
                 rs.getTimestamp("last_sync_time"),
@@ -75,6 +78,7 @@ public class EntitySyncStatusRepository {
         parameters.put("sync_status", entitySyncStatus.getSyncStatus().toString());
         parameters.put("last_sync_time", entitySyncStatus.getLastSyncTime());
         parameters.put("table_metadata_id", entitySyncStatus.getTableMetadataId());
+        parameters.put("schema_name", ContextHolder.getDbSchema());
 
         return parameters;
     }
