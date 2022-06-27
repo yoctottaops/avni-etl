@@ -18,6 +18,7 @@ public class TransactionalSyncSqlGenerator {
     public TransactionalSyncSqlGenerator() {
         typeMap.put(TableMetadata.Type.Household, "/insertSql/individual.sql");
         typeMap.put(TableMetadata.Type.Individual, "/insertSql/individual.sql");
+        typeMap.put(TableMetadata.Type.Group, "/insertSql/individual.sql");
         typeMap.put(TableMetadata.Type.Person, "/insertSql/person.sql");
         typeMap.put(TableMetadata.Type.Encounter, "/insertSql/generalEncounter.sql");
         typeMap.put(TableMetadata.Type.ProgramEnrolment, "/insertSql/programEnrolment.sql");
