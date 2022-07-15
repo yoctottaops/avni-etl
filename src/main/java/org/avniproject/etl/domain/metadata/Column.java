@@ -22,13 +22,15 @@ public class Column {
 
     public String getName() {
         if (isColumnNameTruncated()) {
-            return String.format("%s (%s)", this.name.substring(0, POSTGRES_MAX_COLUMN_NAME_LENGTH - NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE), Math.abs(this.name.hashCode()));
+            byte[] truncatedNameBytes = new byte[POSTGRES_MAX_COLUMN_NAME_LENGTH - NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE];
+            System.arraycopy(this.name.getBytes(), 0, truncatedNameBytes, 0, truncatedNameBytes.length);
+            return String.format("%s (%s)", new String(truncatedNameBytes), Math.abs(this.name.hashCode()));
         }
         return name;
     }
 
     private boolean isColumnNameTruncated() {
-        return this.name.length() > POSTGRES_MAX_COLUMN_NAME_LENGTH;
+        return this.name.getBytes().length > POSTGRES_MAX_COLUMN_NAME_LENGTH;
     }
 
     public Type getType() {
