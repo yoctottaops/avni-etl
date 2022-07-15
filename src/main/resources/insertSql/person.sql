@@ -4,6 +4,7 @@ insert into ${schema_name}.${table_name} (
     "date_of_birth_verified", "registration_date", "registration_location",
     "is_voided", "created_by_id", "last_modified_by_id", "created_date_time",
     "last_modified_date_time", "legacy_id"
+    ${middle_name}
     ${observations_to_insert_list}
 )
 (${concept_maps}
@@ -23,6 +24,7 @@ SELECT entity.id                                                                
        entity.created_date_time                                                        as "created_date_time",
        entity.last_modified_date_time                                                  as "last_modified_date_time",
        entity.legacy_id                                                                as "legacy_id"
+       ${middle_name_select}
        ${selections}
 FROM public.individual entity
     LEFT OUTER JOIN public.subject_type st on st.id = entity.subject_type_id

@@ -144,4 +144,11 @@ public class ColumnMetadata extends Model {
         }
         return format("->> '%s'", conceptUuid);
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "column=" + column +
+                '}';
+    }
 }

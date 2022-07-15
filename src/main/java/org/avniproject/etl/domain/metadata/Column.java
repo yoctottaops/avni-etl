@@ -86,4 +86,13 @@ public class Column {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", columnType=" + columnType +
+                '}';
+    }
 }

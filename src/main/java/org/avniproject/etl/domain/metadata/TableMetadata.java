@@ -194,6 +194,10 @@ public class TableMetadata extends Model {
         return diffs;
     }
 
+    public boolean hasColumn(String columnName) {
+        return columnMetadataList.stream().anyMatch(columnMetadata -> columnMetadata.getColumn().getName().equals(columnName));
+    }
+
     public enum Type {
         Individual,
         Person,

@@ -71,6 +71,7 @@ public class SchemaMetadataRepository {
                 "       ost.name                                                               subject_type_name,\n" +
                 "       st.uuid                                                                subject_type_uuid,\n" +
                 "       st.type                                                                subject_type_type,\n" +
+                "       st.allow_middle_name                                                   subject_type_allow_middle_name,\n" +
                 "       f.form_type                                                            table_type,\n" +
                 "       p.uuid                                                                 program_uuid,\n" +
                 "       op.name                                                                program_name,\n" +

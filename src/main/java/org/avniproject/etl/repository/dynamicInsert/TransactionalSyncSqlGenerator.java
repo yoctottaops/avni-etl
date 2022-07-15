@@ -46,7 +46,7 @@ public class TransactionalSyncSqlGenerator {
     public String getSql(String path, TableMetadata tableMetadata, Date startTime, Date endTime) {
         String template = readFile(path);
         String obsColumnName = tableMetadata.getType().equals(TableMetadata.Type.Address) ? "location_properties" : "observations";
-        return template.replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
+        String text = template.replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
                 .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
                 .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
                 .replace("${concept_maps}", getConceptMaps(tableMetadata))
@@ -59,6 +59,12 @@ public class TransactionalSyncSqlGenerator {
                 .replace("${program_uuid}", toString(tableMetadata.getProgramUuid()))
                 .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
                 .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(endTime));
+        if (tableMetadata.getType().equals(TableMetadata.Type.Person) && tableMetadata.hasColumn("middle_name")) {
+            text = text.replace("${middle_name}", ",middle_name").replace("${middle_name_select}", ", entity.middle_name                                                               as \"middle_name\"");
+        } else {
+            text = text.replace("${middle_name}", "").replace("${middle_name_select}", "");
+        }
+        return text;
     }
 
     private String getConceptMapName(TableMetadata tableMetadata) {

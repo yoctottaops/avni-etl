@@ -9,7 +9,7 @@ public class TableTest {
     @Test
     void shouldGetAllColumns() {
         assertThat(new SubjectTable().columns().size(), is(14));
-        assertThat(new PersonTable().columns().size(), is(17));
+        assertThat(new PersonTable(false).columns().size(), is(17));
 
         assertThat(new EncounterTable().columns().size(), is(18));
         assertThat(new ProgramEncounterCancellationTable().columns().size(), is(19));

@@ -41,15 +41,15 @@ public class EtlService {
         boolean runForAll = organisationSchemaNameFilter.isEmpty();
         Set<String> nonProcessedSchemaNames = new HashSet<>(organisationSchemaNameFilter);
         organisationRepository
-            .getOrganisationList()
-            .stream()
-            .filter(oi -> runForAll || organisationSchemaNameFilter.contains(oi.getSchemaName()))
-            .forEach(organisationIdentity -> {
-                nonProcessedSchemaNames.remove(organisationIdentity.getSchemaName());
-                runForOrganisation(organisationIdentity);
-            });
-        if(!nonProcessedSchemaNames.isEmpty()) {
-            log.error("Failed to perform ETL job for schemas: "+nonProcessedSchemaNames);
+                .getOrganisationList()
+                .stream()
+                .filter(oi -> runForAll || organisationSchemaNameFilter.contains(oi.getSchemaName()))
+                .forEach(organisationIdentity -> {
+                    nonProcessedSchemaNames.remove(organisationIdentity.getSchemaName());
+                    runForOrganisation(organisationIdentity);
+                });
+        if (!nonProcessedSchemaNames.isEmpty()) {
+            log.error("Failed to perform ETL job for schemas: " + nonProcessedSchemaNames);
         }
     }
 

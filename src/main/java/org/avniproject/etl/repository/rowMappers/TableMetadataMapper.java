@@ -95,7 +95,7 @@ public class TableMetadataMapper {
             case Individual:
                 return new SubjectTable();
             case Person:
-                return new PersonTable();
+                return new PersonTable((Boolean) tableDetails.get("subject_type_allow_middle_name"));
             case ProgramEnrolment:
                 return new ProgramEnrolmentTable();
             case ProgramExit:
