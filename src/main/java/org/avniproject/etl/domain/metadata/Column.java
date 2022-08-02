@@ -9,28 +9,40 @@ public class Column {
     private final ColumnType columnType;
 
     public Column(String name, Type type) {
-        this.name = name;
+        this.name = getName(name);
         this.type = type;
         this.columnType = null;
     }
 
     public Column(String name, Type type, ColumnType columnType) {
-        this.name = name;
+        this.name = getName(name);
         this.type = type;
         this.columnType = columnType;
     }
 
     public String getName() {
-        if (isColumnNameTruncated()) {
-            byte[] truncatedNameBytes = new byte[POSTGRES_MAX_COLUMN_NAME_LENGTH - NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE];
-            System.arraycopy(this.name.getBytes(), 0, truncatedNameBytes, 0, truncatedNameBytes.length);
-            return String.format("%s (%s)", new String(truncatedNameBytes), Math.abs(this.name.hashCode()));
+        return this.name;
+    }
+
+    private String getTruncatedName(String name) {
+        byte[] truncatedNameBytes = new byte[POSTGRES_MAX_COLUMN_NAME_LENGTH - NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE];
+        System.arraycopy(name.getBytes(), 0, truncatedNameBytes, 0, truncatedNameBytes.length);
+        return String.format("%s (%s)", new String(truncatedNameBytes), Math.abs(name.hashCode()));
+    }
+
+    private String getName(String name) {
+        if (isColumnNameTruncated(name)) {
+            String truncatedName = getTruncatedName(name);
+            while (isColumnNameTruncated(truncatedName)) {
+                truncatedName = getTruncatedName(truncatedName);
+            }
+            return truncatedName;
         }
         return name;
     }
 
-    private boolean isColumnNameTruncated() {
-        return this.name.getBytes().length > POSTGRES_MAX_COLUMN_NAME_LENGTH;
+    private boolean isColumnNameTruncated(String name) {
+        return name.getBytes().length > POSTGRES_MAX_COLUMN_NAME_LENGTH;
     }
 
     public Type getType() {
@@ -44,6 +56,15 @@ public class Column {
     public boolean isSyncAttributeColumn() {
         return ColumnType.syncAttribute1.equals(this.columnType) ||
                 ColumnType.syncAttribute2.equals(this.columnType);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", columnType=" + columnType +
+                '}';
     }
 
     public enum ColumnType {
@@ -87,14 +108,5 @@ public class Column {
                     throw new RuntimeException("column_name is not defined for this type"); //Not an expected scenario
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                ", columnType=" + columnType +
-                '}';
     }
 }
