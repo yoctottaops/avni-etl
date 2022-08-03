@@ -64,7 +64,7 @@ class SqlGeneratorTest {
                 "(entity.observations->> 'uuid-2')::TEXT as \"text field\",\n" +
                 "public.get_coded_string_value(entity.observations-> 'uuid-3', Individual_concept_maps.map)::TEXT as \"single select\",\n" +
                 "public.get_coded_string_value(entity.observations-> 'uuid-4', Individual_concept_maps.map)::TEXT as \"multi select\",\n" +
-                "(entity.observations->> 'uuid-5')::DATE as \"date\"\n" +
+                "((entity.observations->> 'uuid-5')::timestamptz AT time zone 'asia/kolkata')::date as \"date\"\n" +
                 "        FROM public.individual entity\n" +
                 "        LEFT OUTER JOIN public.subject_type st on st.id = entity.subject_type_id\n" +
                 "        cross join Individual_concept_maps\n" +

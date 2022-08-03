@@ -119,10 +119,10 @@ public class TransactionalSyncSqlGenerator {
                             obsColumn, column.getJsonbExtractor(), getConceptMapName(tableMetadata), column.getName());
                 }
                 case Date: {
-                    return String.format("(%s%s)::DATE as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
+                    return String.format("((%s%s)::timestamptz AT time zone 'asia/kolkata')::date as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
                 case DateTime: {
-                    return String.format("(%s%s)::TIMESTAMP as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
+                    return String.format("(%s%s)::timestamptz AT time zone 'asia/kolkata' as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
                 case Time: {
                     return String.format("(%s%s)::TIME as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
