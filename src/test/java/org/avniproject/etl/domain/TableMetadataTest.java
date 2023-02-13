@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TableMetadataTest {
 
@@ -84,7 +85,30 @@ public class TableMetadataTest {
     }
 
     @Test
-    public void shouldAddIndexIfMissing() {
+    public void mergeWith() {
+        TableMetadata oldTable = new TableMetadataBuilder().forPerson().build();
+        TableMetadata newTable = new TableMetadataBuilder().forPerson().build();
 
+        String conceptUuid = UUID.randomUUID().toString();
+        oldTable.addColumnMetadata(List.of(new ColumnMetadata(new Column("oldColumn", Column.Type.text), 24, ColumnMetadata.ConceptType.Text, conceptUuid)));
+        newTable.addColumnMetadata(List.of(new ColumnMetadata(new Column("renamedColumn", Column.Type.text), 24, ColumnMetadata.ConceptType.Text, conceptUuid)));
+
+        newTable.mergeWith(oldTable);
+
+        assertEquals(1, newTable.getColumns().size());
+        assertEquals("renamedColumn", newTable.getColumns().get(0).getName());
+    }
+
+    @Test
+    public void findChangesWhenTheNewColumnNameIsLarge() {
+        TableMetadata oldTable = new TableMetadataBuilder().forPerson().build();
+        TableMetadata newTable = new TableMetadataBuilder().forPerson().build();
+
+        String conceptUuid = UUID.randomUUID().toString();
+        oldTable.addColumnMetadata(List.of(new ColumnMetadata(new Column("Total silt requested by the family members", Column.Type.text), 24, ColumnMetadata.ConceptType.Text, conceptUuid)));
+        newTable.addColumnMetadata(List.of(new ColumnMetadata(new Column("Total silt requested by the family members – Number of trolle", Column.Type.text), 24, ColumnMetadata.ConceptType.Text, conceptUuid)));
+
+        List<Diff> changes = newTable.findChanges(oldTable);
+        assertEquals(1, changes.size());
     }
 }

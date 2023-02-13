@@ -8,3 +8,6 @@ create-extensions:
 	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
 	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "ltree"';
 	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "hstore"';
+
+open-test-results:
+	open build/reports/tests/test/index.html

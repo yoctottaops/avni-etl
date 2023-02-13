@@ -27,6 +27,7 @@ delete from operational_program;
 delete from program;
 delete from operational_subject_type;
 delete from subject_type;
+delete from catchment_address_mapping;
 delete from address_level;
 delete from address_level_type;
 delete from users where organisation_id >= 10;
