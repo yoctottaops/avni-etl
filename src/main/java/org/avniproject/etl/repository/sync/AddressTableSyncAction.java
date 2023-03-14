@@ -8,14 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
-import static org.avniproject.etl.repository.dynamicInsert.SqlFile.readFile;
 
 @Repository
 public class AddressTableSyncAction implements EntitySyncAction {
@@ -42,14 +40,14 @@ public class AddressTableSyncAction implements EntitySyncAction {
 
     private void insertLowestLevelAddresses(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
         String templatePath = "/insertSql/address.sql";
-        List<Map<String, Object>> lowestLevelsMap = runInOrgContext(() -> jdbcTemplate.queryForList("select name, id, parent_id from address_level_type where not is_voided;"), jdbcTemplate);
-        lowestLevelsMap.forEach(lowestLevel -> {
-            String levelName = (String) lowestLevel.get("name");
+        List<Map<String, Object>> addressLevels = runInOrgContext(() -> jdbcTemplate.queryForList("select name, id, parent_id from address_level_type where not is_voided order by level desc;"), jdbcTemplate);
+        addressLevels.forEach(addressLevel -> {
+            String levelName = (String) addressLevel.get("name");
             String sql = new TransactionalSyncSqlGenerator().getSql(templatePath, tableMetadata, lastSyncTime, dataSyncBoundaryTime);
             String query = sql.replace("${titleColumnName}", levelName)
                     .replace("${idColumnName}", format("%s id", levelName));
             runAddressQuery(query);
-            insertParents((Integer) lowestLevel.get("id"), levelName, (Integer) lowestLevel.get("parent_id"));
+            insertParents((Integer) addressLevel.get("id"), levelName, (Integer) addressLevel.get("parent_id"));
         });
     }
 
