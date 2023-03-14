@@ -25,7 +25,6 @@ public class EtlApplication implements CommandLineRunner {
 	public static final int INT_CONSTANT_ZERO = 0;
 	public static final int ORG_SCHEMA_NAMES_INDEX = 0;
 	private List<String> organisationSchemaNameFilter = new ArrayList<>();
-	public static final String ORG_SCHEMA_NAMES = "orgSchemaNames";
 	public static final String SCHEMA_NAME_SEPARATOR = "\\s*,\\s*";
 	private static final Logger log = LoggerFactory.getLogger(EtlApplication.class);
 
