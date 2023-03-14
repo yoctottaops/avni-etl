@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
-public class LocationTable extends Table {
+public class AddressTable extends Table {
 
     private final List<Map<String, Object>> addressLevelTypes;
     private final List<Map<String, Object>> formColumns;
 
-    public LocationTable(List<Map<String, Object>> addressLevelTypes, List<Map<String, Object>> formColumns) {
+    public AddressTable(List<Map<String, Object>> addressLevelTypes, List<Map<String, Object>> formColumns) {
         this.addressLevelTypes = addressLevelTypes;
         this.formColumns = formColumns;
     }
@@ -51,5 +51,4 @@ public class LocationTable extends Table {
         columnMetadata.addAll(formColumnsMetadata);
         return columnMetadata;
     }
-
 }

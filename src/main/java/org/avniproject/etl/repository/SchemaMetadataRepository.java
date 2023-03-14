@@ -8,8 +8,7 @@ import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
-import org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns;
-import org.avniproject.etl.repository.rowMappers.tableMappers.LocationTable;
+import org.avniproject.etl.repository.rowMappers.tableMappers.AddressTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -45,7 +44,7 @@ public class SchemaMetadataRepository {
     }
 
     private TableMetadata getAddressTable() {
-        String fomSql = "select (case when c.data_type = 'Coded' then fe.type else c.data_type end) as element_type,\n" +
+        String locationPropertiesSql = "select (case when c.data_type = 'Coded' then fe.type else c.data_type end) as element_type,\n" +
                 "       c.id                                                                   concept_id,\n" +
                 "       c.uuid                                                                 concept_uuid,\n" +
                 "       c.name                                                                 concept_name\n" +
@@ -56,12 +55,12 @@ public class SchemaMetadataRepository {
                 "where f.form_type = 'Location'\n" +
                 "  and f.is_voided = false";
         List<Map<String, Object>> addressLevelTypes = runInOrgContext(() -> jdbcTemplate.queryForList("select name from address_level_type where not is_voided;"), jdbcTemplate);
-        List<Map<String, Object>> formColumns = runInOrgContext(() -> jdbcTemplate.queryForList(fomSql), jdbcTemplate);
-        LocationTable locationTable = new LocationTable(addressLevelTypes, formColumns);
+        List<Map<String, Object>> locationProperties = runInOrgContext(() -> jdbcTemplate.queryForList(locationPropertiesSql), jdbcTemplate);
+        AddressTable addressTable = new AddressTable(addressLevelTypes, locationProperties);
         TableMetadata tableMetadata = new TableMetadata();
-        tableMetadata.setName(locationTable.name(null));
+        tableMetadata.setName(addressTable.name(null));
         tableMetadata.setType(TableMetadata.Type.Address);
-        tableMetadata.setColumnMetadataList(locationTable.columnMetadata());
+        tableMetadata.setColumnMetadataList(addressTable.columnMetadata());
         return tableMetadata;
     }
 
