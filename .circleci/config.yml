@@ -37,9 +37,9 @@ commands:
 jobs:
   test:
     docker:
-      - image: circleci/openjdk:11-jdk
+      - image: cimg/openjdk:17.0.5
 
-      - image: circleci/postgres:12.7
+      - image: cimg/postgres:12.7
         environment:
           - POSTGRES_USER: openchs
           - POSTGRES_DB: openchs_test
@@ -81,7 +81,7 @@ jobs:
 
   build:
     docker:
-    - image: circleci/openjdk:11-jdk
+    - image: cimg/openjdk:17.0.5
 
     working_directory: ~/avni-etl
 
@@ -130,7 +130,7 @@ workflows:
     - test
     - build:
         requires:
-          - test  
+          - test
     - STAGING_deploy:
         filters:
           branches:
