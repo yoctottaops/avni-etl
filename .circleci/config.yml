@@ -131,12 +131,16 @@ workflows:
     - build:
         requires:
           - test
+    - STAGING_approve:
+        type: approval
+        requires:
+          - build
     - STAGING_deploy:
         filters:
           branches:
             only: main
         requires:
-          - build
+          - STAGING_approve
     - PRODUCTION_approve:
         type: approval
         requires:

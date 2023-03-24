@@ -54,7 +54,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     }
 
     private void addApprovalStatus(Integer id, String uuid, Integer statusId, String dateTime) {
-        jdbcTemplate.execute(format("insert into entity_approval_status (id, uuid, entity_id, entity_type, approval_status_id, approval_status_comment,organisation_id, audit_id, version, status_date_time, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time) values (%d, '%s', 574170, 'Subject', %d, null, 12, create_audit(), 0,  '%s', 1,1, '%s', '%s')", id, uuid, statusId, dateTime, dateTime, dateTime));
+        jdbcTemplate.execute(format("insert into entity_approval_status (id, uuid, entity_id, entity_type, approval_status_id, approval_status_comment,organisation_id, audit_id, version, status_date_time, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, entity_type_uuid, address_id, individual_id, sync_concept_1_value, sync_concept_2_value ) values (%d, '%s', 574170, 'Subject', %d, null, 12, create_audit(), 0,  '%s', 1,1, '%s', '%s', '19f9c741-a8b1-4be6-9aab-c0e5ae4e0cd8', 107786, 574170, null, null)", id, uuid, statusId, dateTime, dateTime, dateTime));
     }
 
 
