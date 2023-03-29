@@ -37,7 +37,8 @@ commands:
     - run: |
         pwd
         cd ~/avni-infra/configure
-        VAULT_PASSWORD_FILE=~/.vault-pass.txt app_zip_path=~/artifacts/avni-etl.jar make deploy-etl-<< parameters.env >>
+        mv ~/artifacts/avni-etl.jar ~/artifacts/etl-1.0.0-SNAPSHOT.jar
+        VAULT_PASSWORD_FILE=~/.vault-pass.txt app_zip_path=~/artifacts/ make deploy-etl-<< parameters.env >>
 
     - run: rm ~/.vault-pass.txt
 
