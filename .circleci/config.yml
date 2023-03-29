@@ -22,7 +22,6 @@ commands:
           sudo apt-get -y -qq update
           sudo apt-get -y -qq install python3-pip
           sudo pip3 install awscli --upgrade
-          sudo apt-get install make openssl
           sudo pip3 install ansible
 
     - run: curl -L https://github.com/avniproject/avni-infra/archive/master.zip >> ~/infra.zip
