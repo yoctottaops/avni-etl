@@ -62,8 +62,7 @@ public class EtlService {
             Organisation newOrganisation = schemaMigrationService.migrate(organisation);
             syncService.sync(newOrganisation);
         } catch (Exception e) {
-            log.error("Could not migrate organisation ", organisationIdentity);
-            log.error("Error message", e);
+            log.error("Could not migrate organisation", e);
             return new EtlResult(false);
         }
 
