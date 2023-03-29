@@ -32,7 +32,7 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     @Sql({"/test-data-teardown.sql", "/test-data.sql"})
     @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)    public void shouldGetAllTablesForAnOrganisation() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
-        assertThat(schemaMetadata.getTableMetadata().size(), is(10));
+        assertThat(schemaMetadata.getTableMetadata().size(), is(11));
     }
 
     @Test
@@ -66,6 +66,16 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
         assertThat(addressTable.getColumns().stream().anyMatch(column -> column.getName().equals("Gram Panchayat id")), is(true));
         assertThat(addressTable.getColumns().stream().anyMatch(column -> column.getName().equals("gps_coordinates")), is(true));
         assertThat(addressTable.getColumns().stream().anyMatch(column -> column.getName().equals("Extra location info")), is(true));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void shouldGetMediaTable() {
+        SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
+        Optional<TableMetadata> mediaTable = schemaMetadata.getTableMetadata().stream().filter(tableMetadata1 -> tableMetadata1.getName().equals("media")).findFirst();
+
+        assertThat(mediaTable.isPresent(), is(true));
     }
 
 

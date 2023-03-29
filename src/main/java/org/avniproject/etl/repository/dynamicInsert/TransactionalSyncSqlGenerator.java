@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.COMMA;
-import static org.avniproject.etl.repository.dynamicInsert.SqlFile.*;
+import static org.avniproject.etl.repository.dynamicInsert.SqlFile.readFile;
 
 public class TransactionalSyncSqlGenerator {
 

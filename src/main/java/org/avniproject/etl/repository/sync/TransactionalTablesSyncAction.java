@@ -1,6 +1,5 @@
 package org.avniproject.etl.repository.sync;
 
-import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.repository.dynamicInsert.TransactionalSyncSqlGenerator;

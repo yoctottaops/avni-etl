@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @DisallowConcurrentExecution
 public class EtlJob implements Job {
-    private EtlService etlService;
+    private final EtlService etlService;
 
     @Autowired
     public EtlJob(EtlService etlService) {

@@ -8,8 +8,8 @@ import org.avniproject.etl.domain.metadata.diff.Diff;
 import java.util.UUID;
 
 public class IndexMetadata extends Model {
-    private String name;
-    private ColumnMetadata column;
+    private final String name;
+    private final ColumnMetadata column;
 
     public IndexMetadata(ColumnMetadata column) {
         super();

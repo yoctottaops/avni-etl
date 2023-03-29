@@ -1,6 +1,5 @@
 package org.avniproject.etl.service;
 
-import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;

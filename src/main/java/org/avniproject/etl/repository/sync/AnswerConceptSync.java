@@ -2,7 +2,6 @@ package org.avniproject.etl.repository.sync;
 
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.NullObject;
-import org.avniproject.etl.domain.metadata.Column;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.repository.dynamicInsert.TransactionalSyncSqlGenerator;
@@ -11,12 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
