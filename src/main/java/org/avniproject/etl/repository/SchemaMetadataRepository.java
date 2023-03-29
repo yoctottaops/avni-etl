@@ -7,6 +7,7 @@ import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
+import org.avniproject.etl.repository.rowMappers.MediaTableMetadataBuilder;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.tableMappers.AddressTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,9 @@ public class SchemaMetadataRepository {
 
     @Transactional(readOnly = true)
     public SchemaMetadata getNewSchemaMetadata() {
-        List<TableMetadata> tables = new ArrayList<>();
-        tables.addAll(getFormTables());
+        List<TableMetadata> tables = new ArrayList<>(getFormTables());
         tables.add(getAddressTable());
+        tables.add(MediaTableMetadataBuilder.build());
 
         return new SchemaMetadata(tables);
     }
