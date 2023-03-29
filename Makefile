@@ -11,3 +11,6 @@ create-extensions:
 
 open-test-results:
 	open build/reports/tests/test/index.html
+
+start:
+	./gradlew bootRun
