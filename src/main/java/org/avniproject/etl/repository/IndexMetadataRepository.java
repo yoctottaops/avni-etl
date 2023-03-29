@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Repository
 public class IndexMetadataRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public IndexMetadataRepository(JdbcTemplate jdbcTemplate) {

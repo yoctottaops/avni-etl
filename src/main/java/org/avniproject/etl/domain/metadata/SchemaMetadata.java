@@ -1,6 +1,5 @@
 package org.avniproject.etl.domain.metadata;
 
-import org.avniproject.etl.domain.metadata.diff.CreateTable;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 
 import java.util.ArrayList;

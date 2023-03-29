@@ -5,9 +5,9 @@ import org.avniproject.etl.domain.ContextHolder;
 import static org.avniproject.etl.domain.metadata.diff.Strings.*;
 
 public class AddIndex implements Diff {
-    private String name;
-    private String tableName;
-    private String columnName;
+    private final String name;
+    private final String tableName;
+    private final String columnName;
 
     public AddIndex(String name, String tableName, String columnName) {
         this.name = name;

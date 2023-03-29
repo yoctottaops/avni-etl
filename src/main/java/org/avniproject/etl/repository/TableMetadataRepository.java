@@ -16,7 +16,7 @@ public class TableMetadataRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private final ColumnMetadataRepository columnMetadataRepository;
-    private IndexMetadataRepository indexMetadataRepository;
+    private final IndexMetadataRepository indexMetadataRepository;
 
     @Autowired
     public TableMetadataRepository(JdbcTemplate jdbcTemplate, ColumnMetadataRepository columnMetadataRepository, IndexMetadataRepository indexMetadataRepository) {

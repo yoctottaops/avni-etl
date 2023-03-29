@@ -1,14 +1,9 @@
 package org.avniproject.etl.repository.rowMappers.tableMappers;
 
 import org.avniproject.etl.domain.metadata.Column;
-import org.avniproject.etl.domain.metadata.ColumnMetadata;
-import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.lang.String.format;
 
 public class MediaTable extends Table {
 

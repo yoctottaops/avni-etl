@@ -1,8 +1,8 @@
 package org.avniproject.etl.repository;
 
+import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.OrganisationIdentityRowMapper;
-import org.avniproject.etl.domain.OrganisationIdentity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

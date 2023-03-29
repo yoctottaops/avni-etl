@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.avniproject.etl.domain.NullObject.isNullObject;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 class NullObjectTest {
     @Test
@@ -12,5 +12,4 @@ class NullObjectTest {
         assertThat(isNullObject(NullObject.instance()), is(true));
         assertThat(isNullObject("I am not a null object"), is(false));
     }
-
 }

@@ -5,7 +5,6 @@ import org.avniproject.etl.domain.metadata.Column.Type;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.domain.metadata.diff.RenameColumn;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

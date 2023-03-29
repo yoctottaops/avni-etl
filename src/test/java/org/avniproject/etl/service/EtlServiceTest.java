@@ -3,9 +3,8 @@ package org.avniproject.etl.service;
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.Organisation;
-import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.domain.OrganisationIdentity;
-import org.avniproject.etl.repository.SchemaMetadataRepository;
+import org.avniproject.etl.repository.OrganisationRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 

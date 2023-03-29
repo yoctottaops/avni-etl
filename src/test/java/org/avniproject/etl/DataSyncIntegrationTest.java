@@ -2,14 +2,11 @@ package org.avniproject.etl;
 
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.service.EtlService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.jdbc.Sql;
 
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -220,7 +217,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void approvalStatusFromChildOrgsShouldUpdateCorrectly() {
         etlService.run();
         Map<String, Object> org1Person = jdbcTemplate.queryForMap("select * from og.person where id = 674170;");
-        Map<String, Object> org2Person = jdbcTemplate.queryForMap("select * from og.person where id = 574170;");;
+        Map<String, Object> org2Person = jdbcTemplate.queryForMap("select * from og.person where id = 574170;");
         assertThat(org1Person.get("latest_approval_status"), is("Pending"));
         assertThat(org2Person.get("latest_approval_status"), is("Approved"));
     }

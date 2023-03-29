@@ -11,7 +11,7 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 @Configuration
 public class EtlConfig {
-    private static String ETL_JOB_ID = "ETL";
+    private static final String ETL_JOB_ID = "ETL";
 
     @Bean
     public JobDetail etlJobDetail() {

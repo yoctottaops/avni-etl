@@ -6,7 +6,6 @@ import org.avniproject.etl.domain.metadata.Column;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.*;
