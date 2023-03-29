@@ -14,17 +14,12 @@ commands:
     - attach_workspace:
         at: ~/artifacts
 
-    - run: sudo apt-get install make openssl
-
+    # Installation
     - run:
-        name: Install dependencies
-        command: |
-          sudo apt-get -y -qq update
-          sudo apt-get -y -qq install python3-pip
-          sudo pip3 install awscli --upgrade
-          sudo apt-get install make openssl
-          sudo pip3 install ansible
+        name: Install System Packages
+        command: pip install --upgrade pip && pip install ansible
 
+    # Dependencies
     - run: curl -L https://github.com/avniproject/avni-infra/archive/master.zip >> ~/infra.zip
 
     - run: |
@@ -120,7 +115,7 @@ jobs:
 
   STAGING_deploy:
     docker:
-    - image: circleci/openjdk:11-jdk
+    - image: ansible/ansible:ubuntu1604
       environment:
         ANSIBLE_HOST_KEY_CHECKING: no
     working_directory: ~/
