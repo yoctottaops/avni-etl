@@ -1,12 +1,11 @@
 package org.avniproject.etl.service;
 
+import org.apache.log4j.Logger;
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.result.EtlResult;
 import org.avniproject.etl.repository.OrganisationRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class EtlService {
     private final OrganisationFactory organisationFactory;
     private final SchemaMigrationService schemaMigrationService;
     private final SyncService syncService;
-    private static final Logger log = LoggerFactory.getLogger(EtlService.class);
+    private static final Logger log = Logger.getLogger(EtlService.class);
 
     @Autowired
     public EtlService(OrganisationRepository organisationRepository, OrganisationFactory organisationFactory,

@@ -1,13 +1,12 @@
 package org.avniproject.etl.service;
 
+import org.apache.log4j.Logger;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.repository.SchemaMetadataRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,7 +19,7 @@ import java.util.List;
 public class SchemaMigrationService {
     private final SchemaMetadataRepository schemaMetadataRepository;
     private final OrganisationRepository organisationRepository;
-    private static final Logger log = LoggerFactory.getLogger(SchemaMigrationService.class);
+    private static final Logger log = Logger.getLogger(SchemaMigrationService.class);
 
     @Autowired
     public SchemaMigrationService(SchemaMetadataRepository schemaMetadataRepository, OrganisationRepository organisationRepository) {

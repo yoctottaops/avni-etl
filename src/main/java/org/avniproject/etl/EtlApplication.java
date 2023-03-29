@@ -1,7 +1,6 @@
 package org.avniproject.etl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,7 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 		havingValue = "true",
 		matchIfMissing = true)
 public class EtlApplication {
-	private static final Logger log = LoggerFactory.getLogger(EtlApplication.class);
+	private static final Logger log = Logger.getLogger(EtlApplication.class);
 
 	public EtlApplication() {
 	}

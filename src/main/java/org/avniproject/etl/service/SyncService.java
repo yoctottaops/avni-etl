@@ -1,5 +1,6 @@
 package org.avniproject.etl.service;
 
+import org.apache.log4j.Logger;
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
@@ -8,8 +9,6 @@ import org.avniproject.etl.domain.syncstatus.EntitySyncStatus;
 import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
 import org.avniproject.etl.repository.EntitySyncStatusRepository;
 import org.avniproject.etl.repository.sync.EntityRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,7 +19,7 @@ public class SyncService {
 
     private final EntityRepository entityRepository;
     private final EntitySyncStatusRepository entitySyncStatusRepository;
-    private static final Logger log = LoggerFactory.getLogger(SyncService.class);
+    private static final Logger log = Logger.getLogger(SyncService.class);
 
     @Autowired
     public SyncService(EntityRepository entityRepository, EntitySyncStatusRepository entitySyncStatusRepository) {
