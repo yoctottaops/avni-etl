@@ -53,7 +53,7 @@ commands:
     - run: |
         pwd
         cd ~/avni-infra/configure
-        make VAULT_PASSWORD_FILE=~/.vault-pass.txt app_zip_path=/Users/himeshr/IdeaProjects/avni-etl/build/libs/ make deploy-etl-<< parameters.env >>
+        VAULT_PASSWORD_FILE=~/.vault-pass.txt app_zip_path=/Users/himeshr/IdeaProjects/avni-etl/build/libs/ make deploy-etl-<< parameters.env >>
 
     - run: rm ~/.vault-pass.txt
 
