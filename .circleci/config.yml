@@ -6,7 +6,7 @@ commands:
     parameters:
       hostname:
         type: string
-        default: "ssh.staging.openchs.org"
+        default: "int-staging.avniproject.org"
       env:
         type: string
         default: "staging"
@@ -108,7 +108,7 @@ jobs:
 
     - run: mkdir -p ~/artifacts;
 
-    - run: cp ~/avni-etl/build/libs/etl-1.0.0-SNAPSHOT-plain.jar ~/artifacts/avni-etl.jar;
+    - run: cp ~/avni-etl/build/libs/etl-1.0.0-SNAPSHOT.jar ~/artifacts/avni-etl.jar;
 
     - persist_to_workspace:
         root: ~/artifacts
