@@ -25,7 +25,6 @@ import static org.avniproject.etl.repository.dynamicInsert.SqlFile.readFile;
 public class MediaTableSyncAction implements EntitySyncAction {
     private final JdbcTemplate jdbcTemplate;
     private final AvniMetadataRepository avniMetadataRepository;
-    private static final Logger log = LoggerFactory.getLogger(EtlService.class);
 
     @Autowired
     public MediaTableSyncAction(JdbcTemplate jdbcTemplate, AvniMetadataRepository metadataRepository) {
@@ -88,9 +87,6 @@ public class MediaTableSyncAction implements EntitySyncAction {
                 .replace("${fromTableName}", wrapInQuotes(fromTableName))
                 .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(lastSyncTime))
                 .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(dataSyncBoundaryTime));
-
-        log.debug("Insert sql");
-        log.debug(sql);
 
         runInOrgContext(() -> {
             jdbcTemplate.execute(sql);
