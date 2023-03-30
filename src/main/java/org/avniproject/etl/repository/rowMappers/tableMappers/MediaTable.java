@@ -15,6 +15,7 @@ public class MediaTable extends Table {
     @Override
     public List<Column> columns() {
         return new Columns()
+                .withSerialIdColumn()
                 .withCommonColumns()
                 .withColumn(new Column("address_id", Column.Type.numeric, Column.ColumnType.index))
                 .withColumn(new Column("image_url", Column.Type.text))

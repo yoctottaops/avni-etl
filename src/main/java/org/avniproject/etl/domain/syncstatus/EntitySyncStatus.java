@@ -6,7 +6,6 @@ import java.util.Date;
 
 public class EntitySyncStatus extends Model {
 
-
     public enum Status {
         Running,
         Success,

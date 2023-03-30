@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 public class ColumnMetadata extends Model {
     private final Column column;
@@ -110,10 +111,10 @@ public class ColumnMetadata extends Model {
             return getName().equals(realColumn.getName());
         }
         if (realColumn.getParentConceptUuid() != null) {
-            return equalsIgnoreNulls(realColumn.getParentConceptUuid(), getParentConceptUuid()) &&
-                    equalsIgnoreNulls(realColumn.getConceptUuid(), getConceptUuid());
+            return nullSafeEquals(realColumn.getParentConceptUuid(), getParentConceptUuid()) &&
+                    nullSafeEquals(realColumn.getConceptUuid(), getConceptUuid());
         }
-        return equalsIgnoreNulls(realColumn.getConceptUuid(), getConceptUuid());
+        return nullSafeEquals(realColumn.getConceptUuid(), getConceptUuid());
     }
 
     public List<Diff> findChanges(TableMetadata newTable, ColumnMetadata oldColumnMetadata) {
@@ -142,6 +143,10 @@ public class ColumnMetadata extends Model {
             return format("-> '%s' ->> '%s'", parentConceptUuid, conceptUuid);
         }
         return format("->> '%s'", conceptUuid);
+    }
+
+    public boolean isSyncAttributeColumn() {
+        return getColumn().isSyncAttributeColumn();
     }
 
     @Override

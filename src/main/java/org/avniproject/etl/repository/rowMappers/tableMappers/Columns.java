@@ -19,6 +19,16 @@ public class Columns {
         return this;
     }
 
+    public Columns withSerialIdColumn() {
+        columns.add(new Column("id", Column.Type.serial, Column.ColumnType.index));
+        return this;
+    }
+
+    public Columns withIdColumn() {
+        columns.add(new Column("id", Column.Type.integer, Column.ColumnType.index));
+        return this;
+    }
+
     public List<Column> build() {
         return this.columns;
     }

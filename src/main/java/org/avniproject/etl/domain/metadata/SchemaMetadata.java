@@ -5,7 +5,6 @@ import org.avniproject.etl.domain.metadata.diff.Diff;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BinaryOperator;
 
 public class SchemaMetadata {
     private List<TableMetadata> tableMetadata;
@@ -45,14 +44,6 @@ public class SchemaMetadata {
             diffs.addAll(newTable.createNew());
         }
         return diffs;
-    }
-
-    private BinaryOperator<ArrayList<Diff>> arrayListCombiner() {
-        return (diffa, diffb) -> {
-            ArrayList<Diff> diffs = new ArrayList<>(diffa);
-            diffs.addAll(diffb);
-            return diffs;
-        };
     }
 
     public void mergeWith(SchemaMetadata oldSchemaMetadata) {

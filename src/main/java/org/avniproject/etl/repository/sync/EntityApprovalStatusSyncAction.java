@@ -2,6 +2,7 @@ package org.avniproject.etl.repository.sync;
 
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.NullObject;
+import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.repository.dynamicInsert.TransactionalSyncSqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class EntityApprovalStatusSyncAction implements EntitySyncAction {
     }
 
     @Override
-    public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
+    public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata) {
         if (!this.supports(tableMetadata)) {
             return;
         }

@@ -37,6 +37,7 @@ public class AddressTable extends Table {
                 .withColumns(columns)
                 .withColumn(new Column("gps_coordinates", Column.Type.point))
                 .withColumns(idColumns)
+                .withIdColumn()
                 .withCommonColumns()
                 .build();
     }

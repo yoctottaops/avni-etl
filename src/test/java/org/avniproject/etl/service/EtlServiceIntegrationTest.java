@@ -46,7 +46,7 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
-    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldRunForOrganisationGroup() {
         etlService.run();
         assertThat(countOfRowsIn("og.goat"), equalTo(2L));

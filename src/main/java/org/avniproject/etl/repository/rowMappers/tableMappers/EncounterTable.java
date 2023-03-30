@@ -11,6 +11,7 @@ public class EncounterTable extends Table {
     @Override
     public List<Column> columns() {
         return new Columns()
+                .withIdColumn()
                 .withCommonColumns()
                 .withColumns(Arrays.asList(
                                 new Column("name", Column.Type.text),

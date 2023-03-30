@@ -15,6 +15,7 @@ public class SubjectTable extends Table {
     @Override
     public List<Column> columns() {
         return new Columns()
+                .withIdColumn()
                 .withCommonColumns()
                 .withColumns(Arrays.asList(
                         new Column("address_id", Column.Type.integer, Column.ColumnType.index),

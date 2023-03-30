@@ -74,6 +74,7 @@ public class Column {
     }
 
     public enum Type {
+        serial,
         text,
         date,
         bool,
@@ -86,6 +87,8 @@ public class Column {
 
         public String typeString() {
             switch (this) {
+                case serial:
+                    return "serial";
                 case integer:
                     return "integer";
                 case numeric:

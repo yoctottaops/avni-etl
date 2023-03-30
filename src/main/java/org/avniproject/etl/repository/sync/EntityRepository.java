@@ -1,5 +1,6 @@
 package org.avniproject.etl.repository.sync;
 
+import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,18 +19,20 @@ public class EntityRepository {
                             DuplicateRowDeleteAction duplicateRowDeleteAction,
                             AddressTableSyncAction addressTableSyncAction,
                             EntityApprovalStatusSyncAction entityApprovalStatusSyncAction,
-                            AnswerConceptSync answerConceptSync) {
+                            AnswerConceptSync answerConceptSync,
+                            MediaTableSyncAction mediaTableSyncAction) {
         entitySyncRepositories.add(transactionalTablesSyncAction);
         entitySyncRepositories.add(addressTableSyncAction);
         entitySyncRepositories.add(duplicateRowDeleteAction);
         entitySyncRepositories.add(entityApprovalStatusSyncAction);
         entitySyncRepositories.add(answerConceptSync);
+        entitySyncRepositories.add(mediaTableSyncAction);
     }
 
     @Transactional
-    public void saveEntities(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
+    public void saveEntities(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata) {
         entitySyncRepositories.forEach(entitySyncRepository -> {
-            entitySyncRepository.perform(tableMetadata, lastSyncTime, dataSyncBoundaryTime);
+            entitySyncRepository.perform(tableMetadata, lastSyncTime, dataSyncBoundaryTime, currentSchemaMetadata);
         });
     }
 }

@@ -36,16 +36,16 @@ public class SyncService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sync(Organisation organisation) {
         SchemaMetadata currentSchemaMetadata = organisation.getSchemaMetadata();
-        currentSchemaMetadata.getTableMetadata().forEach(tableMetadata -> migrateTable(tableMetadata, organisation.getSyncStatus()));
+        currentSchemaMetadata.getTableMetadata().forEach(tableMetadata -> migrateTable(tableMetadata, organisation.getSyncStatus(), currentSchemaMetadata));
     }
 
     @Transactional
-    public void migrateTable(TableMetadata tableMetadata, SchemaDataSyncStatus syncStatus) {
+    public void migrateTable(TableMetadata tableMetadata, SchemaDataSyncStatus syncStatus, SchemaMetadata currentSchemaMetadata) {
         log.info(String.format("Migrating table %s.%s", ContextHolder.getDbSchema(), tableMetadata.getName()));
         EntitySyncStatus entitySyncStatus = syncStatus.startSync(tableMetadata);
         entitySyncStatusRepository.save(entitySyncStatus);
 
-        entityRepository.saveEntities(tableMetadata, entitySyncStatus.getLastSyncTime(), ContextHolder.dataSyncBoundaryTime());
+        entityRepository.saveEntities(tableMetadata, entitySyncStatus.getLastSyncTime(), ContextHolder.dataSyncBoundaryTime(), currentSchemaMetadata);
 
         entitySyncStatus.markSuccess(ContextHolder.dataSyncBoundaryTime());
         entitySyncStatusRepository.save(entitySyncStatus);

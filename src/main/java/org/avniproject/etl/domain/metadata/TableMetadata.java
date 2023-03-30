@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.util.ObjectUtils.nullSafeEquals;
+
 public class TableMetadata extends Model {
     private String name;
     private Type type;
@@ -29,11 +31,11 @@ public class TableMetadata extends Model {
 
     public boolean matches(TableMetadata realTable) {
         if (realTable == null) return false;
-        return equalsIgnoreNulls(realTable.getType(), this.getType())
-                && equalsIgnoreNulls(realTable.getSubjectTypeUuid(), this.subjectTypeUuid)
-                && equalsIgnoreNulls(realTable.getFormUuid(), this.formUuid)
-                && equalsIgnoreNulls(realTable.getEncounterTypeUuid(), this.encounterTypeUuid)
-                && equalsIgnoreNulls(realTable.getProgramUuid(), this.programUuid);
+        return nullSafeEquals(realTable.getType(), this.getType())
+                && nullSafeEquals(realTable.getSubjectTypeUuid(), this.subjectTypeUuid)
+                && nullSafeEquals(realTable.getFormUuid(), this.formUuid)
+                && nullSafeEquals(realTable.getEncounterTypeUuid(), this.encounterTypeUuid)
+                && nullSafeEquals(realTable.getProgramUuid(), this.programUuid);
     }
 
     public List<Diff> findChanges(TableMetadata currentTable) {
@@ -75,11 +77,19 @@ public class TableMetadata extends Model {
                 .findFirst();
     }
 
+    public List<ColumnMetadata> findSyncColumns() {
+        return this.columnMetadataList.stream().filter(ColumnMetadata::isSyncAttributeColumn).collect(Collectors.toList());
+    }
+
     public List<Column> getColumns() {
         return getColumnMetadataList()
                 .stream()
                 .map(ColumnMetadata::getColumn)
                 .collect(Collectors.toList());
+    }
+
+    public List<ColumnMetadata> findColumnsMatchingConceptType(ColumnMetadata.ConceptType... conceptTypes) {
+        return this.getColumnMetadataList().stream().filter(columnMetadata -> Arrays.stream(conceptTypes).anyMatch(conceptType -> nullSafeEquals(columnMetadata.getConceptType(), conceptType))).collect(Collectors.toList());
     }
 
     public void mergeWith(TableMetadata oldTableMetadata) {

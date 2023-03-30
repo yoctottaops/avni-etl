@@ -245,4 +245,12 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         });
     }
 
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql", "/media-form-element.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void shouldPopulateMediaTable() {
+        runDataSync();
+        List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
+        assertThat(media.size(), is(1));
+    }
 }

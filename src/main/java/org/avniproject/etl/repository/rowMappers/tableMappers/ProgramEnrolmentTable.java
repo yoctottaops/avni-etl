@@ -16,6 +16,7 @@ public class ProgramEnrolmentTable extends Table {
     @Override
     public List<Column> columns() {
         return new Columns()
+                .withIdColumn()
                 .withCommonColumns()
                 .withColumns(Arrays.asList(
                         new Column("individual_id", Column.Type.integer, Column.ColumnType.index),

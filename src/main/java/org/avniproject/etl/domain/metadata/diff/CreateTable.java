@@ -31,18 +31,24 @@ public class CreateTable implements Diff {
 
         List<String> groupDbUsers = ContextHolder.getOrganisationIdentity().getGroupDbUsers();
         List<String> applicableUsers = groupDbUsers.isEmpty() ? Collections.singletonList(ContextHolder.getDbUser()) : groupDbUsers;
-        List<StringBuilder> permissions = applicableUsers.stream()
+        List<StringBuilder> tablePermissions = applicableUsers.stream()
                 .map(user -> grantPermissions(ContextHolder.getDbSchema(), user))
                 .collect(Collectors.toList());
 
-        sql.append(String.join("", permissions));
+        sql.append(String.join("", tablePermissions));
 
         return sql.toString();
     }
 
     private StringBuilder grantPermissions(String dbSchema, String user) {
         return new StringBuilder()
-                .append("grant all privileges on all tables in schema ")
+                .append(grantPermissionsToObject(dbSchema, user, "tables"))
+                .append(grantPermissionsToObject(dbSchema, user, "sequences"));
+    }
+
+    private StringBuilder grantPermissionsToObject(String dbSchema, String user, String objectName) {
+        return new StringBuilder()
+                .append("grant all privileges on all "  + objectName + " in schema ")
                 .append(dbSchema)
                 .append(" to ")
                 .append(user)
