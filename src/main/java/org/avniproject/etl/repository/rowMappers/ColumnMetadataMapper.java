@@ -11,7 +11,7 @@ public class ColumnMetadataMapper {
         if (column.get("parent_concept_name") != null) {
             return new ColumnMetadata(
                     null,
-                    column.get("parent_concept_name") + " " + column.get("concept_name"),
+                    (String) column.get("parent_concept_name") + " " + column.get("concept_name"),
                     (Integer) column.get("concept_id"),
                     ColumnMetadata.ConceptType.valueOf((String) column.get("element_type")),
                     (String) column.get("concept_uuid"),

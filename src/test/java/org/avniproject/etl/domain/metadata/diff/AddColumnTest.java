@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AddColumnTest {
 
@@ -15,5 +16,22 @@ public class AddColumnTest {
         ContextHolder.setContext(new OrganisationIdentity("dbUser", "schema"));
         AddColumn addColumn = new AddColumn("table", new Column("name", Column.Type.text));
         assertThat(addColumn.getSql(), is("alter table schema.table add column \"name\" text;"));
+    }
+
+    @Test
+    public void checkNameLengthBeforeShortening() {
+        String columnName = "Total silt requested by the family members – Number of trolleys";
+        String shortenedColumnName = "Total silt requested by the family members – Nu (1206887472)";
+        Column longColumn = new Column(columnName, Column.Type.numeric);
+        assertEquals(shortenedColumnName, longColumn.getName());
+    }
+
+    @Test
+    public void shouldAddColumnWithLargeNameAfterShortening() {
+        String columnName = "Total silt requested by the family members – Number of trolleys";
+        String shortenedColumnName = "Total silt requested by the family members – Nu (1206887472)";
+        ContextHolder.setContext(new OrganisationIdentity("dbUser", "schema"));
+        AddColumn addColumn = new AddColumn("table", new Column(columnName, Column.Type.text));
+        assertThat(addColumn.getSql(), is("alter table schema.table add column \""+shortenedColumnName+"\" text;"));
     }
 }

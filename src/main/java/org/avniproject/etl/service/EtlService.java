@@ -54,7 +54,8 @@ public class EtlService {
     }
 
     public EtlResult runForOrganisation(OrganisationIdentity organisationIdentity) {
-        log.info(String.format("Running ETL for schema %s", organisationIdentity.getSchemaName()));
+        log.info(String.format("Running ETL for schema %s with dbUser %s",
+                organisationIdentity.getSchemaName(), organisationIdentity.getDbUser()));
         ContextHolder.setContext(organisationIdentity);
 
         try {
