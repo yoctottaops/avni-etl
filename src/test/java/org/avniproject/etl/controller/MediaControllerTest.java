@@ -19,7 +19,7 @@ public class MediaControllerTest {
         when(mediaService.list("orga", 5, 0)).thenReturn(new ArrayList<>());
         MediaController mediaController = new MediaController(mediaService);
         mediaController.getMedia("orga", "orga", 5, 0);
-        verify(mediaService);
+        verify(mediaService).list("orga", 5, 0);
     }
 
 }
