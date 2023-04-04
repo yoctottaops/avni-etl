@@ -1,6 +1,7 @@
 package org.avniproject.etl.service;
 
 import org.avniproject.etl.dto.MediaDTO;
+import org.avniproject.etl.dto.ResponseDTO;
 import org.avniproject.etl.repository.MediaTableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,17 @@ public class MediaService {
     }
 
 
+    /**
+     * @param schemaName
+     * @param size
+     * @param page
+     * @return
+     */
     @Transactional
-    public List<MediaDTO> list(String schemaName,int size, int page){
-        return mediaTableRepository.findAll(schemaName, size, page);
+    public ResponseDTO list(String schemaName,int size, int page){
+        int total = mediaTableRepository.findTotalMedia(schemaName);
+        List<MediaDTO> mediaList= mediaTableRepository.findAll(schemaName, size, page);
+        return new ResponseDTO(total, page, mediaList);
     }
 
 }

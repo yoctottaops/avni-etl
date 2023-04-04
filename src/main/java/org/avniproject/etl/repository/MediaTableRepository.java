@@ -3,6 +3,7 @@ package org.avniproject.etl.repository;
 import org.avniproject.etl.config.ContextHolderUtil;
 import org.avniproject.etl.dto.MediaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -40,6 +41,7 @@ public class MediaTableRepository {
 
         String uuid = rs.getString("uuid");
         String imageUrl = rs.getString("image_url");
+        String thumbnailUrl = imageUrl;
         String subjectTypeName = rs.getString("subject_type_name");
         String programName = rs.getString("program_name");
         String encounterTypeName = rs.getString("encounter_type_name");
@@ -54,6 +56,7 @@ public class MediaTableRepository {
         return new MediaDTO(
                 uuid,
                 imageUrl,
+                thumbnailUrl,
                 subjectTypeName,
                 programName,
                 encounterTypeName,
@@ -67,4 +70,11 @@ public class MediaTableRepository {
         );
     }
 
+    public int findTotalMedia(String schemaName) throws DataAccessException {
+        String sql = "SELECT count(*) as record_count FROM " + schemaName + ".media JOIN " + schemaName + ".address ON " + schemaName + ".address.id=" + schemaName + ".media.address_id where " + schemaName + ".media.image_url is not null";
+
+        Map<String, Object> parameters = ContextHolderUtil.getParameters();
+
+        return runInOrgContext(() -> jdbcTemplate.queryForObject(sql, Integer.class), jdbcTemplate);
+    }
 }

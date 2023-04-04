@@ -3,6 +3,7 @@ package org.avniproject.etl.controller;
 import jakarta.websocket.server.PathParam;
 import org.avniproject.etl.config.ContextHolderUtil;
 import org.avniproject.etl.dto.MediaDTO;
+import org.avniproject.etl.dto.ResponseDTO;
 import org.avniproject.etl.service.MediaService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +22,10 @@ public class MediaController {
 
     @GetMapping ("/media")
     @CrossOrigin(origins = "http://localhost:3000")
-    public List<MediaDTO> getMedia(@PathParam("schemaName") String schemaName,
-                                   @PathParam("db") String db,
-                                   @PathParam("size") int size,
-                                   @PathParam("page") int page) {
+    public ResponseDTO<MediaDTO> getMedia(@PathParam("schemaName") String schemaName,
+                                          @PathParam("db") String db,
+                                          @PathParam("size") int size,
+                                          @PathParam("page") int page) {
         ContextHolderUtil.setParameters(schemaName, db);
         return mediaService.list(schemaName, size, page);
     }
