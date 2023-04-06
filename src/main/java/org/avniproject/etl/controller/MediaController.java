@@ -9,24 +9,25 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 public class MediaController {
 
     private final MediaService mediaService;
 
-    MediaController(MediaService mediaService){
+    private final ContextHolderUtil contextHolderUtil;
+
+    MediaController(MediaService mediaService, ContextHolderUtil contextHolderUtil){
         this.mediaService = mediaService;
+        this.contextHolderUtil = contextHolderUtil;
     }
 
     @GetMapping ("/media")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseDTO<MediaDTO> getMedia(@PathParam("schemaName") String schemaName,
-                                          @PathParam("db") String db,
+    public ResponseDTO<MediaDTO> getMedia(@PathParam("orgUUID") String orgUUID,
                                           @PathParam("size") int size,
                                           @PathParam("page") int page) {
-        ContextHolderUtil.setParameters(schemaName, db);
-        return mediaService.list(schemaName, size, page);
+        contextHolderUtil.setParameters(orgUUID);
+        return mediaService.list(size, page);
     }
 }

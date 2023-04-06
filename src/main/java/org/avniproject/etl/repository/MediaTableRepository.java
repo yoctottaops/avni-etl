@@ -20,17 +20,20 @@ public class MediaTableRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final ContextHolderUtil contextHolderUtil;
+
     @Autowired
-    MediaTableRepository(JdbcTemplate jdbcTemplate){
+    MediaTableRepository(JdbcTemplate jdbcTemplate, ContextHolderUtil contextHolderUtil){
         this.jdbcTemplate = jdbcTemplate;
+        this.contextHolderUtil = contextHolderUtil;
     }
 
 
-    public List<MediaDTO> findAll(String schemaName, int size, int page) {
+    public List<MediaDTO> findAll(int size, int page) {
+        String schemaName = contextHolderUtil.getSchemaName();
+        Map<String, Object> parameters = contextHolderUtil.getParameters();
 
         String sql = "SELECT " + schemaName + ".media.*, row_to_json(" + schemaName + ".address.*) as address FROM " + schemaName + ".media JOIN " + schemaName + ".address ON " + schemaName + ".address.id=" + schemaName + ".media.address_id where " + schemaName + ".media.image_url is not null LIMIT " + size + " OFFSET " + size * page;
-
-        Map<String, Object> parameters = ContextHolderUtil.getParameters();
 
         return runInOrgContext(
                 () -> new NamedParameterJdbcTemplate(jdbcTemplate)
@@ -70,10 +73,10 @@ public class MediaTableRepository {
         );
     }
 
-    public int findTotalMedia(String schemaName) throws DataAccessException {
-        String sql = "SELECT count(*) as record_count FROM " + schemaName + ".media JOIN " + schemaName + ".address ON " + schemaName + ".address.id=" + schemaName + ".media.address_id where " + schemaName + ".media.image_url is not null";
+    public int findTotalMedia() throws DataAccessException {
+        String schemaName = contextHolderUtil.getSchemaName();
 
-        Map<String, Object> parameters = ContextHolderUtil.getParameters();
+        String sql = "SELECT count(*) as record_count FROM " + schemaName + ".media JOIN " + schemaName + ".address ON " + schemaName + ".address.id=" + schemaName + ".media.address_id where " + schemaName + ".media.image_url is not null";
 
         return runInOrgContext(() -> jdbcTemplate.queryForObject(sql, Integer.class), jdbcTemplate);
     }

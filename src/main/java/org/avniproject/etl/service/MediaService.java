@@ -21,15 +21,14 @@ public class MediaService {
 
 
     /**
-     * @param schemaName
      * @param size
      * @param page
      * @return
      */
     @Transactional
-    public ResponseDTO list(String schemaName,int size, int page){
-        int total = mediaTableRepository.findTotalMedia(schemaName);
-        List<MediaDTO> mediaList= mediaTableRepository.findAll(schemaName, size, page);
+    public ResponseDTO list(int size, int page){
+        int total = mediaTableRepository.findTotalMedia();
+        List<MediaDTO> mediaList= mediaTableRepository.findAll(size, page);
         return new ResponseDTO(total, page, mediaList);
     }
 
