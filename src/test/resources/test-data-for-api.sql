@@ -1,0 +1,15 @@
+select create_db_user('orga', 'password');
+select create_implementation_schema('orga', 'orga');
+
+INSERT INTO "public"."organisation" ("id", "name", "db_user", "uuid", "parent_organisation_id", "is_voided", "media_directory", "username_suffix", "account_id", "schema_name", "has_analytics_db") VALUES
+(999, 'TestOrg', 'orga', '4640a909-dfae-4ec3-8fbb-1b08f35c4995', NULL, 'f', 'orga', NULL, 1, 'orga', 't');
+
+INSERT INTO orga.media ("id", "uuid", "is_voided", "created_by_id", "last_modified_by_id", "created_date_time", "last_modified_date_time", "address_id", "image_url", "sync_parameter_key1", "sync_parameter_value1", "sync_parameter_key2", "sync_parameter_value2", "subject_type_name", "encounter_type_name", "program_name", "concept_name", "entity_id") VALUES
+(1, '7824b24f-cd2b-4b43-bad7-89e6c8d2d5e2', 'f', 362, 362, '2022-03-02 18:36:03.576+05:30', '2022-03-02 18:36:03.576+05:30', 13834, NULL, NULL, NULL, NULL, NULL, 'Work Order', 'Work order daily Recording - Machine', NULL, 'Image 2', 138082),
+(2, 'c400b118-ba66-46bb-94c6-6789fc0a0860', 'f', 362, 362, '2022-03-02 13:56:47.804+05:30', '2022-03-02 13:56:47.804+05:30', 13834, NULL, NULL, NULL, NULL, NULL, 'Work Order', 'Work order daily Recording - Machine', NULL, 'Image 2', 138072),
+(3, 'c6c07fce-de0f-416a-9af5-aa839788226e', 'f', 362, 362, '2022-03-02 13:56:53.744+05:30', '2022-03-02 13:56:53.744+05:30', 13834, 'https://staging-user-media.s3.ap-south-1.amazonaws.com/rwb/view%3Fusp%3Dsharing', NULL, NULL, NULL, NULL, 'Work Order', 'Work order daily Recording - Machine', NULL, 'Image 2', 138073),
+(4, '624f1b97-0e0e-42cf-8020-0cb7899fb8cf', 'f', 362, 362, '2022-03-02 13:56:58.356+05:30', '2022-03-02 13:56:58.356+05:30', 13834, 'https://staging-user-media.s3.ap-south-1.amazonaws.com/rwb/view%3Fusp%3Dsharing', NULL, NULL, NULL, NULL, 'Work Order', 'Work order daily Recording - Machine', NULL, 'Image 2', 138074),
+(5, 'ecf861ba-38f2-4260-bd20-0cc547d724eb', 'f', 362, 362, '2022-03-02 13:57:01.937+05:30', '2022-03-02 13:57:01.937+05:30', 13834, NULL, NULL, NULL, NULL, NULL, 'Work Order', 'Work order daily Recording - Machine', NULL, 'Image 2', 138075);
+
+INSERT INTO orga.address ("State", "District", "Taluka", "Village", "Dam", "gps_coordinates", "State id", "District id", "Taluka id", "Village id", "Dam id", "id", "uuid", "is_voided", "created_by_id", "last_modified_by_id", "created_date_time", "last_modified_date_time", "Estimated quantity of Silt", "GPS Coordinates of the site, Latitude", "Name of Gram Panchayat", "Estimated population", "NGO", "Concerned Govt Department", "Assumptions/ Calculation to estimating the silt", "Estimated number of households to be benefited", "GPS Coordinates of the site, Longitude", "Year of construction of the water structure", "Responsible coordinator names", "Type of the water structure", "Total area of the site") VALUES
+    ('Maharashtra', 'Bid', 'Ambajogai', 'Ghatnandur', 'Ghatnandur', NULL, 13823, 13831, 13832, 13833, 13834, 13834, 'dc8885f5-93ff-49c0-bfac-2963cb01e28a', 'f', 1, 1, '2021-03-26 16:53:07.741+05:30', '2021-03-26 16:53:07.755+05:30', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
