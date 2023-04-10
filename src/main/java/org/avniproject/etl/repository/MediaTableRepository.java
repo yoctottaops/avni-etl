@@ -1,5 +1,6 @@
 package org.avniproject.etl.repository;
 
+import org.avniproject.etl.config.AmazonClientService;
 import org.avniproject.etl.config.ContextHolderUtil;
 import org.avniproject.etl.dto.MediaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -22,12 +24,14 @@ public class MediaTableRepository {
 
     private final ContextHolderUtil contextHolderUtil;
 
+    private final AmazonClientService amazonClientService;
+
     @Autowired
-    MediaTableRepository(JdbcTemplate jdbcTemplate, ContextHolderUtil contextHolderUtil){
+    MediaTableRepository(JdbcTemplate jdbcTemplate, ContextHolderUtil contextHolderUtil, AmazonClientService amazonClientService){
         this.jdbcTemplate = jdbcTemplate;
         this.contextHolderUtil = contextHolderUtil;
+        this.amazonClientService = amazonClientService;
     }
-
 
     public List<MediaDTO> findAll(int size, int page) {
         String schemaName = contextHolderUtil.getSchemaName();
@@ -44,7 +48,17 @@ public class MediaTableRepository {
 
         String uuid = rs.getString("uuid");
         String imageUrl = rs.getString("image_url");
-        String thumbnailUrl = imageUrl;
+        URL signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
+
+        String[] parts = imageUrl.split("/", 4);
+        String bucketName = parts[2];
+        String[] objectKeyParts = parts[3].split("/", 2);
+        String orgName = objectKeyParts[0];
+        String objectKey = objectKeyParts[1];
+
+        String thumbnailUrl = "https://" + bucketName + "/" + orgName + "/thumbnails/" + objectKey;
+        URL signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
+
         String subjectTypeName = rs.getString("subject_type_name");
         String programName = rs.getString("program_name");
         String encounterTypeName = rs.getString("encounter_type_name");
@@ -59,7 +73,9 @@ public class MediaTableRepository {
         return new MediaDTO(
                 uuid,
                 imageUrl,
+                signedImageUrl,
                 thumbnailUrl,
+                signedThumbnailUrl,
                 subjectTypeName,
                 programName,
                 encounterTypeName,
