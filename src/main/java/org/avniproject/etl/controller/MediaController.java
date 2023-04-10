@@ -24,10 +24,10 @@ public class MediaController {
 
     @GetMapping ("/media")
     @CrossOrigin(origins = "http://localhost:3000,https://staging.avniproject.org")
-    public ResponseDTO<MediaDTO> getMedia(@PathParam("orgUUID") String orgUUID,
+    public ResponseDTO<MediaDTO> getMedia(@PathParam("orgID") String orgID,
                                           @PathParam("size") int size,
                                           @PathParam("page") int page) {
-        contextHolderUtil.setParameters(orgUUID);
+        contextHolderUtil.setParameters(orgID);
         return mediaService.list(size, page);
     }
 }

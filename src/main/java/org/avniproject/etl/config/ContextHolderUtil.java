@@ -26,8 +26,8 @@ public class ContextHolderUtil {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void setParameters(String orgUUID) {
-        String sql = "SELECT * FROM organisation WHERE uuid = '"+ orgUUID +"'";
+    public void setParameters(String orgID) {
+        String sql = "SELECT * FROM organisation WHERE id = '"+ orgID +"'";
         OrganisationIdentity org =  jdbcTemplate.queryForObject(sql, (rs, rowNum) -> setOrganisation(rs));
 
         ContextHolder.setContext(org);
