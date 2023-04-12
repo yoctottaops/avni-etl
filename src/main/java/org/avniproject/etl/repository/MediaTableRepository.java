@@ -48,15 +48,23 @@ public class MediaTableRepository {
 
         String uuid = rs.getString("uuid");
         String imageUrl = rs.getString("image_url");
+
         URL signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
 
-        String[] parts = imageUrl.split("/", 4);
+        String[] parts = imageUrl.split("/", 4); // split the URL into 4 parts at "/"
         String bucketName = parts[2];
-        String[] objectKeyParts = parts[3].split("/", 2);
-        String orgName = objectKeyParts[0];
-        String objectKey = objectKeyParts[1];
+        String objectKey = parts[3];
 
-        String thumbnailUrl = "https://" + bucketName + "/" + orgName + "/thumbnails/" + objectKey;
+        int slashIndex = objectKey.lastIndexOf('/');
+
+        String folderPath = "";
+
+        if (slashIndex != -1) {
+            folderPath = objectKey.substring(0, slashIndex + 1); // include the final slash
+            objectKey = objectKey.substring(slashIndex + 1);
+        }
+
+        String thumbnailUrl = "https://" + bucketName + "/" + folderPath + "thumbnails/" + objectKey;
         URL signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
 
         String subjectTypeName = rs.getString("subject_type_name");
