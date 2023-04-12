@@ -5,7 +5,6 @@ import org.avniproject.etl.config.ContextHolderUtil;
 import org.avniproject.etl.dto.MediaDTO;
 import org.avniproject.etl.dto.ResponseDTO;
 import org.avniproject.etl.service.MediaService;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,10 +22,9 @@ public class MediaController {
     }
 
     @GetMapping ("/media")
-    @CrossOrigin(origins = "http://localhost:3000,https://staging.avniproject.org,http://localhost:6010")
-    public ResponseDTO<MediaDTO> getMedia(@PathParam("orgID") Long orgID,
-                                          @PathParam("size") int size,
-                                          @PathParam("page") int page) {
+    public ResponseDTO<MediaDTO> list(@PathParam("orgID") Long orgID,
+                                      @PathParam("size") int size,
+                                      @PathParam("page") int page) {
         contextHolderUtil.setParameters(orgID);
         return mediaService.list(size, page);
     }
