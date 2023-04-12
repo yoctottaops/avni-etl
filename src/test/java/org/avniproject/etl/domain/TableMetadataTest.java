@@ -111,4 +111,16 @@ public class TableMetadataTest {
         List<Diff> changes = newTable.findChanges(oldTable);
         assertEquals(1, changes.size());
     }
+
+    @Test
+    void findBytesLength() {
+        String errorColumnName = "Total silt requested by the family members – Number of trolle";
+        String columnName = "Total silt requested by the family members – Number of trolleys";
+        String expected = "Total silt requested by the family members – Nu (1206887472)";
+        assertEquals(65, columnName.getBytes().length);
+        assertEquals(63, errorColumnName.getBytes().length);
+        assertEquals(62, expected.getBytes().length);
+        Column column = new Column(columnName, Column.Type.numeric);
+        assertEquals(expected, column.getName());
+    }
 }
