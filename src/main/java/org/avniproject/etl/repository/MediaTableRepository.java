@@ -51,7 +51,7 @@ public class MediaTableRepository {
 
         URL signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
 
-        String[] parts = imageUrl.split("/", 4); // split the URL into 4 parts at "/"
+        String[] parts = imageUrl.split("/", 4);
         String bucketName = parts[2];
         String objectKey = parts[3];
 
@@ -60,7 +60,7 @@ public class MediaTableRepository {
         String folderPath = "";
 
         if (slashIndex != -1) {
-            folderPath = objectKey.substring(0, slashIndex + 1); // include the final slash
+            folderPath = objectKey.substring(0, slashIndex + 1);
             objectKey = objectKey.substring(slashIndex + 1);
         }
 
