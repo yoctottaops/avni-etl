@@ -2,6 +2,7 @@ package org.avniproject.etl.repository.service;
 
 import org.avniproject.etl.config.AmazonClientService;
 import org.avniproject.etl.dto.MediaDTO;
+import org.avniproject.etl.util.GenericUtil;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -13,8 +14,11 @@ public class MediaTableRepositoryService {
 
     private final AmazonClientService amazonClientService;
 
-    public MediaTableRepositoryService(AmazonClientService amazonClientService) {
+    private final GenericUtil genericUtil;
+
+    public MediaTableRepositoryService(AmazonClientService amazonClientService, GenericUtil genericUtil) {
         this.amazonClientService = amazonClientService;
+        this.genericUtil = genericUtil;
     }
 
 
@@ -24,7 +28,7 @@ public class MediaTableRepositoryService {
             String imageUrl = rs.getString("image_url");
             URL signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
 
-            String thumbnailUrl = getThumbnailUrl(imageUrl);
+            String thumbnailUrl = genericUtil.getThumbnailUrl(imageUrl);
             URL signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
 
             return new MediaDTO(
@@ -51,21 +55,4 @@ public class MediaTableRepositoryService {
     }
 
 
-    public String getThumbnailUrl (String imageUrl) {
-        String[] parts = imageUrl.split("/", 4);
-        String bucketName = parts[2];
-        String objectKey = parts[3];
-
-        int slashIndex = objectKey.lastIndexOf('/');
-
-        String folderPath = "";
-
-        if (slashIndex != -1) {
-            folderPath = objectKey.substring(0, slashIndex + 1);
-            objectKey = objectKey.substring(slashIndex + 1);
-        }
-
-        String thumbnailUrl = "https://" + bucketName + "/" + folderPath + "thumbnails/" + objectKey;
-        return thumbnailUrl;
-    }
 }

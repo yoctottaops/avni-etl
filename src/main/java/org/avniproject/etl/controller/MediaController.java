@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class MediaController {
 
     private final MediaService mediaService;
+    private final ContextHolderUtil contextHolderUtil;
 
 
-    MediaController(MediaService mediaService){
+    MediaController(MediaService mediaService, ContextHolderUtil contextHolderUtil){
         this.mediaService = mediaService;
+        this.contextHolderUtil = contextHolderUtil;
     }
 
     @GetMapping ("/media")
@@ -25,7 +27,7 @@ public class MediaController {
     public ResponseDTO<MediaDTO> getMedia(@PathParam("orgID") Long orgID,
                                           @PathParam("size") int size,
                                           @PathParam("page") int page) {
-        ContextHolderUtil.setParameters(orgID);
+        contextHolderUtil.setParameters(orgID);
         return mediaService.list(size, page);
     }
 }

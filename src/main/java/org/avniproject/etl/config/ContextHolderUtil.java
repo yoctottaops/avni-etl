@@ -17,16 +17,16 @@ import static java.lang.String.format;
 @Component
 public class ContextHolderUtil {
 
-    private static JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     static Map<String, Object> parameters = new HashMap<>();
 
     @Autowired
     public ContextHolderUtil(JdbcTemplate jdbcTemplate) {
-        ContextHolderUtil.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static void setParameters(Long orgID) {
+    public void setParameters(Long orgID) {
         String sql = format("SELECT * FROM organisation WHERE id = %s", orgID);
         OrganisationIdentity org =  jdbcTemplate.queryForObject(sql, (rs, rowNum) -> setOrganisation(rs));
 
