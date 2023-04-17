@@ -31,6 +31,7 @@ public class MediaControllerTest {
         MediaTableRepositoryService mediaTableRepositoryService = mock(MediaTableRepositoryService.class);
         when(mediaTableRepositoryService.getThumbnailUrl("https://s3.ap-south-1.amazonaws.com/staging-user-media/mt/e70a306c-27c4-43cf-9aaa-37c8d3153dca.jpeg"))
                 .thenReturn("https://s3.ap-south-1.amazonaws.com/staging-user-media/mt/thumbnails/e70a306c-27c4-43cf-9aaa-37c8d3153dca.jpeg");
+        verify(mediaTableRepositoryService).getThumbnailUrl("https://s3.ap-south-1.amazonaws.com/staging-user-media/mt/e70a306c-27c4-43cf-9aaa-37c8d3153dca.jpeg");
     }
 
 }
