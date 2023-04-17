@@ -2,12 +2,16 @@ package org.avniproject.etl.domain.metadata.diff;
 
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.metadata.Column;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.*;
 
 public class AddColumn implements Diff {
     private final String tableName;
     private final Column column;
+    private static final Logger log = LoggerFactory.getLogger(AddColumn.class);
+
 
     public AddColumn(String tableName, Column column) {
         this.tableName = tableName;
@@ -16,7 +20,7 @@ public class AddColumn implements Diff {
 
     @Override
     public String getSql() {
-        return new StringBuffer()
+        String alter_table_add_column = new StringBuffer()
                 .append("alter table ")
                 .append(ContextHolder.getDbSchema())
                 .append(DOT)
@@ -28,5 +32,7 @@ public class AddColumn implements Diff {
                 .append(SPACE)
                 .append(column.getType().typeString())
                 .append(END_STATEMENT).toString();
+        log.debug("Altering table to add column:" +  alter_table_add_column);
+        return alter_table_add_column;
     }
 }
