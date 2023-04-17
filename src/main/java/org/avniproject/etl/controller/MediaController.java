@@ -15,19 +15,17 @@ public class MediaController {
 
     private final MediaService mediaService;
 
-    private final ContextHolderUtil contextHolderUtil;
 
-    MediaController(MediaService mediaService, ContextHolderUtil contextHolderUtil){
+    MediaController(MediaService mediaService){
         this.mediaService = mediaService;
-        this.contextHolderUtil = contextHolderUtil;
     }
 
     @GetMapping ("/media")
     @CrossOrigin(origins = "http://localhost:3000,https://staging.avniproject.org")
-    public ResponseDTO<MediaDTO> getMedia(@PathParam("orgID") String orgID,
+    public ResponseDTO<MediaDTO> getMedia(@PathParam("orgID") Long orgID,
                                           @PathParam("size") int size,
                                           @PathParam("page") int page) {
-        contextHolderUtil.setParameters(orgID);
+        ContextHolderUtil.setParameters(orgID);
         return mediaService.list(size, page);
     }
 }

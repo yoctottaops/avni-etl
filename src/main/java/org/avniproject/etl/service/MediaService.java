@@ -1,13 +1,11 @@
 package org.avniproject.etl.service;
 
-import org.avniproject.etl.dto.MediaDTO;
 import org.avniproject.etl.dto.ResponseDTO;
 import org.avniproject.etl.repository.MediaTableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 public class MediaService {
@@ -19,7 +17,6 @@ public class MediaService {
         this.mediaTableRepository = mediaTableRepository;
     }
 
-
     /**
      * @param size
      * @param page
@@ -28,8 +25,7 @@ public class MediaService {
     @Transactional
     public ResponseDTO list(int size, int page){
         int total = mediaTableRepository.findTotalMedia();
-        List<MediaDTO> mediaList= mediaTableRepository.findAll(size, page);
-        return new ResponseDTO(total, page, mediaList);
+        return new ResponseDTO(total, page, mediaTableRepository.findAll(size, page));
     }
 
 }

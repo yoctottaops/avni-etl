@@ -11,23 +11,23 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
+import static java.lang.String.format;
+
 
 @Component
 public class ContextHolderUtil {
 
+    private static JdbcTemplate jdbcTemplate;
 
-    private final JdbcTemplate jdbcTemplate;
-
-    Map<String, Object> parameters = new HashMap<>(1);
+    static Map<String, Object> parameters = new HashMap<>();
 
     @Autowired
     public ContextHolderUtil(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        ContextHolderUtil.jdbcTemplate = jdbcTemplate;
     }
 
-    public void setParameters(String orgID) {
-        String sql = "SELECT * FROM organisation WHERE id = '"+ orgID +"'";
+    public static void setParameters(Long orgID) {
+        String sql = format("SELECT * FROM organisation WHERE id = %s", orgID);
         OrganisationIdentity org =  jdbcTemplate.queryForObject(sql, (rs, rowNum) -> setOrganisation(rs));
 
         ContextHolder.setContext(org);
@@ -35,15 +35,11 @@ public class ContextHolderUtil {
         parameters.put("schema", ContextHolder.getDbSchema());
     }
 
-    public Map<String, Object> getParameters() {
-        return parameters;
-    }
-
-    public String getSchemaName() {
+    public static String getSchemaName() {
         return String.valueOf(parameters.get("schema"));
     }
 
-    private OrganisationIdentity setOrganisation(ResultSet rs)  throws SQLException{
+    private static OrganisationIdentity setOrganisation(ResultSet rs)  throws SQLException{
         return new OrganisationIdentity(rs.getString("schema_name"), rs.getString("db_user"));
     }
 }
