@@ -2,7 +2,7 @@ package org.avniproject.etl.repository.service;
 
 import org.avniproject.etl.config.AmazonClientService;
 import org.avniproject.etl.dto.MediaDTO;
-import org.avniproject.etl.util.GenericUtil;
+import org.avniproject.etl.util.Utils;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -14,11 +14,11 @@ public class MediaTableRepositoryService {
 
     private final AmazonClientService amazonClientService;
 
-    private final GenericUtil genericUtil;
+    private final Utils utils;
 
-    public MediaTableRepositoryService(AmazonClientService amazonClientService, GenericUtil genericUtil) {
+    public MediaTableRepositoryService(AmazonClientService amazonClientService, Utils utils) {
         this.amazonClientService = amazonClientService;
-        this.genericUtil = genericUtil;
+        this.utils = utils;
     }
 
 
@@ -28,7 +28,7 @@ public class MediaTableRepositoryService {
             String imageUrl = rs.getString("image_url");
             URL signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
 
-            String thumbnailUrl = genericUtil.getThumbnailUrl(imageUrl);
+            String thumbnailUrl = utils.getThumbnailUrl(imageUrl);
             URL signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
 
             return new MediaDTO(

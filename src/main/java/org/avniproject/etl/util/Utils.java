@@ -3,9 +3,9 @@ package org.avniproject.etl.util;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GenericUtil {
+public class Utils {
 
-    public String getThumbnailUrl (String imageUrl) {
+    public static String getThumbnailUrl (String imageUrl) {
         String[] parts = imageUrl.split("/", 4);
         String bucketName = parts[2];
         String objectKey = parts[3];
