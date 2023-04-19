@@ -23,7 +23,7 @@ public class MediaController {
     }
 
     @GetMapping ("/media")
-    @CrossOrigin(origins = "http://localhost:3000,https://staging.avniproject.org")
+    @CrossOrigin(origins = "http://localhost:3000,https://staging.avniproject.org,http://localhost:6010")
     public ResponseDTO<MediaDTO> getMedia(@PathParam("orgID") Long orgID,
                                           @PathParam("size") int size,
                                           @PathParam("page") int page) {
