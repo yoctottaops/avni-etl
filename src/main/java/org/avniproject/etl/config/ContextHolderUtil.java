@@ -2,6 +2,8 @@ package org.avniproject.etl.config;
 
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
+import org.avniproject.etl.security.UserContext;
+import org.avniproject.etl.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -21,9 +23,12 @@ public class ContextHolderUtil {
 
     static Map<String, Object> parameters = new HashMap<>();
 
+    private final AuthService authService;
+
     @Autowired
-    public ContextHolderUtil(JdbcTemplate jdbcTemplate) {
+    public ContextHolderUtil(JdbcTemplate jdbcTemplate, AuthService authService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.authService = authService;
     }
 
     public void setParameters(Long orgID) {
@@ -33,6 +38,12 @@ public class ContextHolderUtil {
         ContextHolder.setContext(org);
 
         parameters.put("schema", ContextHolder.getDbSchema());
+    }
+
+    public void setUser(String derivedAuthToken, String organisationUUID) {
+        IdpType idpType = IdpType.cognito;
+        UserContext userContext =  authService.authenticateByToken(derivedAuthToken, organisationUUID);
+        System.out.println("User name " + userContext.getUser().getUsername());
     }
 
     public static String getSchemaName() {
