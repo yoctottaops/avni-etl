@@ -49,6 +49,7 @@ public abstract class BaseIAMService implements IAMAuthService {
 
         String username = getValueInToken(jwt, getUsernameField());
         String userUUID = getValueInToken(jwt, getUserUuidField());
+
         return Strings.isNullOrEmpty(userUUID)
                 ? userRepository.findByUsername(username)
                 : userRepository.findByUuid(userUUID);

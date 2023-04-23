@@ -11,16 +11,8 @@ public class UserContext {
     private Collection<String> roles = new HashSet<>();
     private Organisation organisation;
     private User user;
-    private String organisationUUID;
     private String authToken;
 
-    public String getOrganisationUUID() {
-        return organisationUUID;
-    }
-
-    public void setOrganisationUUID(String organisationUUID) {
-        this.organisationUUID = organisationUUID;
-    }
 
     public User getUser() {
         return user;
@@ -31,30 +23,9 @@ public class UserContext {
         this.addRolesToContext();
     }
 
-    public String getUserName() {
-        User user = this.getUser();
-        return user == null ? null : user.getUsername();
-    }
-
     private void addRolesToContext() {
         String[] roles = this.user.getRoles();
         Arrays.stream(roles).forEach(this::addRole);
-    }
-
-    public Collection<String> getRoles() {
-        return roles;
-    }
-
-    public UserContext addUserRole() {
-        return addRole(User.USER);
-    }
-
-    public UserContext addOrganisationAdminRole() {
-        return addRole(User.ORGANISATION_ADMIN);
-    }
-
-    public UserContext addAdminRole() {
-        return addRole(User.ADMIN);
     }
 
     public UserContext addRole(String role) {
@@ -70,22 +41,6 @@ public class UserContext {
         this.organisation = organisation;
     }
 
-    private Organisation nullSafeGetOrganisation() {
-//        return organisation == null ? new Organisation() : organisation;
-        return organisation;
-    }
-
-    public String getOrganisationName() {
-        return "sdasdasd";
-    }
-
-    public Long getOrganisationId() {
-        return 123L;
-    }
-
-    public String getMediaDirectory() {
-        return "sdasdasdas";
-    }
 
     public String getAuthToken() {
         return authToken;

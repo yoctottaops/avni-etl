@@ -23,15 +23,13 @@ public class MediaController {
     }
 
     @GetMapping ("/media")
-    public ResponseDTO<MediaDTO> list(HttpServletRequest request, @PathParam("orgID") Long orgID,
+    public ResponseDTO<MediaDTO> list(HttpServletRequest request,
                                       @PathParam("size") int size,
                                       @PathParam("page") int page)
     {
 
         String token = request.getHeader("AUTH-TOKEN");
-        System.out.println("ATUH TOKE IN CONTROLLER __" + token );
-        contextHolderUtil.setParameters(orgID);
-        contextHolderUtil.setUser(token, "organisationUUIDorganisationUUID");
+        contextHolderUtil.setUser(token);
         return mediaService.list(size, page);
     }
 }

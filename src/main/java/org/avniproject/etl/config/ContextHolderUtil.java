@@ -40,10 +40,9 @@ public class ContextHolderUtil {
         parameters.put("schema", ContextHolder.getDbSchema());
     }
 
-    public void setUser(String derivedAuthToken, String organisationUUID) {
-        IdpType idpType = IdpType.cognito;
-        UserContext userContext =  authService.authenticateByToken(derivedAuthToken, organisationUUID);
-        System.out.println("User name " + userContext.getUser().getUsername());
+    public void setUser(String derivedAuthToken) {
+        UserContext userContext =  authService.authenticateByToken(derivedAuthToken);
+        setParameters(userContext.getUser().getOrganisationId());
     }
 
     public static String getSchemaName() {
