@@ -22,3 +22,6 @@ open-test-results:
 	open build/reports/tests/test/index.html
 
 start: boot_run
+
+debug:
+	./gradlew bootRun -Dagentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
