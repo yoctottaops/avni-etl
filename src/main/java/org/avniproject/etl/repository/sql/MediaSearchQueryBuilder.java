@@ -11,8 +11,8 @@ import java.util.Map;
 import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 
 public class MediaSearchQueryBuilder {
-    private ST template;
-    private Map<String, Object> parameters = new HashMap<>();
+    private final ST template;
+    private final Map<String, Object> parameters = new HashMap<>();
 
     public MediaSearchQueryBuilder() {
         this.template = new ST(readFile("/sql/api/media.sql"));

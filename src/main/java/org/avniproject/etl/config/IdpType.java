@@ -4,5 +4,5 @@ public enum IdpType {
     none,
     keycloak,
     cognito,
-    both;
+    both
 }

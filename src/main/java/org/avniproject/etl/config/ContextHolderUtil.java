@@ -19,7 +19,7 @@ import static java.lang.String.format;
 @Component
 public class ContextHolderUtil {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     static Map<String, Object> parameters = new HashMap<>();
 

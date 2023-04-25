@@ -13,11 +13,8 @@ import java.sql.SQLException;
 public class MediaTableRepositoryService {
     private final AmazonClientService amazonClientService;
 
-    private final Utils utils;
-
-    public MediaTableRepositoryService(AmazonClientService amazonClientService, Utils utils) {
+    public MediaTableRepositoryService(AmazonClientService amazonClientService) {
         this.amazonClientService = amazonClientService;
-        this.utils = utils;
     }
 
     public MediaDTO setMediaDto(ResultSet rs) {
@@ -25,7 +22,7 @@ public class MediaTableRepositoryService {
             String imageUrl = rs.getString("image_url");
             URL signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
 
-            String thumbnailUrl = utils.getThumbnailUrl(imageUrl);
+            String thumbnailUrl = Utils.getThumbnailUrl(imageUrl);
             URL signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
 
             return new MediaDTO(

@@ -7,9 +7,9 @@ public class User {
     public static final String USER = "Somthing";
     public static final String ORGANISATION_ADMIN = "sdasdasd";
     public static final String ADMIN = "asdasdasd";
-    private String userName;
-    private String uuid;
-    private Long organisationId;
+    private final String userName;
+    private final String uuid;
+    private final Long organisationId;
 
     public User(String userName, String uuid, Long organisationId) {
         this.userName = userName;

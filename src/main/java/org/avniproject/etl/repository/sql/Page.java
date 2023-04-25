@@ -1,8 +1,8 @@
 package org.avniproject.etl.repository.sql;
 
 public class Page {
-    private int page;
-    private int size;
+    private final int page;
+    private final int size;
 
     public Page(int page, int size) {
         this.page = page;
