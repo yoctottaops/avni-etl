@@ -25,22 +25,10 @@ public class MediaTableRepository {
 
     private final MediaTableRepositoryService mediaTableRepositoryService;
 
-
     @Autowired
     MediaTableRepository(JdbcTemplate jdbcTemplate, MediaTableRepositoryService mediaTableRepositoryService){
         this.jdbcTemplate = jdbcTemplate;
         this.mediaTableRepositoryService = mediaTableRepositoryService;
-    }
-
-    public int findTotalMedia() throws DataAccessException {
-        String schemaName = ContextHolderUtil.getSchemaName();
-
-        String sql = format("SELECT count(*) as record_count " +
-                "FROM %s .media " +
-                "JOIN %s .address ON %s .address.id= %s .media.address_id " +
-                "where %s .media.image_url is not null",
-                schemaName, schemaName, schemaName, schemaName, schemaName);
-        return runInOrgContext(() -> jdbcTemplate.queryForObject(sql, Integer.class), jdbcTemplate);
     }
 
     public List<MediaDTO> search(MediaSearchRequest mediaSearchRequest, Page page) {

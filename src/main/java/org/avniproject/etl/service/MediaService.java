@@ -20,7 +20,6 @@ public class MediaService {
 
     @Transactional (readOnly = true)
     public ResponseDTO search(MediaSearchRequest mediaSearchRequest, Page page) {
-        int total = mediaTableRepository.findTotalMedia();
-        return new ResponseDTO(total, page, mediaTableRepository.search(mediaSearchRequest, page));
+        return new ResponseDTO(page, mediaTableRepository.search(mediaSearchRequest, page));
     }
 }
