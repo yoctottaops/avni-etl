@@ -34,9 +34,7 @@ public class MediaController {
     public ResponseDTO<MediaDTO> list(HttpServletRequest request,
                                       @PathParam("size") int size,
                                       @PathParam("page") int page) {
-        String token = request.getHeader("AUTH-TOKEN");
-        contextHolderUtil.setUser(token);
-        return mediaService.list(new Page(page, size));
+        return search(request, new MediaSearchRequest(), size, page);
     }
 
     @PostMapping("/media/search")

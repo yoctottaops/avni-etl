@@ -32,23 +32,6 @@ public class MediaTableRepository {
         this.mediaTableRepositoryService = mediaTableRepositoryService;
     }
 
-    public List<MediaDTO> findAll(Page page) {
-        String schemaName = ContextHolderUtil.getSchemaName();
-
-        String sql = format("SELECT %s .media.*, row_to_json(%s .address.*) as address " +
-                "FROM %s .media " +
-                "JOIN %s .address ON %s .address.id = %s .media.address_id " +
-                "where %s .media.image_url is not null " +
-                "ORDER BY created_date_time Desc LIMIT %s OFFSET %s",
-                schemaName, schemaName, schemaName, schemaName, schemaName, schemaName, schemaName, page.limit(), page.offset());
-
-
-        return runInOrgContext(
-                () -> new NamedParameterJdbcTemplate(jdbcTemplate)
-                .query(sql, (rs, rowNum) -> mediaTableRepositoryService.setMediaDto(rs)), jdbcTemplate);
-    }
-
-
     public int findTotalMedia() throws DataAccessException {
         String schemaName = ContextHolderUtil.getSchemaName();
 

@@ -42,7 +42,7 @@ public class MediaSearchQueryBuilderTest {
 
         Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
 
-        assertThat("Query should have filter condition", query.sql(), containsString("and media.subject_type_name in :subjectTypeNames"));
+        assertThat("Query should have filter condition", query.sql(), containsString("and media.subject_type_name in (:subjectTypeNames)"));
         assertThat("Query should have not have missing filter conditions", query.sql(), not(containsString(":programNames")));
 
         assertThat("Query condition should contain SubjectTypeName parameter", query.parameters(), hasKey("subjectTypeNames"));
@@ -56,12 +56,12 @@ public class MediaSearchQueryBuilderTest {
 
         mediaSearchRequest.setProgramNames(Arrays.asList("new Program"));
         Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
-        assertThat("Query should have filter condition", query.sql(), containsString("and media.program_name in :programNames"));
+        assertThat("Query should have filter condition", query.sql(), containsString("and media.program_name in (:programNames)"));
         assertThat("Query condition should not contain parameter", query.parameters(), hasKey("programNames"));
 
         mediaSearchRequest.setProgramNames(Collections.emptyList());
         query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
-        assertThat("Query should not have filter condition for empty list", query.sql(), not(containsString("and media.program_name in :programNames")));
+        assertThat("Query should not have filter condition for empty list", query.sql(), not(containsString("and media.program_name in (:programNames)")));
         assertThat("Query condition should not contain parameter for empty list", query.parameters(), not(hasKey("programNames")));
     }
 }
