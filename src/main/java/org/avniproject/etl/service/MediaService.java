@@ -1,11 +1,12 @@
 package org.avniproject.etl.service;
 
+import org.avniproject.etl.dto.MediaSearchRequest;
 import org.avniproject.etl.dto.ResponseDTO;
 import org.avniproject.etl.repository.MediaTableRepository;
+import org.avniproject.etl.repository.sql.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 public class MediaService {
@@ -17,15 +18,15 @@ public class MediaService {
         this.mediaTableRepository = mediaTableRepository;
     }
 
-    /**
-     * @param size
-     * @param page
-     * @return
-     */
-    @Transactional
-    public ResponseDTO list(int size, int page){
+    @Transactional (readOnly = true)
+    public ResponseDTO list(Page page){
         int total = mediaTableRepository.findTotalMedia();
-        return new ResponseDTO(total, page, mediaTableRepository.findAll(size, page));
+        return new ResponseDTO(total, page, mediaTableRepository.findAll(page));
     }
 
+    @Transactional (readOnly = true)
+    public ResponseDTO search(MediaSearchRequest mediaSearchRequest, Page page) {
+        int total = mediaTableRepository.findTotalMedia();
+        return new ResponseDTO(total, page, mediaTableRepository.search(mediaSearchRequest, page));
+    }
 }
