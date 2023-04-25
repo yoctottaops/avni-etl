@@ -1,4 +1,4 @@
-package org.avniproject.etl.repository.dynamicInsert;
+package org.avniproject.etl.repository.sql;
 
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;

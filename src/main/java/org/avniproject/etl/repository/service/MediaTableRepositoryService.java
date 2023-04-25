@@ -11,7 +11,6 @@ import java.sql.SQLException;
 
 @Service
 public class MediaTableRepositoryService {
-
     private final AmazonClientService amazonClientService;
 
     private final Utils utils;
@@ -21,9 +20,7 @@ public class MediaTableRepositoryService {
         this.utils = utils;
     }
 
-
     public MediaDTO setMediaDto(ResultSet rs) {
-
         try {
             String imageUrl = rs.getString("image_url");
             URL signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
@@ -51,8 +48,5 @@ public class MediaTableRepositoryService {
         } catch (SQLException e) {
             throw new Error("Error:" + e.getMessage());
         }
-
     }
-
-
 }

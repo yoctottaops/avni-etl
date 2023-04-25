@@ -1,4 +1,4 @@
-package org.avniproject.etl.repository.dynamicInsert;
+package org.avniproject.etl.repository.sql;
 
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
 import org.avniproject.etl.builder.domain.metadata.TableMetadataBuilder;

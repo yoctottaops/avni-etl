@@ -3,7 +3,7 @@ package org.avniproject.etl.repository.sync;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
-import org.avniproject.etl.repository.dynamicInsert.TransactionalSyncSqlGenerator;
+import org.avniproject.etl.repository.sql.TransactionalSyncSqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

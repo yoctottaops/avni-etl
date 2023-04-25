@@ -4,7 +4,7 @@ import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
-import org.avniproject.etl.repository.dynamicInsert.TransactionalSyncSqlGenerator;
+import org.avniproject.etl.repository.sql.TransactionalSyncSqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -40,7 +40,7 @@ public class AddressTableSyncAction implements EntitySyncAction {
     }
 
     private void insertLowestLevelAddresses(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
-        String templatePath = "/insertSql/address.sql";
+        String templatePath = "/sql/etl/address.sql";
         List<Map<String, Object>> lowestLevelsMap = runInOrgContext(() -> jdbcTemplate.queryForList("select name, id, parent_id from address_level_type where not is_voided;"), jdbcTemplate);
         lowestLevelsMap.forEach(lowestLevel -> {
             String levelName = (String) lowestLevel.get("name");

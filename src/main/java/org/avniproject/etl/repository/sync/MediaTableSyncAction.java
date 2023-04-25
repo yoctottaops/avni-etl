@@ -7,9 +7,6 @@ import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.result.SyncRegistrationConcept;
 import org.avniproject.etl.repository.AvniMetadataRepository;
-import org.avniproject.etl.service.EtlService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
-import static org.avniproject.etl.repository.dynamicInsert.SqlFile.readFile;
+import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 
 @Repository
 public class MediaTableSyncAction implements EntitySyncAction {
@@ -71,7 +68,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
             }
         });
 
-        String templatePath = "/insertSql/media.sql";
+        String templatePath = "/sql/etl/media.sql";
         String sql = readFile(templatePath)
                 .replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
                 .replace("${table_name}", wrapInQuotes(mediaTableMetadata.getName()))
