@@ -15,9 +15,10 @@ import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 public class MediaSearchQueryBuilder {
     private final ST template;
     private final Map<String, Object> parameters = new HashMap<>();
+    private final String sqlTemplate = readFile("/sql/api/searchMedia.sql.st");
 
     public MediaSearchQueryBuilder() {
-        this.template = new ST(readFile("/sql/api/searchMedia.sql.st"));
+        this.template = new ST(sqlTemplate);
         addDefaultParameters();
     }
 

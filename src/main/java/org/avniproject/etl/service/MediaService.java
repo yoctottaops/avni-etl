@@ -27,6 +27,6 @@ public class MediaService {
             return new ResponseDTO(page, mediaTableRepository.search(mediaSearchRequest, page));
         }
 
-        return null;
+        throw new IllegalArgumentException("Address level type names are incorrect");
     }
 }

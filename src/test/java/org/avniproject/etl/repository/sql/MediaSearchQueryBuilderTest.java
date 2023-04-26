@@ -85,16 +85,21 @@ public class MediaSearchQueryBuilderTest {
         mediaSearchRequest.setAddresses(List.of(address));
 
         Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
-        System.out.println(query.sql());
+        assertThat(query.sql(), containsString("address.\"District id\" in (:addressLevelIds_0)"));
+        assertThat(query.parameters(), hasKey("addressLevelIds_0"));
+        List<Integer> addressLevelParameter = (List<Integer>) query.parameters().get("addressLevelIds_0");
+        assertThat(addressLevelParameter, is(iterableWithSize(3)));
+        assertThat(addressLevelParameter, contains(1, 2, 3));
     }
-
 
     @Test
     public void shouldHandleFromDate() {
         MediaSearchRequest mediaSearchRequest = new MediaSearchRequest();
-        mediaSearchRequest.setFromDate(new Date());
+        Date fromDate = new Date();
+        mediaSearchRequest.setFromDate(fromDate);
 
         Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
         assertThat(query.sql(), containsString("and media.created_date_time >= :fromDate"));
+        assertThat(query.parameters(), hasEntry("fromDate", fromDate));
     }
 }
