@@ -6,20 +6,17 @@ import org.springframework.stereotype.Service;
 public class Utils {
 
     public static String getThumbnailUrl (String imageUrl) {
-        String[] parts = imageUrl.split("/", 4);
-        String bucketName = parts[2];
-        String objectKey = parts[3];
+        int slashIndex = imageUrl.lastIndexOf('/');
 
-        int slashIndex = objectKey.lastIndexOf('/');
-
-        String folderPath = "";
+        String firstPart = "";
+        String objectKey = "";
 
         if (slashIndex != -1) {
-            folderPath = objectKey.substring(0, slashIndex + 1);
-            objectKey = objectKey.substring(slashIndex + 1);
+            firstPart = imageUrl.substring(0, slashIndex + 1);
+            objectKey = imageUrl.substring(slashIndex + 1);
         }
 
-        String thumbnailUrl = "https://" + bucketName + "/" + folderPath + "thumbnails/" + objectKey;
+        String thumbnailUrl = firstPart + "thumbnails/" + objectKey;
 
         return thumbnailUrl;
     }
