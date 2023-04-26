@@ -1,19 +1,37 @@
 package org.avniproject.etl.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class MediaSearchRequest {
+    private List<AddressRequest> addressRequests;
     private List<String> subjectTypeNames;
     private List<String> programNames;
     private List<String> encounterTypeNames;
     private List<String> imageConcepts;
-    private List<SyncValues> syncValues;
+    private List<SyncValue> syncValues;
     private Date fromDate;
     private Date toDate;
 
     public MediaSearchRequest() {
+    }
+
+    public List<AddressRequest> getAddressRequests() {
+        if (addressRequests == null) {
+            addressRequests = new ArrayList<>();
+        }
+        return addressRequests;
+    }
+
+    public void setAddressRequests(List<AddressRequest> addressRequests) {
+        this.addressRequests = addressRequests;
+    }
+
+    public List<String> getAddressLevelTypes() {
+        return this.getAddressRequests().stream().map(AddressRequest::getAddressLevelType).collect(Collectors.toList());
     }
 
     public List<String> getSubjectTypeNames() {
@@ -48,11 +66,14 @@ public final class MediaSearchRequest {
         this.imageConcepts = imageConcepts;
     }
 
-    public List<SyncValues> getSyncValues() {
+    public List<SyncValue> getSyncValues() {
+        if (syncValues == null) {
+            syncValues = new ArrayList<>();
+        }
         return syncValues;
     }
 
-    public void setSyncValues(List<SyncValues> syncValues) {
+    public void setSyncValues(List<SyncValue> syncValues) {
         this.syncValues = syncValues;
     }
 

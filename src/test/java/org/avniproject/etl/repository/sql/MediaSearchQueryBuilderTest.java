@@ -3,13 +3,12 @@ package org.avniproject.etl.repository.sql;
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.dto.MediaSearchRequest;
+import org.avniproject.etl.dto.SyncValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.stringtemplate.v4.ST;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -41,6 +40,7 @@ public class MediaSearchQueryBuilderTest {
         mediaSearchRequest.setSubjectTypeNames(Arrays.asList("person"));
 
         Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
+        System.out.println(query.sql());
 
         assertThat("Query should have filter condition", query.sql(), containsString("and media.subject_type_name in (:subjectTypeNames)"));
         assertThat("Query should have not have missing filter conditions", query.sql(), not(containsString(":programNames")));
@@ -63,5 +63,25 @@ public class MediaSearchQueryBuilderTest {
         query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
         assertThat("Query should not have filter condition for empty list", query.sql(), not(containsString("and media.program_name in (:programNames)")));
         assertThat("Query condition should not contain parameter for empty list", query.parameters(), not(hasKey("programNames")));
+    }
+
+    @Test
+    public void shouldWorkWellForSyncParameters() {
+        MediaSearchRequest mediaSearchRequest = new MediaSearchRequest();
+        SyncValue syncValue1 = new SyncValue("a", "b");
+        SyncValue syncValue2 = new SyncValue("c", "d");
+        mediaSearchRequest.setSyncValues(Arrays.asList(syncValue1, syncValue2));
+
+        Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
+        System.out.println(query.sql());
+    }
+
+    @Test
+    public void shouldHandleFromDate() {
+        MediaSearchRequest mediaSearchRequest = new MediaSearchRequest();
+        mediaSearchRequest.setFromDate(new Date());
+
+        Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
+        assertThat(query.sql(), containsString("and media.created_date_time >= :fromDate"));
     }
 }

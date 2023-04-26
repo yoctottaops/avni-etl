@@ -6,6 +6,9 @@ import org.avniproject.etl.repository.service.MediaTableRepositoryService;
 import org.avniproject.etl.repository.sql.MediaSearchQueryBuilder;
 import org.avniproject.etl.repository.sql.Page;
 import org.avniproject.etl.repository.sql.Query;
+import org.avniproject.etl.service.CognitoAuthServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,6 +23,7 @@ public class MediaTableRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final MediaTableRepositoryService mediaTableRepositoryService;
+    private final Logger log = LoggerFactory.getLogger(MediaTableRepository.class);
 
     @Autowired
     MediaTableRepository(JdbcTemplate jdbcTemplate, MediaTableRepositoryService mediaTableRepositoryService) {
@@ -32,6 +36,7 @@ public class MediaTableRepository {
                 .withPage(page)
                 .withMediaSearchRequest(mediaSearchRequest)
                 .build();
+        log.debug("Running query" + query.sql());
         return runInOrgContext(() -> new NamedParameterJdbcTemplate(jdbcTemplate)
                 .query(query.sql(), query.parameters(),
                         (rs, rowNum) -> mediaTableRepositoryService.setMediaDto(rs)), jdbcTemplate);

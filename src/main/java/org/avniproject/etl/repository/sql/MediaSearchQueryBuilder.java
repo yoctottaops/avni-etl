@@ -1,7 +1,9 @@
 package org.avniproject.etl.repository.sql;
 
 import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.dto.AddressRequest;
 import org.avniproject.etl.dto.MediaSearchRequest;
+import org.avniproject.etl.dto.SyncValue;
 import org.stringtemplate.v4.ST;
 
 import java.util.HashMap;
@@ -15,7 +17,7 @@ public class MediaSearchQueryBuilder {
     private final Map<String, Object> parameters = new HashMap<>();
 
     public MediaSearchQueryBuilder() {
-        this.template = new ST(readFile("/sql/api/media.sql"));
+        this.template = new ST(readFile("/sql/api/searchMedia.sql.st"));
         addDefaultParameters();
     }
 
@@ -30,6 +32,20 @@ public class MediaSearchQueryBuilder {
         addParameter("programNames", request.getProgramNames());
         addParameter("encounterTypeNames", request.getEncounterTypeNames());
         addParameter("imageConcepts", request.getImageConcepts());
+        addParameter("fromDate", request.getFromDate());
+        addParameter("toDate", request.getToDate());
+
+        List<AddressRequest> addressRequests = request.getAddressRequests();
+        for (int index = 0; index < addressRequests.size(); index++) {
+            addParameter("addressLevelIds_" + index, addressRequests.get(index).getAddressIds());
+        }
+
+        List<SyncValue> syncValues = request.getSyncValues();
+        for (int index = 0; index < syncValues.size(); index++) {
+            SyncValue syncValue = syncValues.get(index);
+            addParameter("syncConceptName_" + index, syncValue.getSyncConceptName());
+            addParameter("syncConceptValue_" + index, syncValue.getSyncConceptValue());
+        }
     }
 
     public MediaSearchQueryBuilder withPage(Page page) {
@@ -44,6 +60,12 @@ public class MediaSearchQueryBuilder {
 
     private void addParameter(String key, List value) {
         if (value != null && !value.isEmpty()) {
+            parameters.put(key, value);
+        }
+    }
+
+    private void addParameter(String key, Object value) {
+        if (value != null) {
             parameters.put(key, value);
         }
     }

@@ -19,11 +19,21 @@ FROM <schemaName>.media media
          JOIN <schemaName>.address address ON address.id = media.address_id
 where media.image_url is not null
     and media.is_voided is false
-    <if(request.fromDate & request.toDate)> and media.created_date_time between :fromDate and :toDate   <endif>
+    <if(request.fromDate)>                  and media.created_date_time >= :fromDate                   <endif>
+    <if(request.toDate)>                    and media.created_date_time \<= :toDate                     <endif>
     <if(request.subjectTypeNames)>          and media.subject_type_name in (:subjectTypeNames)          <endif>
     <if(request.programNames)>              and media.program_name in (:programNames)                   <endif>
     <if(request.encounterTypeNames)>        and media.encounter_type_name in (:encounterTypeNames)      <endif>
     <if(request.imageConcepts)>             and media.concept_name in (:imageConcepts)                  <endif>
+    <if(request.syncValues)> and (<endif>
+      <<request.syncValues:{syncValue|
+        ((media.sync_parameter_key1 = :syncConceptName_<i0> and media.sync_parameter_value1 = :syncConceptValue_<i0>)
+        or (media.sync_parameter_key2 = :syncConceptName_<i0> and media.sync_parameter_value2 = :syncConceptValue_<i0>))};
+        separator="\n OR "
+      >
+    <if(request.syncValues)> )<endif>
+    <if(request.addressRequests)> and (<endif>
+        <request.addressRequests:{addressRequest|media.<addressRequest.addressLevelType> in (:addressLevelIds_<i0>)}; separator="\n OR">
+    <if(request.addressRequests)> )<endif>
 ORDER BY media.created_date_time desc
 LIMIT :limit OFFSET :offset;
-<abc.x>
