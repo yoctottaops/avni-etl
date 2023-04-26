@@ -1,12 +1,14 @@
 package org.avniproject.etl.dto;
 
+import java.util.List;
+
 public class SyncValue {
     private String syncConceptName;
-    private String syncConceptValue;
+    private List<String> syncConceptValues;
 
-    public SyncValue(String syncConceptName, String syncConceptValue) {
+    public SyncValue(String syncConceptName, List<String> syncConceptValues) {
         this.syncConceptName = syncConceptName;
-        this.syncConceptValue = syncConceptValue;
+        this.syncConceptValues = syncConceptValues;
     }
 
     public SyncValue() {
@@ -20,11 +22,11 @@ public class SyncValue {
         this.syncConceptName = syncConceptName;
     }
 
-    public String getSyncConceptValue() {
-        return syncConceptValue;
+    public List<String> getSyncConceptValues() {
+        return syncConceptValues;
     }
 
-    public void setSyncConceptValue(String syncConceptValue) {
-        this.syncConceptValue = syncConceptValue;
+    public void setSyncConceptValues(List<String> syncConceptValues) {
+        this.syncConceptValues = syncConceptValues;
     }
 }

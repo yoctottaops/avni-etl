@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class MediaSearchRequest {
-    private List<AddressRequest> addressRequests;
+    private List<AddressRequest> addresses;
     private List<String> subjectTypeNames;
     private List<String> programNames;
     private List<String> encounterTypeNames;
@@ -19,19 +19,19 @@ public final class MediaSearchRequest {
     public MediaSearchRequest() {
     }
 
-    public List<AddressRequest> getAddressRequests() {
-        if (addressRequests == null) {
-            addressRequests = new ArrayList<>();
+    public List<AddressRequest> getAddresses() {
+        if (addresses == null) {
+            addresses = new ArrayList<>();
         }
-        return addressRequests;
+        return addresses;
     }
 
-    public void setAddressRequests(List<AddressRequest> addressRequests) {
-        this.addressRequests = addressRequests;
+    public void setAddresses(List<AddressRequest> addresses) {
+        this.addresses = addresses;
     }
 
     public List<String> getAddressLevelTypes() {
-        return this.getAddressRequests().stream().map(AddressRequest::getAddressLevelType).collect(Collectors.toList());
+        return this.getAddresses().stream().map(AddressRequest::getAddressLevelType).collect(Collectors.toList());
     }
 
     public List<String> getSubjectTypeNames() {

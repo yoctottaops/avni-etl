@@ -4,14 +4,14 @@ import java.util.List;
 
 public class AddressRequest {
     public String addressLevelType;
-    public List<Integer> addressIds;
+    public List<Integer> addressLevelIds;
 
     public AddressRequest() {
     }
 
-    public AddressRequest(String addressLevelType, List<Integer> addressIds) {
+    public AddressRequest(String addressLevelType, List<Integer> addressLevelIds) {
         this.addressLevelType = addressLevelType;
-        this.addressIds = addressIds;
+        this.addressLevelIds = addressLevelIds;
     }
 
     public String getAddressLevelType() {
@@ -22,11 +22,11 @@ public class AddressRequest {
         this.addressLevelType = addressLevelType;
     }
 
-    public List<Integer> getAddressIds() {
-        return addressIds;
+    public List<Integer> getAddressLevelIds() {
+        return addressLevelIds;
     }
 
-    public void setAddressIds(List<Integer> addressIds) {
-        this.addressIds = addressIds;
+    public void setAddressLevelIds(List<Integer> addressLevelIds) {
+        this.addressLevelIds = addressLevelIds;
     }
 }

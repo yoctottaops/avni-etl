@@ -2,11 +2,11 @@ package org.avniproject.etl.repository.sql;
 
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
 import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.dto.AddressRequest;
 import org.avniproject.etl.dto.MediaSearchRequest;
 import org.avniproject.etl.dto.SyncValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.stringtemplate.v4.ST;
 
 import java.util.*;
 
@@ -68,13 +68,26 @@ public class MediaSearchQueryBuilderTest {
     @Test
     public void shouldWorkWellForSyncParameters() {
         MediaSearchRequest mediaSearchRequest = new MediaSearchRequest();
-        SyncValue syncValue1 = new SyncValue("a", "b");
-        SyncValue syncValue2 = new SyncValue("c", "d");
+        SyncValue syncValue1 = new SyncValue("a", List.of("b"));
+        SyncValue syncValue2 = new SyncValue("c", List.of("d"));
         mediaSearchRequest.setSyncValues(Arrays.asList(syncValue1, syncValue2));
 
         Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
         System.out.println(query.sql());
     }
+
+    @Test
+    public void shouldWorkWellForAddresses() {
+        MediaSearchRequest mediaSearchRequest = new MediaSearchRequest();
+        AddressRequest address = new AddressRequest();
+        address.setAddressLevelType("District");
+        address.setAddressLevelIds(List.of(1, 2, 3));
+        mediaSearchRequest.setAddresses(List.of(address));
+
+        Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
+        System.out.println(query.sql());
+    }
+
 
     @Test
     public void shouldHandleFromDate() {

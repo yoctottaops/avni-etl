@@ -35,16 +35,16 @@ public class MediaSearchQueryBuilder {
         addParameter("fromDate", request.getFromDate());
         addParameter("toDate", request.getToDate());
 
-        List<AddressRequest> addressRequests = request.getAddressRequests();
+        List<AddressRequest> addressRequests = request.getAddresses();
         for (int index = 0; index < addressRequests.size(); index++) {
-            addParameter("addressLevelIds_" + index, addressRequests.get(index).getAddressIds());
+            addParameter("addressLevelIds_" + index, addressRequests.get(index).getAddressLevelIds());
         }
 
         List<SyncValue> syncValues = request.getSyncValues();
         for (int index = 0; index < syncValues.size(); index++) {
             SyncValue syncValue = syncValues.get(index);
             addParameter("syncConceptName_" + index, syncValue.getSyncConceptName());
-            addParameter("syncConceptValue_" + index, syncValue.getSyncConceptValue());
+            addParameter("syncConceptValues_" + index, syncValue.getSyncConceptValues());
         }
     }
 

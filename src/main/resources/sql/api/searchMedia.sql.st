@@ -27,13 +27,13 @@ where media.image_url is not null
     <if(request.imageConcepts)>             and media.concept_name in (:imageConcepts)                  <endif>
     <if(request.syncValues)> and (<endif>
       <<request.syncValues:{syncValue|
-        ((media.sync_parameter_key1 = :syncConceptName_<i0> and media.sync_parameter_value1 = :syncConceptValue_<i0>)
-        or (media.sync_parameter_key2 = :syncConceptName_<i0> and media.sync_parameter_value2 = :syncConceptValue_<i0>))};
+        ((media.sync_parameter_key1 = :syncConceptName_<i0> and media.sync_parameter_value1 in (:syncConceptValues_<i0>))
+        or (media.sync_parameter_key2 = :syncConceptName_<i0> and media.sync_parameter_value2 in (:syncConceptValues_<i0>)))};
         separator="\n OR "
       >
     <if(request.syncValues)> )<endif>
-    <if(request.addressRequests)> and (<endif>
-        <request.addressRequests:{addressRequest|media.<addressRequest.addressLevelType> in (:addressLevelIds_<i0>)}; separator="\n OR">
-    <if(request.addressRequests)> )<endif>
+    <if(request.addresses)> and (<endif>
+        <request.addresses:{addressRequest|<if(addressRequest.addressLevelIds)>address."<addressRequest.addressLevelType> id" in (:addressLevelIds_<i0>)<else>1 = 2<endif>}; separator="\n OR ">
+    <if(request.addresses)> )<endif>
 ORDER BY media.created_date_time desc
 LIMIT :limit OFFSET :offset;

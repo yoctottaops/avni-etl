@@ -14,8 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 		havingValue = "true",
 		matchIfMissing = true)
 public class EtlApplication {
-	private static final Logger log = Logger.getLogger(EtlApplication.class);
-
 	public EtlApplication() {
 	}
 
