@@ -78,7 +78,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
                 .replace("${syncRegistrationConcept1Name}", wrapStringValue(syncRegistrationConcepts[0].getName()))
                 .replace("${syncRegistrationConcept1ColumnName}", wrapInQuotes(syncRegistrationConcepts[0].getColumnName()))
                 .replace("${syncRegistrationConcept2Name}", wrapStringValue(syncRegistrationConcepts[1].getName()))
-                .replace("${syncRegistrationConcept2ColumnName}", wrapInQuotes(syncRegistrationConcepts[0].getColumnName()))
+                .replace("${syncRegistrationConcept2ColumnName}", wrapInQuotes(syncRegistrationConcepts[1].getColumnName()))
                 .replace("${subjectTypeName}", wrapStringValue(subjectTypeName))
                 .replace("${encounterTypeName}", wrapStringValue(encounterTypeName))
                 .replace("${programName}", wrapStringValue(programName))
