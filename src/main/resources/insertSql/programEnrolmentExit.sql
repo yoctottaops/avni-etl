@@ -13,6 +13,7 @@ insert into ${schema_name}.${table_name} (
     "last_modified_by_id",
     "created_date_time",
     "last_modified_date_time",
+    "organisation_id",
     "legacy_id"
         ${observations_to_insert_list}
 )
@@ -30,6 +31,7 @@ insert into ${schema_name}.${table_name} (
         entity.last_modified_by_id                                                   "last_modified_by_id",
         entity.created_date_time                                                     "created_date_time",
         entity.last_modified_date_time                                               "last_modified_date_time",
+        entity.organisation_id                                                       "organisation_id",
         entity.legacy_id                                                             "legacy_id"
         ${exit_obs_selections}
         FROM public.program_enrolment entity

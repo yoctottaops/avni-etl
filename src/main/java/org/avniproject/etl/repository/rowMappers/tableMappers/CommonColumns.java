@@ -13,5 +13,7 @@ public class CommonColumns {
             new Column("created_by_id", Column.Type.integer, Column.ColumnType.index),
             new Column("last_modified_by_id", Column.Type.integer, Column.ColumnType.index),
             new Column("created_date_time", Column.Type.timestampWithTimezone),
-            new Column("last_modified_date_time", Column.Type.timestampWithTimezone));
+            new Column("last_modified_date_time", Column.Type.timestampWithTimezone),
+            new Column("organisation_id", Column.Type.integer, Column.ColumnType.index)
+        );
 }

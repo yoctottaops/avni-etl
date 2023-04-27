@@ -2,7 +2,7 @@
 insert into ${schema_name}.${table_name} (
     "id", "address_id", "uuid", "first_name", "last_name", "registration_date", "registration_location",
     "is_voided", "created_by_id", "last_modified_by_id", "created_date_time",
-    "last_modified_date_time", "legacy_id"
+    "last_modified_date_time", "organisation_id", "legacy_id"
         ${observations_to_insert_list}
 )
     (${concept_maps}
@@ -18,6 +18,7 @@ insert into ${schema_name}.${table_name} (
         entity.last_modified_by_id                                                      as "last_modified_by_id",
         entity.created_date_time                                                        as "created_date_time",
         entity.last_modified_date_time                                                  as "last_modified_date_time",
+        entity.organisation_id                                                          as "organisation_id",
         entity.legacy_id                                                                as "legacy_id"
         ${selections}
         FROM public.individual entity
