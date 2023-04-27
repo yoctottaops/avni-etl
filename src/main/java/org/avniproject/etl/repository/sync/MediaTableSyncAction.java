@@ -7,6 +7,8 @@ import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.result.SyncRegistrationConcept;
 import org.avniproject.etl.repository.AvniMetadataRepository;
+import org.avniproject.etl.repository.rowMappers.TableNameGenerator;
+import org.avniproject.etl.repository.rowMappers.tableMappers.SubjectTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -83,12 +85,18 @@ public class MediaTableSyncAction implements EntitySyncAction {
                 .replace("${conceptName}", wrapStringValue(conceptName))
                 .replace("${fromTableName}", wrapInQuotes(fromTableName))
                 .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(lastSyncTime))
-                .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(dataSyncBoundaryTime));
+                .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(dataSyncBoundaryTime))
+                .replace("${subjectTableName}", subjectTypeTableName(subjectTypeName))
+                .replace("${individualId}", tableMetadata.isSubjectTable()? "id": "individual_id");
 
         runInOrgContext(() -> {
             jdbcTemplate.execute(sql);
             return NullObject.instance();
         }, jdbcTemplate);
+    }
+
+    private String subjectTypeTableName(String subjectTypeName) {
+        return new TableNameGenerator().generateName(List.of(subjectTypeName), "IndividualProfile", null);
     }
 
     private String wrapInQuotes(String parameter) {

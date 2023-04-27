@@ -251,6 +251,6 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void shouldPopulateMediaTable() {
         runDataSync();
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat(media.size(), is(1));
+        assertThat(media.size(), is(2));
     }
 }

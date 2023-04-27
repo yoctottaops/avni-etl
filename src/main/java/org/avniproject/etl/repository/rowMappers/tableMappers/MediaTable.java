@@ -28,6 +28,8 @@ public class MediaTable extends Table {
                 .withColumn(new Column("program_name", Column.Type.text))
                 .withColumn(new Column("concept_name", Column.Type.text))
                 .withColumn(new Column("entity_id", Column.Type.integer))
+                .withColumn(new Column("subject_first_name", Column.Type.text))
+                .withColumn(new Column("subject_last_name", Column.Type.text))
                 .build();
     }
 }
