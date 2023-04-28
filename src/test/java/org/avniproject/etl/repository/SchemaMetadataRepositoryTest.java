@@ -57,7 +57,7 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
         assertThat(addressTableOptional.isPresent(), is(true));
 
         TableMetadata addressTable = addressTableOptional.get();
-        assertThat(addressTable.getColumns().size(), is(15));
+        assertThat(addressTable.getColumns().size(), is(16));
         assertThat(addressTable.getColumns().stream().anyMatch(column -> column.getName().equals("District")), is(true));
         assertThat(addressTable.getColumns().stream().anyMatch(column -> column.getName().equals("District id")), is(true));
         assertThat(addressTable.getColumns().stream().anyMatch(column -> column.getName().equals("Block")), is(true));
@@ -108,6 +108,6 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     public void shouldGetIndicesWhenGettingNewSchemaMetadata() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
         List<IndexMetadata> personTableIndexMetadata = schemaMetadata.getTableMetadata().stream().filter(tableMetadata -> tableMetadata.getName().equals("person")).findFirst().get().getIndexMetadataList();
-        assertThat(personTableIndexMetadata, hasSize(7));
+        assertThat(personTableIndexMetadata, hasSize(8));
     }
 }

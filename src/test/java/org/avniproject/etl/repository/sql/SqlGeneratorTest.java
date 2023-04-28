@@ -39,7 +39,7 @@ class SqlGeneratorTest {
                 "insert into \"schema\".\"Individual\" (\n" +
                 "    \"id\", \"address_id\", \"uuid\", \"first_name\", \"last_name\", \"registration_date\", \"registration_location\",\n" +
                 "    \"is_voided\", \"created_by_id\", \"last_modified_by_id\", \"created_date_time\",\n" +
-                "    \"last_modified_date_time\", \"legacy_id\"\n" +
+                "    \"last_modified_date_time\", \"organisation_id\", \"legacy_id\"\n" +
                 "        , \"numeric field\", \"text field\", \"single select\", \"multi select\", \"date\"\n" +
                 ")\n" +
                 "    (with Individual_concept_maps as (SELECT public.hstore((array_agg(c2.uuid)) :: text [], (array_agg(c2.name)) :: text []) AS map\n" +
@@ -59,6 +59,7 @@ class SqlGeneratorTest {
                 "        entity.last_modified_by_id                                                      as \"last_modified_by_id\",\n" +
                 "        entity.created_date_time                                                        as \"created_date_time\",\n" +
                 "        entity.last_modified_date_time                                                  as \"last_modified_date_time\",\n" +
+                "        entity.organisation_id                                                          as \"organisation_id\",\n" +
                 "        entity.legacy_id                                                                as \"legacy_id\"\n" +
                 "        ,(entity.observations->> 'uuid-1')::NUMERIC as \"numeric field\",\n" +
                 "(entity.observations->> 'uuid-2')::TEXT as \"text field\",\n" +
