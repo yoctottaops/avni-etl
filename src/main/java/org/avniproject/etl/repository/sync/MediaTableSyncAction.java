@@ -8,10 +8,10 @@ import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.result.SyncRegistrationConcept;
 import org.avniproject.etl.repository.AvniMetadataRepository;
 import org.avniproject.etl.repository.rowMappers.TableNameGenerator;
-import org.avniproject.etl.repository.rowMappers.tableMappers.SubjectTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.stringtemplate.v4.ST;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -70,24 +70,32 @@ public class MediaTableSyncAction implements EntitySyncAction {
             }
         });
 
-        String templatePath = "/sql/etl/media.sql";
-        String sql = readFile(templatePath)
-                .replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
-                .replace("${table_name}", wrapInQuotes(mediaTableMetadata.getName()))
-                .replace("${conceptColumnName}", wrapInQuotes(conceptColumnName))
-                .replace("${syncRegistrationConcept1Name}", wrapStringValue(syncRegistrationConcepts[0].getName()))
-                .replace("${syncRegistrationConcept1ColumnName}", wrapInQuotes(syncRegistrationConcepts[0].getColumnName()))
-                .replace("${syncRegistrationConcept2Name}", wrapStringValue(syncRegistrationConcepts[1].getName()))
-                .replace("${syncRegistrationConcept2ColumnName}", wrapInQuotes(syncRegistrationConcepts[1].getColumnName()))
-                .replace("${subjectTypeName}", wrapStringValue(subjectTypeName))
-                .replace("${encounterTypeName}", wrapStringValue(encounterTypeName))
-                .replace("${programName}", wrapStringValue(programName))
-                .replace("${conceptName}", wrapStringValue(conceptName))
-                .replace("${fromTableName}", wrapInQuotes(fromTableName))
-                .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(lastSyncTime))
-                .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(dataSyncBoundaryTime))
-                .replace("${subjectTableName}", subjectTypeTableName(subjectTypeName))
-                .replace("${individualId}", tableMetadata.isSubjectTable()? "id": "individual_id");
+        String templatePath = "/sql/etl/media.sql.st";
+        ST template = new ST(readFile(templatePath))
+                .add("schemaName", wrapInQuotes(ContextHolder.getDbSchema()))
+                .add("tableName", wrapInQuotes(mediaTableMetadata.getName()))
+                .add("conceptColumnName", wrapInQuotes(conceptColumnName))
+                .add("subjectTypeName", wrapStringValue(subjectTypeName))
+                .add("encounterTypeName", wrapStringValue(encounterTypeName))
+                .add("programName", wrapStringValue(programName))
+                .add("conceptName", wrapStringValue(conceptName))
+                .add("fromTableName", wrapInQuotes(fromTableName))
+                .add("startTime", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(lastSyncTime))
+                .add("endTime", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(dataSyncBoundaryTime))
+                .add("subjectTableName", subjectTypeTableName(subjectTypeName))
+                .add("individualId", tableMetadata.isSubjectTable() ? "id" : "individual_id");
+        if (syncRegistrationConcepts[0].getUuid() != null) {
+            template = template
+                    .add("syncRegistrationConcept1Name", wrapStringValue(syncRegistrationConcepts[0].getName()))
+                    .add("syncRegistrationConcept1ColumnName", wrapInQuotes(syncRegistrationConcepts[0].getColumnName()));
+        }
+        if (syncRegistrationConcepts[1].getUuid() != null) {
+            template = template
+                    .add("syncRegistrationConcept2Name", wrapStringValue(syncRegistrationConcepts[1].getName()))
+                    .add("syncRegistrationConcept2ColumnName", wrapInQuotes(syncRegistrationConcepts[1].getColumnName()));
+        }
+
+        String sql = template.render();
 
         runInOrgContext(() -> {
             jdbcTemplate.execute(sql);
