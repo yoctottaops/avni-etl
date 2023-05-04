@@ -9,10 +9,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.stringtemplate.v4.ST;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;

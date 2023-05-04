@@ -10,13 +10,16 @@ import org.avniproject.etl.repository.AvniMetadataRepository;
 import org.avniproject.etl.repository.rowMappers.TableNameGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.stringtemplate.v4.ST;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 
@@ -51,6 +54,12 @@ public class MediaTableSyncAction implements EntitySyncAction {
     }
 
     private void insertData(TableMetadata mediaTableMetadata, TableMetadata tableMetadata, ColumnMetadata mediaColumn, Date lastSyncTime, Date dataSyncBoundaryTime) {
+        syncNewerRows(mediaTableMetadata, tableMetadata, mediaColumn, lastSyncTime, dataSyncBoundaryTime);
+
+        deleteDuplicateRows(lastSyncTime);
+    }
+
+    private void syncNewerRows(TableMetadata mediaTableMetadata, TableMetadata tableMetadata, ColumnMetadata mediaColumn, Date lastSyncTime, Date dataSyncBoundaryTime) {
         String fromTableName = tableMetadata.getName();
         String subjectTypeName = avniMetadataRepository.subjectTypeName(tableMetadata.getSubjectTypeUuid());
         String programName = avniMetadataRepository.programName(tableMetadata.getProgramUuid());
@@ -102,6 +111,21 @@ public class MediaTableSyncAction implements EntitySyncAction {
             return NullObject.instance();
         }, jdbcTemplate);
     }
+
+    private void deleteDuplicateRows(Date lastSyncTime) {
+        String schema = ContextHolder.getDbSchema();
+        String sql = new ST(readFile("sql/etl/deleteDuplicateMedia.sql.st"))
+                .add("schemaName", schema)
+                .render();
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("lastSyncTime", lastSyncTime);
+
+        runInOrgContext(() -> {
+            new NamedParameterJdbcTemplate(jdbcTemplate).update(sql, params);
+            return NullObject.instance();
+        }, jdbcTemplate);
+    }
+
 
     private String subjectTypeTableName(String subjectTypeName) {
         return new TableNameGenerator().generateName(List.of(subjectTypeName), "IndividualProfile", null);
