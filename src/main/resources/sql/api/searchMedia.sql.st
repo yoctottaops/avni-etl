@@ -1,5 +1,7 @@
 SELECT media.id as id,
        media.uuid as uuid,
+       media.subject_first_name as subject_first_name,
+       media.subject_last_name as subject_last_name,
        media.is_voided as is_voided,
        media.created_by_id as created_by_id,
        media.last_modified_by_id as last_modified_by_id,

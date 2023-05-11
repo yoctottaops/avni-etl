@@ -27,6 +27,8 @@ public class MediaTableRepositoryService {
 
             return new MediaDTO(
                     rs.getString("uuid"),
+                    rs.getString("subject_first_name"),
+                    rs.getString("subject_last_name"),
                     imageUrl,
                     rs.getString("concept_name"),
                     signedImageUrl,

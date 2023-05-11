@@ -36,7 +36,6 @@ public class MediaTableRepository {
                 .withPage(page)
                 .withMediaSearchRequest(mediaSearchRequest)
                 .build();
-        log.debug("Running query" + query.sql());
         return runInOrgContext(() -> new NamedParameterJdbcTemplate(jdbcTemplate)
                 .query(query.sql(), query.parameters(),
                         (rs, rowNum) -> mediaTableRepositoryService.setMediaDto(rs)), jdbcTemplate);
