@@ -27,8 +27,8 @@ public class TableNameGenerator {
         if (suffix != null) {
             entitiesWithSuffix.add(suffix);
         }
-        String TableName = buildProperTableName(entitiesWithSuffix);
-        return TableName.length() > POSTGRES_MAX_TABLE_NAME_LENGTH ? getTrimmedTableName(entities, TableType, suffix) : TableName;
+        String tableName = buildProperTableName(entitiesWithSuffix);
+        return tableName.length() > POSTGRES_MAX_TABLE_NAME_LENGTH ? getTrimmedTableName(entities, TableType, suffix) : tableName;
     }
 
     private String getTrimmedTableName(List<String> entities, String TableType, String suffix) {

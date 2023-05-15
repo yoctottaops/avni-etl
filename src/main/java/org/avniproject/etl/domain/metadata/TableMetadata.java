@@ -220,7 +220,8 @@ public class TableMetadata extends Model {
         Encounter,
         IndividualEncounterCancellation,
         Address,
-        Media
+        Media,
+        ManualProgramEnrolmentEligibility
     }
 
     public boolean isSubjectTable() {

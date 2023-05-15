@@ -26,6 +26,7 @@ public class TransactionalSyncSqlGenerator {
         typeMap.put(TableMetadata.Type.ProgramEncounter, "/sql/etl/programEncounter.sql");
         typeMap.put(TableMetadata.Type.ProgramEncounterCancellation, "/sql/etl/programEncounterCancel.sql");
         typeMap.put(TableMetadata.Type.IndividualEncounterCancellation, "/sql/etl/generalEncounterCancel.sql");
+        typeMap.put(TableMetadata.Type.ManualProgramEnrolmentEligibility, "/sql/etl/manualProgramEnrolmentEligibility.sql");
     }
 
     private static String toString(String uuid) {

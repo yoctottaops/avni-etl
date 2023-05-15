@@ -38,7 +38,7 @@ public class EntityApprovalStatusSyncAction implements EntitySyncAction {
 
     @Override
     public boolean supports(TableMetadata tableMetadata) {
-        return new TransactionalSyncSqlGenerator().supports(tableMetadata);
+        return typeMap.containsKey(tableMetadata.getType());
     }
 
     @Override
