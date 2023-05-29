@@ -151,7 +151,7 @@ workflows:
         requires:
           - build
     - STAGING_deploy:
-        context: prod-deploy
+        context: non-prod-deploy
         filters:
           branches:
             only: main
@@ -162,5 +162,6 @@ workflows:
         requires:
           - build
     - PRODUCTION_deploy:
+        context: prod-deploy
         requires:
           - PRODUCTION_approve
