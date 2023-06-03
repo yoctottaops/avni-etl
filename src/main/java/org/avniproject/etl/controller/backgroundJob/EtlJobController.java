@@ -3,15 +3,17 @@ package org.avniproject.etl.controller.backgroundJob;
 import org.avniproject.etl.config.ScheduledJobConfig;
 import org.avniproject.etl.contract.JobScheduleRequest;
 import org.avniproject.etl.contract.backgroundJob.EtlJobResponse;
+import org.avniproject.etl.domain.quartz.ScheduledJobRun;
+import org.avniproject.etl.repository.quartz.ScheduledJobRunRepository;
 import org.avniproject.etl.scheduler.EtlJob;
-import org.quartz.*;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
 import org.quartz.impl.JobDetailImpl;
-import org.quartz.impl.matchers.GroupMatcher;
-import org.quartz.spi.MutableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,28 +25,34 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class EtlJobController {
     private final Scheduler scheduler;
     private final ScheduledJobConfig scheduledJobConfig;
+    private final ScheduledJobRunRepository scheduledJobRunRepository;
 
     @Autowired
-    public EtlJobController(Scheduler scheduler, ScheduledJobConfig scheduledJobConfig) {
+    public EtlJobController(Scheduler scheduler, ScheduledJobConfig scheduledJobConfig, ScheduledJobRunRepository scheduledJobRunRepository) {
         this.scheduler = scheduler;
         this.scheduledJobConfig = scheduledJobConfig;
+        this.scheduledJobRunRepository = scheduledJobRunRepository;
     }
 
     @GetMapping("/etl/job")
     public List<EtlJobResponse> getJobs() throws SchedulerException {
-        List<JobExecutionContext> currentlyExecutingJobs = scheduler.getCurrentlyExecutingJobs();
-        scheduler.getJobKeys(GroupMatcher.anyGroup()).stream()
-                .collect(Collectors.toList());
-        return new ArrayList<>();
+        List<ScheduledJobRun> latestRuns = scheduledJobRunRepository.getLatestRuns();
+        return latestRuns.stream().map(scheduledJobRun -> {
+            EtlJobResponse response = new EtlJobResponse();
+            response.setExists(true);
+            response.setLastStartAt(scheduledJobRun.getStartedAt());
+            response.setLastEndedAt(scheduledJobRun.getEndedAt());
+            return response;
+        }).collect(Collectors.toList());
     }
 
     @GetMapping("/etl/job/{id}")
-    public EtlJobResponse getJob(@PathVariable String organisationUUID) throws SchedulerException {
+    public EtlJobResponse getJob(@PathVariable String id) throws SchedulerException {
         EtlJobResponse etlJobResponse = new EtlJobResponse();
-        JobDetail jobDetail = scheduler.getJobDetail(scheduledJobConfig.getJobKey(organisationUUID));
+        JobDetail jobDetail = scheduler.getJobDetail(scheduledJobConfig.getJobKey(id));
         if (jobDetail != null)
             etlJobResponse.setExists(true);
-        Trigger trigger = scheduler.getTrigger(scheduledJobConfig.getTriggerKey(organisationUUID));
+        Trigger trigger = scheduler.getTrigger(scheduledJobConfig.getTriggerKey(id));
         return null;
     }
 
