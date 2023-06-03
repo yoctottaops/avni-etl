@@ -1,8 +1,5 @@
 package org.avniproject.etl.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 public class User {
     public static final String USER = "Somthing";
     public static final String ORGANISATION_ADMIN = "sdasdasd";
