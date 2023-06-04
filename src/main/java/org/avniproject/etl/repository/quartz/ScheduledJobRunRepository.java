@@ -4,6 +4,7 @@ import org.avniproject.etl.domain.quartz.ScheduledJobRun;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -14,5 +15,7 @@ public interface ScheduledJobRunRepository extends CrudRepository<ScheduledJobRu
         return findFirstByJobNameOrderByIdDesc(jobName);
     }
 
-    List<ScheduledJobRun> getLatestRuns();
+    default List<ScheduledJobRun> getLatestRuns() {
+        return new ArrayList<>();
+    }
 }

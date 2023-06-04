@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class Utils {
-
     public static String getThumbnailUrl (String imageUrl) {
         int slashIndex = imageUrl.lastIndexOf('/');
 
@@ -16,8 +15,6 @@ public class Utils {
             objectKey = imageUrl.substring(slashIndex + 1);
         }
 
-        String thumbnailUrl = firstPart + "thumbnails/" + objectKey;
-
-        return thumbnailUrl;
+        return firstPart + "thumbnails/" + objectKey;
     }
 }

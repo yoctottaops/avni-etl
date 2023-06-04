@@ -1,7 +1,9 @@
 package org.avniproject.etl.domain.quartz;
 
 import jakarta.persistence.*;
+import org.avniproject.etl.util.ExceptionUtil;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
 
 import java.util.Date;
@@ -23,6 +25,9 @@ public class ScheduledJobRun {
     @Column
     private Date endedAt;
 
+    @Column
+    private String errorMessage;
+
     public static ScheduledJobRun create(JobDetail jobDetail, Trigger trigger) {
         ScheduledJobRun scheduledJobRun = new ScheduledJobRun();
         scheduledJobRun.jobName = jobDetail.getKey().getName();
@@ -30,8 +35,9 @@ public class ScheduledJobRun {
         return scheduledJobRun;
     }
 
-    public void setEndedAt(Date endedAt) {
-        this.endedAt = endedAt;
+    public void ended(Trigger trigger, JobExecutionException jobException) {
+        this.endedAt = trigger.getEndTime();
+        errorMessage = ExceptionUtil.getStackTraceAsString(jobException);
     }
 
     public Long getId() {
@@ -48,5 +54,13 @@ public class ScheduledJobRun {
 
     public Date getEndedAt() {
         return endedAt;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

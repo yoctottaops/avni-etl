@@ -2,7 +2,7 @@ package org.avniproject.etl.controller.backgroundJob;
 
 import org.avniproject.etl.config.ScheduledJobConfig;
 import org.avniproject.etl.contract.JobScheduleRequest;
-import org.avniproject.etl.contract.backgroundJob.EtlJobResponse;
+import org.avniproject.etl.contract.backgroundJob.EtlJobLatestStatusResponse;
 import org.avniproject.etl.domain.quartz.ScheduledJobRun;
 import org.avniproject.etl.repository.quartz.ScheduledJobRunRepository;
 import org.avniproject.etl.scheduler.EtlJob;
@@ -35,10 +35,10 @@ public class EtlJobController {
     }
 
     @GetMapping("/etl/job")
-    public List<EtlJobResponse> getJobs() throws SchedulerException {
+    public List<EtlJobLatestStatusResponse> getJobs() {
         List<ScheduledJobRun> latestRuns = scheduledJobRunRepository.getLatestRuns();
         return latestRuns.stream().map(scheduledJobRun -> {
-            EtlJobResponse response = new EtlJobResponse();
+            EtlJobLatestStatusResponse response = new EtlJobLatestStatusResponse();
             response.setExists(true);
             response.setLastStartAt(scheduledJobRun.getStartedAt());
             response.setLastEndedAt(scheduledJobRun.getEndedAt());
@@ -47,13 +47,17 @@ public class EtlJobController {
     }
 
     @GetMapping("/etl/job/{id}")
-    public EtlJobResponse getJob(@PathVariable String id) throws SchedulerException {
-        EtlJobResponse etlJobResponse = new EtlJobResponse();
+    public EtlJobLatestStatusResponse getJob(@PathVariable String id) throws SchedulerException {
+        EtlJobLatestStatusResponse etlJobResponse = new EtlJobLatestStatusResponse();
         JobDetail jobDetail = scheduler.getJobDetail(scheduledJobConfig.getJobKey(id));
-        if (jobDetail != null)
+        if (jobDetail != null) {
+            Trigger trigger = scheduler.getTrigger(scheduledJobConfig.getTriggerKey(id));
             etlJobResponse.setExists(true);
-        Trigger trigger = scheduler.getTrigger(scheduledJobConfig.getTriggerKey(id));
-        return null;
+            etlJobResponse.setLastStartAt(trigger.getStartTime());
+            etlJobResponse.setLastEndedAt(trigger.getEndTime());
+            etlJobResponse.setNextStartAt(trigger.getNextFireTime());
+        }
+        return etlJobResponse;
     }
 
     @PostMapping("/etl/job")

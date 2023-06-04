@@ -2,10 +2,11 @@ package org.avniproject.etl.contract.backgroundJob;
 
 import java.util.Date;
 
-public class EtlJobResponse {
+public class EtlJobLatestStatusResponse {
     private boolean exists;
     private Date lastStartAt;
     private Date lastEndedAt;
+    private Date nextStartAt;
 
     public boolean isExists() {
         return exists;
@@ -29,5 +30,13 @@ public class EtlJobResponse {
 
     public void setExists(boolean exists) {
         this.exists = exists;
+    }
+
+    public Date getNextStartAt() {
+        return nextStartAt;
+    }
+
+    public void setNextStartAt(Date nextStartAt) {
+        this.nextStartAt = nextStartAt;
     }
 }
