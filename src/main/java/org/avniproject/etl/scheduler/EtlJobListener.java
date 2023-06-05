@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EtlJobTriggerListener implements JobListener {
+public class EtlJobListener implements JobListener {
     private final ScheduledJobRunRepository scheduledJobRunRepository;
 
     @Autowired
-    public EtlJobTriggerListener(ScheduledJobRunRepository scheduledJobRunRepository) {
+    public EtlJobListener(ScheduledJobRunRepository scheduledJobRunRepository) {
         this.scheduledJobRunRepository = scheduledJobRunRepository;
     }
 

@@ -1,8 +1,8 @@
 select create_db_user('orga', 'password');
 select create_implementation_schema('orga', 'orga');
 
-INSERT INTO "public"."organisation" ("id", "name", "db_user", "uuid", "parent_organisation_id", "is_voided", "media_directory", "username_suffix", "account_id", "schema_name", "has_analytics_db") VALUES
-(999, 'TestOrg', 'orga', '4640a909-dfae-4ec3-8fbb-1b08f35c4995', NULL, 'f', 'orga', NULL, 1, 'orga', 't');
+INSERT INTO "public"."organisation" ("id", "name", "db_user", "uuid", "parent_organisation_id", "is_voided", "media_directory", "username_suffix", "account_id", "schema_name") VALUES
+(999, 'TestOrg', 'orga', '4640a909-dfae-4ec3-8fbb-1b08f35c4995', NULL, 'f', 'orga', NULL, 1, 'orga');
 
 INSERT INTO orga.media ("id", "uuid", "is_voided", "created_by_id", "last_modified_by_id", "created_date_time", "last_modified_date_time", "address_id", "image_url", "sync_parameter_key1", "sync_parameter_value1", "sync_parameter_key2", "sync_parameter_value2", "subject_type_name", "encounter_type_name", "program_name", "concept_name", "entity_id") VALUES
 (1, '7824b24f-cd2b-4b43-bad7-89e6c8d2d5e2', 'f', 362, 362, '2022-03-02 18:36:03.576+05:30', '2022-03-02 18:36:03.576+05:30', 13834, NULL, NULL, NULL, NULL, NULL, 'Work Order', 'Work order daily Recording - Machine', NULL, 'Image 2', 138082),

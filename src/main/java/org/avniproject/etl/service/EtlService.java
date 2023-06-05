@@ -32,24 +32,20 @@ public class EtlService {
         this.syncService = syncService;
     }
 
-    public void run() {
-        runForOrganisationSchemaNames(new ArrayList<>());
+    public EtlResult runForOrganisation(String organisationUUID) {
+        OrganisationIdentity organisationIdentity = organisationRepository.getOrganisation(organisationUUID);
+        return this.runForOrganisation(organisationIdentity);
     }
 
-    public void runForOrganisationSchemaNames(@Nonnull List<String> organisationSchemaNameFilter) {
-        boolean runForAll = organisationSchemaNameFilter.isEmpty();
-        Set<String> nonProcessedSchemaNames = new HashSet<>(organisationSchemaNameFilter);
+    public List<EtlResult> runForAll() {
+        ArrayList<EtlResult> etlResults = new ArrayList<>();
         organisationRepository
                 .getOrganisationList()
                 .stream()
-                .filter(oi -> runForAll || organisationSchemaNameFilter.contains(oi.getSchemaName()))
                 .forEach(organisationIdentity -> {
-                    nonProcessedSchemaNames.remove(organisationIdentity.getSchemaName());
-                    runForOrganisation(organisationIdentity);
+                    etlResults.add(runForOrganisation(organisationIdentity));
                 });
-        if (!nonProcessedSchemaNames.isEmpty()) {
-            log.error("Failed to perform ETL job for schemas: " + nonProcessedSchemaNames);
-        }
+        return etlResults;
     }
 
     public EtlResult runForOrganisation(OrganisationIdentity organisationIdentity) {

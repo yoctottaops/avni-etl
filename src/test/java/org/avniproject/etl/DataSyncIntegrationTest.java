@@ -199,7 +199,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void allTheDBUserOfOrgGroupAreAbleToQueryTables() {
-        etlService.run();
+        etlService.runForAll();
         jdbcTemplate.execute("set role og;");
         List<Map<String, Object>> groupList = jdbcTemplate.queryForList("select * from og.person;");
         jdbcTemplate.execute("set role ogi1;");
@@ -216,7 +216,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void approvalStatusFromChildOrgsShouldUpdateCorrectly() {
-        etlService.run();
+        etlService.runForAll();
         Map<String, Object> org1Person = jdbcTemplate.queryForMap("select * from og.person where id = 674170;");
         Map<String, Object> org2Person = jdbcTemplate.queryForMap("select * from og.person where id = 574170;");
         assertThat(org1Person.get("latest_approval_status"), is("Pending"));

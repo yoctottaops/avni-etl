@@ -3,7 +3,7 @@ The ETL service is responsible for creation, maintenance and distribution of ETL
 
 Because of RLS, heavy usage of jsonb columns and hierarchical nature of the address tables, the public schema is not especially suited for analytical queries. This service converts this data structure into a more flat structure with all jsonb keys converted to columns. A scheduled job runs to keep populating data updated from the last run. 
 
-```Organisation and organisation_group``` tables have fields ```has_analytics_db and schema_name``` that are used by ETL to figure out if an org has ETL enabled, and the schema where data should be transferred to. 
+```Organisation and organisation_group``` tables have fields ```schema_name``` that are used by ETL to figure out if an org has ETL enabled, and the schema where data should be transferred to. 
 Since form fields can change, ETL adjusts tables to match the new application structure. The schema is stored in the ```table_metadata, column_metadata and index_metadata ``` tables on the public schema. 
 ```public.entity_sync_status``` stores the current sync status of each table.
 

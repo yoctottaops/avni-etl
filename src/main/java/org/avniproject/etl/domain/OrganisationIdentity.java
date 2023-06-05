@@ -7,6 +7,7 @@ public class OrganisationIdentity {
     private final String dbUser;
     private final String schemaName;
     private final List<String> groupDbUsers = new ArrayList<>();
+
     public OrganisationIdentity(String dbUser, String schemaName) {
         this.dbUser = dbUser;
         this.schemaName = schemaName;

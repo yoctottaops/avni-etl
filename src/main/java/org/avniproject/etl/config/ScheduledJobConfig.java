@@ -1,5 +1,6 @@
 package org.avniproject.etl.config;
 
+import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,5 +24,9 @@ public class ScheduledJobConfig {
 
     public JobKey getJobKey(String organisationUUID) {
         return new JobKey(organisationUUID);
+    }
+
+    public String getOrganisationId(JobDetail jobDetail) {
+        return jobDetail.getKey().getName();
     }
 }

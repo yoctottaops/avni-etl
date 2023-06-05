@@ -25,7 +25,7 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
     @Sql({"/test-data-teardown.sql", "/test-data.sql"})
     @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldRunForOrganisation() {
-        etlService.run();
+        etlService.runForAll();
     }
 
     @Test
@@ -48,7 +48,7 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
     @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
     @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldRunForOrganisationGroup() {
-        etlService.run();
+        etlService.runForAll();
         assertThat(countOfRowsIn("og.goat"), equalTo(2L));
         assertThat(countOfRowsIn("og.household"), equalTo(2L));
         assertThat(countOfRowsIn("og.person"), equalTo(2L));
