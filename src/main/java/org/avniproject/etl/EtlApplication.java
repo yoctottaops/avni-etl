@@ -1,6 +1,9 @@
 package org.avniproject.etl;
 
+import org.avniproject.etl.scheduler.EtlJobListener;
+import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,7 +17,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 		havingValue = "true",
 		matchIfMissing = true)
 public class EtlApplication {
-	public static void main(String[] args) {
+    @Autowired
+    public EtlApplication(Scheduler scheduler, EtlJobListener etlJobListener) throws SchedulerException {
+        scheduler.getListenerManager().addJobListener(etlJobListener);
+        scheduler.start();
+    }
+
+    public static void main(String[] args) {
 	    SpringApplication.run(EtlApplication.class, args);
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class ScheduledJobConfig {
     public static final String SYNC_JOB_GROUP = "SyncJobs";
     public static final String SYNC_TRIGGER_GROUP = "SyncTriggers";
+    public static final String JOB_CREATED_AT = "CreatedAt";
 
     @Value("${avni.scheduledJob.repeatIntervalInMinutes}")
     private int repeatIntervalInMinutes;
@@ -23,7 +24,7 @@ public class ScheduledJobConfig {
     }
 
     public JobKey getJobKey(String organisationUUID) {
-        return new JobKey(organisationUUID);
+        return new JobKey(organisationUUID, SYNC_JOB_GROUP);
     }
 
     public String getOrganisationId(JobDetail jobDetail) {

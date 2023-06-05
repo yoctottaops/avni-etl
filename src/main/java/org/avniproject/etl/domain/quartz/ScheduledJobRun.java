@@ -35,8 +35,8 @@ public class ScheduledJobRun {
         return scheduledJobRun;
     }
 
-    public void ended(Trigger trigger, JobExecutionException jobException) {
-        this.endedAt = trigger.getEndTime();
+    public void ended(JobExecutionException jobException) {
+        this.endedAt = new Date();
         errorMessage = ExceptionUtil.getStackTraceAsString(jobException);
     }
 

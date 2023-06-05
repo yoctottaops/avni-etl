@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 public class EtlSchedulerController {
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
 
     @Autowired
     public EtlSchedulerController(Scheduler scheduler) {
@@ -16,7 +19,9 @@ public class EtlSchedulerController {
     }
 
     @GetMapping("/etl/scheduler")
-    public boolean getSchedulerStatus() throws SchedulerException {
-        return scheduler.isStarted();
+    public Map<String, Boolean> getSchedulerStatus() throws SchedulerException {
+        return new HashMap<>() {{
+            put("Started", scheduler.isStarted());
+        }};
     }
 }

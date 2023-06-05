@@ -37,7 +37,7 @@ public class EtlJobListener implements JobListener {
     @Override
     public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
         ScheduledJobRun scheduledJobRun = scheduledJobRunRepository.getLastRun(context.getJobDetail().getKey().getName());
-        scheduledJobRun.ended(context.getTrigger(), jobException);
+        scheduledJobRun.ended(jobException);
         scheduledJobRunRepository.save(scheduledJobRun);
     }
 }
