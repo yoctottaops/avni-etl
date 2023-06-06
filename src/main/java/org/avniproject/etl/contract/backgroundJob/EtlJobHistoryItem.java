@@ -2,9 +2,10 @@ package org.avniproject.etl.contract.backgroundJob;
 
 import java.util.Date;
 
-public class EtlJobHistoryResponse {
+public class EtlJobHistoryItem {
     private Date startedAt;
     private Date endedAt;
+    private String errorMessage;
 
     public Date getStartedAt() {
         return startedAt;
@@ -20,5 +21,13 @@ public class EtlJobHistoryResponse {
 
     public void setEndedAt(Date endedAt) {
         this.endedAt = endedAt;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }
