@@ -63,6 +63,10 @@ public class EtlJobController {
         if (organisation == null)
             return ResponseEntity.badRequest().body(String.format("No such organisation exists: %s", jobScheduleRequest.getOrganisationUUID()));
 
+        EtlJobSummary latestJobRun = scheduledJobService.getLatestJobRun(jobScheduleRequest.getOrganisationUUID());
+        if (latestJobRun != null)
+            return ResponseEntity.badRequest().body("Job already present");
+
         JobDetailImpl jobDetail = new JobDetailImpl();
         jobDetail.setJobClass(EtlJob.class);
         jobDetail.setDurability(true);
