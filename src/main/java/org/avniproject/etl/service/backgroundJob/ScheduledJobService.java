@@ -2,9 +2,9 @@ package org.avniproject.etl.service.backgroundJob;
 
 import org.avniproject.etl.config.ScheduledJobConfig;
 import org.avniproject.etl.contract.backgroundJob.EtlJobHistoryItem;
+import org.avniproject.etl.contract.backgroundJob.EtlJobStatus;
 import org.avniproject.etl.contract.backgroundJob.EtlJobSummary;
 import org.quartz.JobDetail;
-import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,19 @@ public class ScheduledJobService {
             "     where sjr.job_name = ?" +
             "order by 1 desc\n";
 
+    private static final String JOB_LIST_QUERY = "select organisationUUID, job_name from (SELECT unnest(string_to_array(?, ',')) as organisationUUID) foo\n" +
+            "    left outer join qrtz_job_details qjd on organisationUUID = qjd.job_name";
+
     @Autowired
     public ScheduledJobService(JdbcTemplate jdbcTemplate, Scheduler scheduler, ScheduledJobConfig scheduledJobConfig) {
         this.jdbcTemplate = jdbcTemplate;
         this.scheduler = scheduler;
         this.scheduledJobConfig = scheduledJobConfig;
+    }
+
+    public List<EtlJobStatus> getJobs(List<String> organisationUUIDs) {
+        String organisations = String.join(",", organisationUUIDs);
+        return jdbcTemplate.query(JOB_LIST_QUERY, ps -> ps.setString(1, organisations), new EtlJobStatusMapper());
     }
 
     public EtlJobSummary getLatestJobRun(String organisationUUID) throws SchedulerException {
@@ -70,6 +78,16 @@ public class ScheduledJobService {
             etlJobLatestStatusResponse.setEndedAt(rs.getDate(2));
             etlJobLatestStatusResponse.setErrorMessage(rs.getString(3));
             return etlJobLatestStatusResponse;
+        }
+    }
+
+    static class EtlJobStatusMapper implements RowMapper<EtlJobStatus> {
+        @Override
+        public EtlJobStatus mapRow(ResultSet rs, int rowNum) throws SQLException {
+            EtlJobStatus etlJobStatus = new EtlJobStatus();
+            etlJobStatus.setOrganisationUUID(rs.getString(1));
+            etlJobStatus.setAnalyticsEnabled(rs.getObject(2) != null);
+            return etlJobStatus;
         }
     }
 }

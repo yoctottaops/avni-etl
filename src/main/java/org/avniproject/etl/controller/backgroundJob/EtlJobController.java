@@ -3,6 +3,7 @@ package org.avniproject.etl.controller.backgroundJob;
 import org.avniproject.etl.config.ScheduledJobConfig;
 import org.avniproject.etl.contract.JobScheduleRequest;
 import org.avniproject.etl.contract.backgroundJob.EtlJobHistoryItem;
+import org.avniproject.etl.contract.backgroundJob.EtlJobStatus;
 import org.avniproject.etl.contract.backgroundJob.EtlJobSummary;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.repository.OrganisationRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.avniproject.etl.config.ScheduledJobConfig.SYNC_JOB_GROUP;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -43,6 +45,11 @@ public class EtlJobController {
         if (latestJobRun == null)
             return ResponseEntity.notFound().build();
         return new ResponseEntity(latestJobRun, HttpStatus.OK);
+    }
+
+    @PostMapping("/etl/job/status")
+    public List<EtlJobStatus> getStatuses(@RequestBody List<String> organisationUUIDs) {
+        return scheduledJobService.getJobs(organisationUUIDs);
     }
 
     @GetMapping("/etl/job/history/{id}")
