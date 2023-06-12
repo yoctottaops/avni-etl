@@ -34,6 +34,10 @@ public class ContextHolder {
         return organisationIdentity.get().getDbUser();
     }
 
+    public static String getSchemaUser() {
+        return organisationIdentity.get().getSchemaUser();
+    }
+
     public static String getDbSchema() {
         return organisationIdentity.get().getSchemaName();
     }

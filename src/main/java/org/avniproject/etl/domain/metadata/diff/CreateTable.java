@@ -1,6 +1,7 @@
 package org.avniproject.etl.domain.metadata.diff;
 
 import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.Column;
 
 import java.util.ArrayList;
@@ -29,9 +30,8 @@ public class CreateTable implements Diff {
                 .append(END_STATEMENT)
                 .append(NEWLINE);
 
-        List<String> groupDbUsers = ContextHolder.getOrganisationIdentity().getGroupDbUsers();
-        List<String> applicableUsers = groupDbUsers.isEmpty() ? Collections.singletonList(ContextHolder.getDbUser()) : groupDbUsers;
-        List<StringBuilder> tablePermissions = applicableUsers.stream()
+        List<String> groupDbUsers = ContextHolder.getOrganisationIdentity().getUsersWithSchemaAccess();
+        List<StringBuilder> tablePermissions = groupDbUsers.stream()
                 .map(user -> grantPermissions(ContextHolder.getDbSchema(), user))
                 .collect(Collectors.toList());
 

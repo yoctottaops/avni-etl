@@ -24,16 +24,9 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     @Sql({"/test-data-teardown.sql", "/test-data.sql"})
     @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void shouldRunForOrganisation() {
-        etlService.runForAll();
-    }
-
-    @Test
-    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
-    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldNotFailWhenRunTwice() {
-        etlService.runForOrganisation(new OrganisationIdentity("orgc", "orgc"));
-        etlService.runForOrganisation(new OrganisationIdentity("orgc", "orgc"));
+        etlService.runFor(OrganisationIdentity.createForOrganisation("orgc", "orgc"));
+        etlService.runFor(OrganisationIdentity.createForOrganisation("orgc", "orgc"));
 
         assertThat(countOfRowsIn("orgc.goat"), equalTo(1L));
         assertThat(countOfRowsIn("orgc.household"), equalTo(1L));
@@ -42,16 +35,6 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(countOfRowsIn("orgc.person_nutrition_exit"), equalTo(1L));
         assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring"), equalTo(1L));
         assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring_cancel"), equalTo(1L));
-    }
-
-    @Test
-    @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
-    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void shouldRunForOrganisationGroup() {
-        etlService.runForAll();
-        assertThat(countOfRowsIn("og.goat"), equalTo(2L));
-        assertThat(countOfRowsIn("og.household"), equalTo(2L));
-        assertThat(countOfRowsIn("og.person"), equalTo(2L));
     }
 
     private Long countOfRowsIn(String tableName) {

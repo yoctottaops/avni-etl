@@ -85,7 +85,7 @@ public class ScheduledJobService {
         @Override
         public EtlJobStatus mapRow(ResultSet rs, int rowNum) throws SQLException {
             EtlJobStatus etlJobStatus = new EtlJobStatus();
-            etlJobStatus.setOrganisationUUID(rs.getString(1));
+            etlJobStatus.setEntityUUID(rs.getString(1));
             etlJobStatus.setAnalyticsEnabled(rs.getObject(2) != null);
             return etlJobStatus;
         }

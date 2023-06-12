@@ -28,6 +28,9 @@ public class ScheduledJobRun {
     @Column
     private String errorMessage;
 
+    @Column
+    private boolean success;
+
     public static ScheduledJobRun create(JobDetail jobDetail, Trigger trigger) {
         ScheduledJobRun scheduledJobRun = new ScheduledJobRun();
         scheduledJobRun.jobName = jobDetail.getKey().getName();
@@ -62,5 +65,13 @@ public class ScheduledJobRun {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }

@@ -1,4 +1,4 @@
-select create_db_user('ogi1', 'password');
+ select create_db_user('ogi1', 'password');
 select create_db_user('ogi2', 'password');
 select create_db_user('og', 'password');
 
@@ -11,8 +11,8 @@ insert into organisation (id, name, db_user, uuid, parent_organisation_id, is_vo
                           account_id, schema_name)
 values (14, 'Org group item 2', 'ogi2', uuid_generate_v4(), null, false, 'ogi2', 'ogi2', 1, 'ogi2');
 
-insert into organisation_group(id, name, db_user, account_id, schema_name)
-VALUES (11, 'Org group', 'og', 1, 'og');
+insert into organisation_group(id, name, db_user, account_id, schema_name, uuid)
+VALUES (11, 'Org group', 'og', 1, 'og', 'og');
 
 insert into organisation_group_organisation (id, name, organisation_group_id, organisation_id)
 VALUES (11, 'OGI1', 11, 13);

@@ -46,8 +46,7 @@ public class SchemaMigrationService {
     private void ensureSchemaExists(OrganisationIdentity organisationIdentity) {
         log.debug("Adding schema if not exists");
         organisationRepository.createDBUser(organisationIdentity.getDbUser(), "password");
-        List<String> groupDbUsers = organisationIdentity.getGroupDbUsers();
-        List<String> applicableUsers = groupDbUsers.isEmpty() ? Collections.singletonList(organisationIdentity.getDbUser()) : groupDbUsers;
-        applicableUsers.forEach(user -> organisationRepository.createImplementationSchema(organisationIdentity.getSchemaName(), user));
+        List<String> dbUsers = organisationIdentity.getUsersWithSchemaAccess();
+        dbUsers.forEach(user -> organisationRepository.createImplementationSchema(organisationIdentity.getSchemaName(), user));
     }
 }

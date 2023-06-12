@@ -1,6 +1,8 @@
 package org.avniproject.etl.domain.result;
 
-public class EtlResult {
+import java.io.Serializable;
+
+public class EtlResult implements Serializable {
     private final Boolean isSuccess;
 
     public EtlResult(Boolean isSuccess) {

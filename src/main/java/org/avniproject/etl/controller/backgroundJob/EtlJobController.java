@@ -5,6 +5,7 @@ import org.avniproject.etl.contract.JobScheduleRequest;
 import org.avniproject.etl.contract.backgroundJob.EtlJobHistoryItem;
 import org.avniproject.etl.contract.backgroundJob.EtlJobStatus;
 import org.avniproject.etl.contract.backgroundJob.EtlJobSummary;
+import org.avniproject.etl.contract.backgroundJob.JobEntityType;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.scheduler.EtlJob;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static org.avniproject.etl.config.ScheduledJobConfig.SYNC_JOB_GROUP;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -59,27 +59,31 @@ public class EtlJobController {
 
     @PostMapping("/etl/job")
     public ResponseEntity createJob(@RequestBody JobScheduleRequest jobScheduleRequest) throws SchedulerException {
-        OrganisationIdentity organisation = organisationRepository.getOrganisation(jobScheduleRequest.getOrganisationUUID());
-        if (organisation == null)
-            return ResponseEntity.badRequest().body(String.format("No such organisation exists: %s", jobScheduleRequest.getOrganisationUUID()));
+        OrganisationIdentity organisationIdentity;
+        if (jobScheduleRequest.getJobEntityType().equals(JobEntityType.Organisation))
+            organisationIdentity = organisationRepository.getOrganisation(jobScheduleRequest.getEntityUUID());
+        else
+            organisationIdentity = (OrganisationIdentity) organisationRepository.getOrganisationGroup(jobScheduleRequest.getEntityUUID());
 
-        EtlJobSummary latestJobRun = scheduledJobService.getLatestJobRun(jobScheduleRequest.getOrganisationUUID());
+        if (organisationIdentity == null)
+            return ResponseEntity.badRequest().body(String.format("No such organisation exists: %s", jobScheduleRequest.getEntityUUID()));
+
+        EtlJobSummary latestJobRun = scheduledJobService.getLatestJobRun(jobScheduleRequest.getEntityUUID());
         if (latestJobRun != null)
             return ResponseEntity.badRequest().body("Job already present");
 
         JobDetailImpl jobDetail = new JobDetailImpl();
         jobDetail.setJobClass(EtlJob.class);
         jobDetail.setDurability(true);
-        jobDetail.setKey(scheduledJobConfig.getJobKey(jobScheduleRequest.getOrganisationUUID()));
+        jobDetail.setKey(scheduledJobConfig.getJobKey(jobScheduleRequest.getEntityUUID()));
         jobDetail.setGroup(SYNC_JOB_GROUP);
-        jobDetail.setName(jobScheduleRequest.getOrganisationUUID());
-        JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(ScheduledJobConfig.JOB_CREATED_AT, new Date());
+        jobDetail.setName(jobScheduleRequest.getEntityUUID());
+        JobDataMap jobDataMap = scheduledJobConfig.createJobData(jobScheduleRequest.getJobEntityType());
         jobDetail.setJobDataMap(jobDataMap);
         scheduler.addJob(jobDetail, false);
 
         Trigger trigger = newTrigger()
-                .withIdentity(scheduledJobConfig.getTriggerKey(jobScheduleRequest.getOrganisationUUID()))
+                .withIdentity(scheduledJobConfig.getTriggerKey(jobScheduleRequest.getEntityUUID()))
                 .forJob(jobDetail)
                 .withSchedule(simpleSchedule().withIntervalInMinutes(scheduledJobConfig.getRepeatIntervalInMinutes()).repeatForever())
                 .build();

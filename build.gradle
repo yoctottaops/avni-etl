@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.keycloak:keycloak-spring-boot-starter:21.0.2'
 	implementation 'org.keycloak:keycloak-admin-client:21.0.2'
 	implementation 'org.antlr:ST4:4.3.4'
+    implementation 'org.hibernate:hibernate-validator:7.0.5.Final'
 }
 
 tasks.named('test') {

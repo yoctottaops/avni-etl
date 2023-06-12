@@ -40,7 +40,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     }
 
     private void runDataSync() {
-        etlService.runForOrganisation(new OrganisationIdentity("orgc", "orgc"));
+        etlService.runFor(OrganisationIdentity.createForOrganisation("orgc", "orgc"));
     }
 
     private List<Map<String, Object>> getPersons() {
@@ -54,7 +54,6 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     private void addApprovalStatus(Integer id, String uuid, Integer statusId, String dateTime) {
         jdbcTemplate.execute(format("insert into entity_approval_status (id, uuid, entity_id, entity_type, approval_status_id, approval_status_comment,organisation_id, audit_id, version, status_date_time, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, entity_type_uuid, address_id, individual_id, sync_concept_1_value, sync_concept_2_value ) values (%d, '%s', 574170, 'Subject', %d, null, 12, create_audit(), 0,  '%s', 1,1, '%s', '%s', '19f9c741-a8b1-4be6-9aab-c0e5ae4e0cd8', 107786, 574170, null, null)", id, uuid, statusId, dateTime, dateTime, dateTime));
     }
-
 
     @Test
     @Sql({"/test-data-teardown.sql", "/test-data.sql", "/new-form-element.sql"})
@@ -199,7 +198,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void allTheDBUserOfOrgGroupAreAbleToQueryTables() {
-        etlService.runForAll();
+        etlService.runForOrganisationGroup("og");
         jdbcTemplate.execute("set role og;");
         List<Map<String, Object>> groupList = jdbcTemplate.queryForList("select * from og.person;");
         jdbcTemplate.execute("set role ogi1;");
@@ -216,7 +215,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void approvalStatusFromChildOrgsShouldUpdateCorrectly() {
-        etlService.runForAll();
+        etlService.runForOrganisationGroup("og");
         Map<String, Object> org1Person = jdbcTemplate.queryForMap("select * from og.person where id = 674170;");
         Map<String, Object> org2Person = jdbcTemplate.queryForMap("select * from og.person where id = 574170;");
         assertThat(org1Person.get("latest_approval_status"), is("Pending"));

@@ -19,34 +19,14 @@ public class OrganisationRepositoryTest extends BaseIntegrationTest {
     private OrganisationRepository organisationRepository;
 
     @Test
-    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
-    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void shouldRetrieveAllOrganisationsWithAnalyticsDbTurnedOn() {
-        List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
-        assertThat(organisationList, hasItem(hasProperty("dbUser", equalTo("orgb") )));
-        assertThat(organisationList, hasItem(hasProperty("schemaName", equalTo("orgb") )));
-    }
-
-    @Test
     @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldRetrieveAllOrganisationsSeparatelyForOrganisationGroup() {
-        List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
+        List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationGroup("og");
         List<OrganisationIdentity> groupOrganisation = organisationList.stream().filter(organisationIdentity -> organisationIdentity.getSchemaName().equals("og")).collect(Collectors.toList());
         assertThat(groupOrganisation.size(), equalTo(2));
         assertThat(groupOrganisation, hasItem(allOf(hasProperty("dbUser", equalTo("ogi1")),hasProperty("schemaName", equalTo("og")))));
         assertThat(groupOrganisation, hasItem(allOf(hasProperty("dbUser", equalTo("ogi2")),hasProperty("schemaName", equalTo("og")))));
-    }
-
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
-    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    public void test() {
-        ContextHolder.setContext(new OrganisationIdentity("orgb", "orgb"));
-        List<OrganisationIdentity> organisationList = organisationRepository.getOrganisationList();
-        ContextHolder.setContext(organisationList.stream().filter(organisationIdentity -> organisationIdentity.getDbUser().equals("orgb")).findFirst().get());
-        assertThat(organisationRepository.getCountOfOrganisationsWithSetRole(), is(1));
     }
 
     @Test

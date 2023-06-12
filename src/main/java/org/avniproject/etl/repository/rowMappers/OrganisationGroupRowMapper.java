@@ -6,10 +6,12 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class OrganisationIdentityRowMapper implements RowMapper<OrganisationIdentity> {
+public class OrganisationGroupRowMapper implements RowMapper<OrganisationIdentity> {
     @Override
     public OrganisationIdentity mapRow(ResultSet rs, int rowNum) throws SQLException {
-        String dbUser = rs.getString("db_user");
-        return OrganisationIdentity.createForOrganisation(dbUser, rs.getString("schema_name"));
+        return OrganisationIdentity.createForOrganisationGroup(rs.getString("db_user"),
+                rs.getString("schema_name"),
+                rs.getString("schema_db_user")
+        );
     }
 }

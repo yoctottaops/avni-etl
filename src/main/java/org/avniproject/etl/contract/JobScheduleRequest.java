@@ -1,13 +1,24 @@
 package org.avniproject.etl.contract;
 
-public class JobScheduleRequest {
-    private String organisationUUID;
+import org.avniproject.etl.contract.backgroundJob.JobEntityType;
 
-    public String getOrganisationUUID() {
-        return organisationUUID;
+public class JobScheduleRequest {
+    private String entityUUID;
+    private JobEntityType jobEntityType;
+
+    public String getEntityUUID() {
+        return entityUUID;
     }
 
-    public void setOrganisationUUID(String organisationUUID) {
-        this.organisationUUID = organisationUUID;
+    public void setEntityUUID(String entityUUID) {
+        this.entityUUID = entityUUID;
+    }
+
+    public JobEntityType getJobEntityType() {
+        return jobEntityType;
+    }
+
+    public void setJobEntityType(JobEntityType jobEntityType) {
+        this.jobEntityType = jobEntityType;
     }
 }

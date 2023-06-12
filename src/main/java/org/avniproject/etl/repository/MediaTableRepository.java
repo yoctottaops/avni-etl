@@ -21,7 +21,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
+import static org.avniproject.etl.repository.JdbcContextWrapper.runInSchemaUserContext;
 
 @Repository
 public class MediaTableRepository {
@@ -88,7 +88,7 @@ public class MediaTableRepository {
                 .withMediaSearchRequest(mediaSearchRequest)
                 .withSearchConceptFilters(conceptFilterSearches)
                 .build();
-        return runInOrgContext(() -> new NamedParameterJdbcTemplate(jdbcTemplate)
+        return runInSchemaUserContext(() -> new NamedParameterJdbcTemplate(jdbcTemplate)
                 .query(query.sql(), query.parameters(),
                         (rs, rowNum) -> mediaTableRepositoryService.setMediaDto(rs)), jdbcTemplate);
     }

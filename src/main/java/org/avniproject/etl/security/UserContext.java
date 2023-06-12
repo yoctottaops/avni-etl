@@ -13,7 +13,6 @@ public class UserContext {
     private User user;
     private String authToken;
 
-
     public User getUser() {
         return user;
     }
@@ -40,7 +39,6 @@ public class UserContext {
     public void setOrganisation(Organisation organisation) {
         this.organisation = organisation;
     }
-
 
     public String getAuthToken() {
         return authToken;

@@ -9,11 +9,8 @@ import org.avniproject.etl.repository.OrganisationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class EtlService {
@@ -32,25 +29,23 @@ public class EtlService {
         this.syncService = syncService;
     }
 
-    public EtlResult runForOrganisation(String organisationUUID) {
+    public EtlResult runFor(String organisationUUID) {
         OrganisationIdentity organisationIdentity = organisationRepository.getOrganisation(organisationUUID);
-        return this.runForOrganisation(organisationIdentity);
+        return this.runFor(organisationIdentity);
     }
 
-    public List<EtlResult> runForAll() {
-        ArrayList<EtlResult> etlResults = new ArrayList<>();
-        organisationRepository
-                .getOrganisationList()
-                .stream()
-                .forEach(organisationIdentity -> {
-                    etlResults.add(runForOrganisation(organisationIdentity));
-                });
-        return etlResults;
+    public List<EtlResult> runForOrganisationGroup(String organisationGroupUUID) {
+        List<OrganisationIdentity> organisationIdentities = organisationRepository.getOrganisationGroup(organisationGroupUUID);
+        return this.runFor(organisationIdentities);
     }
 
-    public EtlResult runForOrganisation(OrganisationIdentity organisationIdentity) {
-        log.info(String.format("Running ETL for schema %s with dbUser %s",
-                organisationIdentity.getSchemaName(), organisationIdentity.getDbUser()));
+    public List<EtlResult> runFor(List<OrganisationIdentity> organisationIdentities) {
+        return organisationIdentities.stream().map(this::runFor).toList();
+    }
+
+    public EtlResult runFor(OrganisationIdentity organisationIdentity) {
+        log.info(String.format("Running ETL for schema %s with dbUser %s and schemaUser %s",
+                organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
         ContextHolder.setContext(organisationIdentity);
 
         try {

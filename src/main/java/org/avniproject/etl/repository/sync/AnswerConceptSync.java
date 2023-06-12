@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
+import static org.avniproject.etl.repository.JdbcContextWrapper.runInSchemaUserContext;
 
 @Repository
 public class AnswerConceptSync implements EntitySyncAction {
@@ -49,7 +50,7 @@ public class AnswerConceptSync implements EntitySyncAction {
                 tableMetadata.getId(),
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(lastSyncTime),
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(dataSyncBoundaryTime));
-        List<Map<String, Object>> answerConceptMigrations = runInOrgContext(() -> jdbcTemplate.queryForList(query), jdbcTemplate);
+        List<Map<String, Object>> answerConceptMigrations = runInSchemaUserContext(() -> jdbcTemplate.queryForList(query), jdbcTemplate);
         answerConceptMigrations.forEach(acm -> performMigration(acm, tableMetadata));
     }
 

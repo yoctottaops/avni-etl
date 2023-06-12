@@ -1,15 +1,15 @@
 package org.avniproject.etl.contract.backgroundJob;
 
 public class EtlJobStatus {
-    private String organisationUUID;
+    private String entityUUID;
     private boolean analyticsEnabled;
 
-    public String getOrganisationUUID() {
-        return organisationUUID;
+    public String getEntityUUID() {
+        return entityUUID;
     }
 
-    public void setOrganisationUUID(String organisationUUID) {
-        this.organisationUUID = organisationUUID;
+    public void setEntityUUID(String entityUUID) {
+        this.entityUUID = entityUUID;
     }
 
     public boolean isAnalyticsEnabled() {

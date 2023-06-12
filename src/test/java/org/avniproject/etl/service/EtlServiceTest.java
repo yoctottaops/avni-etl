@@ -9,12 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.stringtemplate.v4.ST;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -46,18 +41,11 @@ public class EtlServiceTest {
     }
 
     @Test
-    public void fetchesListOfOrganisationsToRunEtlOn() {
-        EtlService etlService = new EtlService(organisationRepository, organisationFactory, schemaMigrationService, syncService);
-        etlService.runForAll();
-        verify(organisationRepository).getOrganisationList();
-    }
-
-    @Test
     public void runForOrganisationShouldSetContextForOrganisation() {
         EtlService etlService = new EtlService(organisationRepository, organisationFactory, schemaMigrationService, syncService);
 
         OrganisationIdentity organisationIdentity = new OrganisationIdentityBuilder().withId(1).withDbUser("a").build();
-        etlService.runForOrganisation(organisationIdentity);
+        etlService.runFor(organisationIdentity);
 
         assertThat(ContextHolder.getOrganisationIdentity(), is(organisationIdentity));
     }
@@ -72,7 +60,7 @@ public class EtlServiceTest {
         Organisation newOrganisation = mock(Organisation.class);
         when(schemaMigrationService.migrate(organisation)).thenReturn(newOrganisation);
 
-        etlService.runForOrganisation(organisationIdentity);
+        etlService.runFor(organisationIdentity);
 
         verify(organisationFactory).create(organisationIdentity);
         verify(schemaMigrationService).migrate(organisation);

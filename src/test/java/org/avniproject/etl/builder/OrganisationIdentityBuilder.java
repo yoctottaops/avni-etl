@@ -13,7 +13,7 @@ public class OrganisationIdentityBuilder {
     }
 
     public OrganisationIdentity build() {
-        return new OrganisationIdentity(dbUser, schemaName);
+        return OrganisationIdentity.createForOrganisation(dbUser, schemaName);
     }
 
     public OrganisationIdentityBuilder withDbUser(String dbUser) {

@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static java.lang.String.format;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 
