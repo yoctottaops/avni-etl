@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -59,14 +60,15 @@ public class EtlJobController {
 
     @PostMapping("/etl/job")
     public ResponseEntity createJob(@RequestBody JobScheduleRequest jobScheduleRequest) throws SchedulerException {
-        OrganisationIdentity organisationIdentity;
+        OrganisationIdentity organisationIdentity = null;
+        List<OrganisationIdentity> organisationIdentitiesInGroup = new ArrayList<>();
         if (jobScheduleRequest.getJobEntityType().equals(JobEntityType.Organisation))
             organisationIdentity = organisationRepository.getOrganisation(jobScheduleRequest.getEntityUUID());
         else
-            organisationIdentity = (OrganisationIdentity) organisationRepository.getOrganisationGroup(jobScheduleRequest.getEntityUUID());
+            organisationIdentitiesInGroup = organisationRepository.getOrganisationGroup(jobScheduleRequest.getEntityUUID());
 
-        if (organisationIdentity == null)
-            return ResponseEntity.badRequest().body(String.format("No such organisation exists: %s", jobScheduleRequest.getEntityUUID()));
+        if (organisationIdentity == null && organisationIdentitiesInGroup.size() == 0)
+            return ResponseEntity.badRequest().body(String.format("No such organisation or group exists: %s", jobScheduleRequest.getEntityUUID()));
 
         EtlJobSummary latestJobRun = scheduledJobService.getLatestJobRun(jobScheduleRequest.getEntityUUID());
         if (latestJobRun != null)
