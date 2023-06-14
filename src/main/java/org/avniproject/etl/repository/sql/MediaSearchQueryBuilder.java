@@ -1,5 +1,6 @@
 package org.avniproject.etl.repository.sql;
 
+import org.apache.log4j.Logger;
 import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.dto.AddressRequest;
 import org.avniproject.etl.dto.ConceptFilterSearch;
@@ -10,14 +11,14 @@ import org.stringtemplate.v4.ST;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 
 public class MediaSearchQueryBuilder {
     private final ST template;
     private final Map<String, Object> parameters = new HashMap<>();
-    private final String sqlTemplate = readFile("/sql/api/searchMedia.sql.st");
+    private final static String sqlTemplate = readFile("/sql/api/searchMedia.sql.st");
+    private static final Logger logger = Logger.getLogger(MediaSearchQueryBuilder.class);
 
     public MediaSearchQueryBuilder() {
         this.template = new ST(sqlTemplate);
@@ -31,7 +32,7 @@ public class MediaSearchQueryBuilder {
     }
 
     public MediaSearchQueryBuilder withSearchConceptFilters(List<ConceptFilterSearch> conceptFilters) {
-        System.out.println("Building with searchConceptFilters:" + conceptFilters);
+        logger.debug("Building with searchConceptFilters:" + conceptFilters);
         if (conceptFilters != null && !conceptFilters.isEmpty()) {
             template.add("joinTablesAndColumns", conceptFilters);
         }
@@ -66,8 +67,9 @@ public class MediaSearchQueryBuilder {
     }
 
     public Query build() {
-        System.out.println(template.render());
-        return new Query(template.render(), parameters);
+        String str = template.render();
+        logger.debug(str);
+        return new Query(str, parameters);
     }
 
     private void addParameter(String key, List value) {

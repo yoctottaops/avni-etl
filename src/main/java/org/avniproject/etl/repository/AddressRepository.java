@@ -14,6 +14,7 @@ import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 @Repository
 public class AddressRepository {
     private JdbcTemplate jdbcTemplate;
+    private static final String sql = readFile("/sql/api/ensureAddressColumnExists.sql.st");
 
     @Autowired
     public AddressRepository(JdbcTemplate jdbcTemplate) {
@@ -24,8 +25,6 @@ public class AddressRepository {
         if (addressLevelTypeNames == null || addressLevelTypeNames.isEmpty()) {
             return true;
         }
-
-        String sql = readFile("/sql/api/ensureAddressColumnExists.sql.st");
 
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("schemaName", ContextHolder.getDbSchema());

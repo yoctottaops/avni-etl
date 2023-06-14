@@ -1,7 +1,6 @@
 package org.avniproject.etl.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class OrganisationIdentity {
 
     @Override
     public String toString() {
-        return String.format("Schema: %s DB User: %s", schemaName, dbUser);
+        return String.format("Schema: %s, DB User: %s, Schema User: %s", schemaName, dbUser, schemaUser);
     }
 
     public String getDbUser() {

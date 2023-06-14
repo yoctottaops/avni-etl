@@ -1,5 +1,6 @@
 package org.avniproject.etl.controller.backgroundJob;
 
+import org.apache.log4j.Logger;
 import org.avniproject.etl.config.ScheduledJobConfig;
 import org.avniproject.etl.contract.JobScheduleRequest;
 import org.avniproject.etl.contract.backgroundJob.EtlJobHistoryItem;
@@ -10,7 +11,11 @@ import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.scheduler.EtlJob;
 import org.avniproject.etl.service.backgroundJob.ScheduledJobService;
-import org.quartz.*;
+import org.avniproject.etl.util.DateTimeUtil;
+import org.quartz.JobDataMap;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
 import org.quartz.impl.JobDetailImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.avniproject.etl.config.ScheduledJobConfig.SYNC_JOB_GROUP;
@@ -31,6 +35,7 @@ public class EtlJobController {
     private final ScheduledJobConfig scheduledJobConfig;
     private final OrganisationRepository organisationRepository;
     private final ScheduledJobService scheduledJobService;
+    private static final Logger logger = Logger.getLogger(EtlJobController.class);
 
     @Autowired
     public EtlJobController(Scheduler scheduler, ScheduledJobConfig scheduledJobConfig, OrganisationRepository organisationRepository, ScheduledJobService scheduledJobService) {
@@ -88,9 +93,11 @@ public class EtlJobController {
                 .withIdentity(scheduledJobConfig.getTriggerKey(jobScheduleRequest.getEntityUUID()))
                 .forJob(jobDetail)
                 .withSchedule(simpleSchedule().withIntervalInMinutes(scheduledJobConfig.getRepeatIntervalInMinutes()).repeatForever())
+                .startAt(DateTimeUtil.nowPlusSeconds(20))
                 .build();
 
         scheduler.scheduleJob(trigger);
+        logger.info(String.format("Job Scheduled for %s:%s", jobScheduleRequest.getJobEntityType(), jobScheduleRequest.getEntityUUID()));
         return ResponseEntity.ok().body("Job Scheduled!");
     }
 

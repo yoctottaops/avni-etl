@@ -14,6 +14,7 @@ import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 public class TransactionalSyncSqlGenerator {
 
     private final Map<TableMetadata.Type, String> typeMap = new HashMap<>();
+    private static final String template = readFile("/sql/etl/conceptMap.sql");
 
     public TransactionalSyncSqlGenerator() {
         typeMap.put(TableMetadata.Type.Household, "/sql/etl/individual.sql");
@@ -73,7 +74,6 @@ public class TransactionalSyncSqlGenerator {
     }
 
     private String getConceptMaps(TableMetadata tableMetadata) {
-        String template = readFile("/sql/etl/conceptMap.sql");
         List<String> names = new ArrayList<>();
         names.add("'dummy'");
         names.addAll(tableMetadata.getNonDefaultColumnMetadataList().stream().map(columnMetadata -> wrapInSingleQuotes(columnMetadata.getConceptUuid())).collect(Collectors.toList()));

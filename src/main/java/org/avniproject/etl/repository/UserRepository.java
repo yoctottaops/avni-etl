@@ -1,6 +1,8 @@
 package org.avniproject.etl.repository;
 
+import org.apache.log4j.Logger;
 import org.avniproject.etl.domain.User;
+import org.avniproject.etl.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,6 +16,7 @@ import static java.lang.String.format;
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
     private User user;
+    private static final Logger logger = Logger.getLogger(UserRepository.class);
 
     @Autowired
     public UserRepository(JdbcTemplate jdbcTemplate) {
@@ -39,7 +42,7 @@ public class UserRepository {
             this.user = new User(rs.getString("username"), rs.getString("uuid"), rs.getLong("organisation_id"));
             return  rs;
         } catch (SQLException e) {
-            System.out.println("Exception occurred--" + e.getMessage());
+            logger.debug("Exception occurred--" + e.getMessage());
             throw new RuntimeException(e);
         }
     }

@@ -1,8 +1,5 @@
 package org.avniproject.etl.util;
 
-import org.springframework.stereotype.Service;
-
-@Service
 public class Utils {
     public static String getThumbnailUrl (String imageUrl) {
         int slashIndex = imageUrl.lastIndexOf('/');

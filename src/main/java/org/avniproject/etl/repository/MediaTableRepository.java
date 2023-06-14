@@ -29,7 +29,7 @@ public class MediaTableRepository {
     private final JdbcTemplate jdbcTemplate;
     private final MediaTableRepositoryService mediaTableRepositoryService;
     private final SchemaMetadataRepository schemaMetadataRepository;
-    private final Logger log = LoggerFactory.getLogger(MediaTableRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(MediaTableRepository.class);
 
     @Autowired
     MediaTableRepository(JdbcTemplate jdbcTemplate, MediaTableRepositoryService mediaTableRepositoryService, SchemaMetadataRepository schemaMetadataRepository) {
@@ -39,7 +39,7 @@ public class MediaTableRepository {
     }
 
     private List<ConceptFilterSearch> determineConceptFilterTablesAndColumns(List<ConceptFilter> conceptFilters) {
-        System.out.println("searching concepts: " + conceptFilters);
+        logger.debug("searching concepts: " + conceptFilters);
         List<ConceptFilterSearch> conceptFilterTablesAndColumns = new ArrayList<>();
         List<ColumnMetadata.ConceptType> supportedConceptSearchTypes = Arrays.asList(
             ColumnMetadata.ConceptType.Numeric,
@@ -54,7 +54,7 @@ public class MediaTableRepository {
                 schema.getAllEncounterTables())
             .flatMap(Collection::stream)
             .toList();
-        System.out.println("Searching tables: " + tablesToSearch);
+        logger.debug("Searching tables: " + tablesToSearch);
         for (ConceptFilter conceptFilter: conceptFilters) {
             String conceptUuid = conceptFilter.getConceptUuid();
             for (TableMetadata tableMetadata: tablesToSearch) {
@@ -73,7 +73,7 @@ public class MediaTableRepository {
                 }
             }
         }
-        System.out.println("Returning conceptFilterTablesAndColumns: " + conceptFilterTablesAndColumns);
+        logger.debug("Returning conceptFilterTablesAndColumns: " + conceptFilterTablesAndColumns);
         return conceptFilterTablesAndColumns;
     }
 

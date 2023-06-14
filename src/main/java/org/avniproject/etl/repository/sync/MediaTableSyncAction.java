@@ -26,6 +26,9 @@ import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 public class MediaTableSyncAction implements EntitySyncAction {
     private final JdbcTemplate jdbcTemplate;
     private final AvniMetadataRepository avniMetadataRepository;
+    private static final String medialSql = readFile("/sql/etl/media.sql.st");
+    private static final String deleteDuplicateMediaSql = readFile("sql/etl/deleteDuplicateMedia.sql.st");
+
 
     @Autowired
     public MediaTableSyncAction(JdbcTemplate jdbcTemplate, AvniMetadataRepository metadataRepository) {
@@ -78,8 +81,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
             }
         });
 
-        String templatePath = "/sql/etl/media.sql.st";
-        ST template = new ST(readFile(templatePath))
+        ST template = new ST(medialSql)
                 .add("schemaName", wrapInQuotes(ContextHolder.getDbSchema()))
                 .add("tableName", wrapInQuotes(mediaTableMetadata.getName()))
                 .add("conceptColumnName", wrapInQuotes(conceptColumnName))
@@ -113,7 +115,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
 
     private void deleteDuplicateRows(Date lastSyncTime) {
         String schema = ContextHolder.getDbSchema();
-        String sql = new ST(readFile("sql/etl/deleteDuplicateMedia.sql.st"))
+        String sql = new ST(deleteDuplicateMediaSql)
                 .add("schemaName", schema)
                 .render();
         HashMap<String, Object> params = new HashMap<>();
