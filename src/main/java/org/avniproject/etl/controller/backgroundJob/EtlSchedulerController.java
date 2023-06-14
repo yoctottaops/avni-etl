@@ -18,7 +18,7 @@ public class EtlSchedulerController {
         this.scheduler = scheduler;
     }
 
-    @GetMapping("/etl/scheduler")
+    @GetMapping("/scheduler")
     public Map<String, Boolean> getSchedulerStatus() throws SchedulerException {
         return new HashMap<>() {{
             put("Started", scheduler.isStarted());

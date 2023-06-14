@@ -45,7 +45,7 @@ public class EtlJobController {
         this.scheduledJobService = scheduledJobService;
     }
 
-    @GetMapping("/etl/job/{id}")
+    @GetMapping("/job/{id}")
     public ResponseEntity getJob(@PathVariable String id) throws SchedulerException {
         EtlJobSummary latestJobRun = scheduledJobService.getLatestJobRun(id);
         if (latestJobRun == null)
@@ -53,17 +53,17 @@ public class EtlJobController {
         return new ResponseEntity(latestJobRun, HttpStatus.OK);
     }
 
-    @PostMapping("/etl/job/status")
+    @PostMapping("/job/status")
     public List<EtlJobStatus> getStatuses(@RequestBody List<String> organisationUUIDs) {
         return scheduledJobService.getJobs(organisationUUIDs);
     }
 
-    @GetMapping("/etl/job/history/{id}")
+    @GetMapping("/job/history/{id}")
     public List<EtlJobHistoryItem> getJobHistory(@PathVariable String id) {
         return scheduledJobService.getJobHistory(id);
     }
 
-    @PostMapping("/etl/job")
+    @PostMapping("/job")
     public ResponseEntity createJob(@RequestBody JobScheduleRequest jobScheduleRequest) throws SchedulerException {
         OrganisationIdentity organisationIdentity = null;
         List<OrganisationIdentity> organisationIdentitiesInGroup = new ArrayList<>();
@@ -101,7 +101,7 @@ public class EtlJobController {
         return ResponseEntity.ok().body("Job Scheduled!");
     }
 
-    @DeleteMapping(value = "/etl/job/{id}")
+    @DeleteMapping(value = "/job/{id}")
     public String deleteJob(@PathVariable String id) throws SchedulerException {
         boolean jobDeleted = scheduler.deleteJob(scheduledJobConfig.getJobKey(id));
         return jobDeleted ? "Job Deleted" : "Job Not Deleted";
