@@ -4,6 +4,7 @@ import com.auth0.jwk.SigningKeyNotFoundException;
 import org.avniproject.etl.config.IdpType;
 import org.avniproject.etl.domain.User;
 import org.avniproject.etl.repository.OrganisationRepository;
+import org.avniproject.etl.repository.UserRepository;
 import org.avniproject.etl.security.IAMAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,9 @@ import org.springframework.stereotype.Service;
 public class IdpServiceFactory {
     @Autowired
     private OrganisationRepository organisationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired(required = false)
     private CognitoAuthServiceImpl cognitoAuthService;
@@ -42,7 +46,7 @@ public class IdpServiceFactory {
             case both:
                 return new CompositeIAMAuthService(cognitoAuthService, keycloakAuthService);
             case none:
-                return new NoIAMAuthService();
+                return new NoIAMAuthService(userRepository);
             default:
                 throw new RuntimeException(String.format("IdpType: %s is not supported", idpType));
         }
@@ -67,10 +71,18 @@ public class IdpServiceFactory {
         }
     }
 
+    @Service
     public static class NoIAMAuthService implements IAMAuthService {
+        private final UserRepository userRepository;
+
+        @Autowired
+        public NoIAMAuthService(UserRepository userRepository) {
+            this.userRepository = userRepository;
+        }
+
         @Override
-        public User getUserFromToken(String token) throws SigningKeyNotFoundException {
-            return null;
+        public User getUserFromToken(String userName) {
+            return userRepository.findByUsername(userName);
         }
     }
 }

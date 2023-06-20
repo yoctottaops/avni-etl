@@ -45,4 +45,8 @@ public class ContextHolder {
     public static Date dataSyncBoundaryTime() {
         return startTime;
     }
+
+    public static void clear() {
+        organisationIdentity.remove();
+    }
 }
