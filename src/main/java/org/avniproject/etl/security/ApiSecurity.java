@@ -52,7 +52,7 @@ public class ApiSecurity  {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(withDefaults()).csrf((csrf) -> csrf.disable())
+        http.csrf((csrf) -> csrf.disable())
             .formLogin((formLogin) -> formLogin.disable())
             .httpBasic((httpBasic) -> httpBasic.disable())
             .authorizeRequests().anyRequest().permitAll()

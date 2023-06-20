@@ -21,9 +21,4 @@ public class RestServiceConfiguration {
             }
         };
     }
-
-    @Bean(name = "mvcHandlerMappingIntrospector")
-    public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
-        return new HandlerMappingIntrospector();
-    }
 }
