@@ -3,6 +3,7 @@ package org.avniproject.etl.controller.backgroundJob;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +19,7 @@ public class EtlSchedulerController {
         this.scheduler = scheduler;
     }
 
+    @PreAuthorize("hasAnyAuthority('admin')")
     @GetMapping("/scheduler")
     public Map<String, Boolean> getSchedulerStatus() throws SchedulerException {
         return new HashMap<>() {{

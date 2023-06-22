@@ -34,10 +34,10 @@ public class AuthService {
         this.accountAdminRepository = accountAdminRepository;
     }
 
-    public User authenticateByTokenOrUserName(String tokenOrUserName) {
+    public User authenticate(String token) {
         IAMAuthService iamAuthService = idpServiceFactory.getAuthService();
         try {
-            return iamAuthService.getUserFromToken(tokenOrUserName);
+            return iamAuthService.getUserFromToken(token);
         } catch (SigningKeyNotFoundException signingKeyNotFoundException) {
             throw new RuntimeException(signingKeyNotFoundException);
         }

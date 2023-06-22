@@ -23,7 +23,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     public static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
-
     private final AuthService authService;
     private final String defaultUserName;
     private final IdpType idpType;
@@ -67,6 +66,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             UserContextHolder.clear();
             SecurityContextHolder.clearContext();
         }
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return "/ping".equals(path);
     }
 
     private void logException(HttpServletRequest request, Exception exception) {

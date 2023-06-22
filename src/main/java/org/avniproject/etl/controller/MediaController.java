@@ -6,6 +6,7 @@ import org.avniproject.etl.dto.MediaSearchRequest;
 import org.avniproject.etl.repository.sql.Page;
 import org.avniproject.etl.service.MediaService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ public class MediaController {
         this.mediaService = mediaService;
     }
 
+    @PreAuthorize("hasAnyAuthority('organisation_admin','admin')")
     @GetMapping("/media")
     public ResponseEntity list(HttpServletRequest request,
                                       @PathParam("size") int size,
@@ -26,6 +28,7 @@ public class MediaController {
         return search(request, new MediaSearchRequest(), size, page);
     }
 
+    @PreAuthorize("hasAnyAuthority('organisation_admin','admin')")
     @PostMapping("/media/search")
     public ResponseEntity search(HttpServletRequest request,
                                  @RequestBody MediaSearchRequest mediaSearchRequest,

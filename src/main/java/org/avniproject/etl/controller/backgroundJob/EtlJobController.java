@@ -46,6 +46,7 @@ public class EtlJobController {
         this.scheduledJobService = scheduledJobService;
     }
 
+    @PreAuthorize("hasAnyAuthority('admin')")
     @GetMapping("/job/{id}")
     public ResponseEntity getJob(@PathVariable String id) throws SchedulerException {
         EtlJobSummary latestJobRun = scheduledJobService.getLatestJobRun(id);
@@ -54,11 +55,13 @@ public class EtlJobController {
         return new ResponseEntity(latestJobRun, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('admin')")
     @PostMapping("/job/status")
     public List<EtlJobStatus> getStatuses(@RequestBody List<String> organisationUUIDs) {
         return scheduledJobService.getJobs(organisationUUIDs);
     }
 
+    @PreAuthorize("hasAnyAuthority('admin')")
     @GetMapping("/job/history/{id}")
     public List<EtlJobHistoryItem> getJobHistory(@PathVariable String id) {
         return scheduledJobService.getJobHistory(id);
@@ -103,6 +106,7 @@ public class EtlJobController {
         return ResponseEntity.ok().body("Job Scheduled!");
     }
 
+    @PreAuthorize("hasAnyAuthority('admin')")
     @DeleteMapping(value = "/job/{id}")
     public String deleteJob(@PathVariable String id) throws SchedulerException {
         boolean jobDeleted = scheduler.deleteJob(scheduledJobConfig.getJobKey(id));
