@@ -20,6 +20,7 @@ import org.quartz.impl.JobDetailImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class EtlJobController {
         return scheduledJobService.getJobHistory(id);
     }
 
+    @PreAuthorize("hasAnyAuthority('admin')")
     @PostMapping("/job")
     public ResponseEntity createJob(@RequestBody JobScheduleRequest jobScheduleRequest) throws SchedulerException {
         OrganisationIdentity organisationIdentity = null;

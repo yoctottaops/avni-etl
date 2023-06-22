@@ -33,16 +33,13 @@ public class ApiSecurity  {
     @Value("${avni.idp.type}")
     private IdpType idpType;
 
-    private final OrganisationRepository organisationRepository;
-
     @Autowired
-    public ApiSecurity(AuthService authService, OrganisationRepository organisationRepository) {
+    public ApiSecurity(AuthService authService) {
         this.authService = authService;
-        this.organisationRepository = organisationRepository;
     }
 
     public AuthenticationFilter authenticationFilter() {
-        return new AuthenticationFilter(authService, idpType, defaultUserName, organisationRepository);
+        return new AuthenticationFilter(authService, idpType, defaultUserName);
     }
 
     @Bean

@@ -2,8 +2,8 @@ package org.avniproject.etl.repository;
 
 import org.apache.log4j.Logger;
 import org.avniproject.etl.domain.User;
-import org.avniproject.etl.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -25,8 +25,12 @@ public class UserRepository {
 
     public User findByUsername(String username) {
         String sql = format("SELECT * FROM users WHERE username = '%s'", username);
-
-        jdbcTemplate.queryForObject(sql, (rs, rowNum) -> setUser(rs));
+        try {
+            jdbcTemplate.queryForObject(sql, (rs, rowNum) -> setUser(rs));
+        }
+        catch (EmptyResultDataAccessException emptyResultDataAccessException) {
+            return null;
+        }
         return this.user;
     }
 
@@ -39,7 +43,7 @@ public class UserRepository {
 
     private Object setUser(ResultSet rs) {
         try {
-            this.user = new User(rs.getString("username"), rs.getString("uuid"), rs.getLong("organisation_id"));
+            this.user = new User(rs.getLong("id"), rs.getString("username"), rs.getString("uuid"), rs.getLong("organisation_id"), rs.getBoolean("is_org_admin"));
             return  rs;
         } catch (SQLException e) {
             logger.debug("Exception occurred--" + e.getMessage());

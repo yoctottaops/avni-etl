@@ -32,6 +32,10 @@ public class UserContext {
         return this;
     }
 
+    public Collection<String> getRoles() {
+        return roles;
+    }
+
     public Organisation getOrganisation() {
         return organisation;
     }

@@ -2,10 +2,8 @@ package org.avniproject.etl.security;
 
 
 import org.avniproject.etl.config.IdpType;
-import org.avniproject.etl.domain.ContextHolder;
-import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.User;
-import org.avniproject.etl.repository.OrganisationRepository;
+import org.avniproject.etl.domain.UserContextHolder;
 import org.avniproject.etl.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +12,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,14 +27,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final AuthService authService;
     private final String defaultUserName;
     private final IdpType idpType;
-    private final OrganisationRepository organisationRepository;
 
 
-    public AuthenticationFilter(AuthService authService, IdpType idpType, String defaultUserName, OrganisationRepository organisationRepository) {
+    public AuthenticationFilter(AuthService authService, IdpType idpType, String defaultUserName) {
         this.authService = authService;
         this.idpType = idpType;
         this.defaultUserName = defaultUserName;
-        this.organisationRepository = organisationRepository;
     }
 
     @Override
@@ -44,26 +41,31 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             String method = request.getMethod();
             String requestURI = request.getRequestURI();
             String queryString = request.getQueryString();
-            String userName = request.getHeader(USER_NAME_HEADER);
-            if (StringUtils.isEmpty(userName)) userName = defaultUserName;
-            User user = authService.authenticateByTokenOrUserName(idpType.equals(IdpType.none) ? userName : request.getHeader(AUTH_TOKEN_HEADER));
+            String tokenForAuth;
+            if (idpType.equals(IdpType.none)) {
+                String userName = request.getHeader(USER_NAME_HEADER);
+                tokenForAuth = StringUtils.hasLength(userName) ? userName : defaultUserName;
+            } else {
+                tokenForAuth = request.getHeader(AUTH_TOKEN_HEADER);
+            }
+            User user = authService.authenticate(tokenForAuth);
             if (user == null) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                logger.info(String.format("%s %s?%s Unauthorized access token: %s", method, requestURI, queryString, tokenForAuth));
                 return;
             }
-            UserContext userContext = authService.setupUserContext(user);
-            OrganisationIdentity organisationIdentity = organisationRepository.getOrganisationByUser(userContext.getUser());
-            ContextHolder.setContext(organisationIdentity);
+            UserContextHolder.create(authService.setupUserContext(user));
             long start = System.currentTimeMillis();
             chain.doFilter(request, response);
             long end = System.currentTimeMillis();
-            logger.info(String.format("%s %s?%s User: %s Time: %s ms", method, requestURI, queryString, userContext.getUser().getUsername(), (end - start)));
+            logger.info(String.format("%s %s?%s User: %s Time: %s ms", method, requestURI, queryString, user.getUsername(), (end - start)));
         } catch (Exception exception) {
             this.logException(request, exception);
             throw exception;
         }
         finally {
-            ContextHolder.clear();
+            UserContextHolder.clear();
+            SecurityContextHolder.clearContext();
         }
     }
 
