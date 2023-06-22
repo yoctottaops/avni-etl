@@ -1,7 +1,7 @@
 package org.avniproject.etl.service;
 
 import org.apache.log4j.Logger;
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
@@ -41,13 +41,13 @@ public class SyncService {
 
     @Transactional
     public void migrateTable(TableMetadata tableMetadata, SchemaDataSyncStatus syncStatus, SchemaMetadata currentSchemaMetadata) {
-        log.info(String.format("Migrating table %s.%s", ContextHolder.getDbSchema(), tableMetadata.getName()));
+        log.info(String.format("Migrating table %s.%s", OrgIdentityContextHolder.getDbSchema(), tableMetadata.getName()));
         EntitySyncStatus entitySyncStatus = syncStatus.startSync(tableMetadata);
         entitySyncStatusRepository.save(entitySyncStatus);
 
-        entityRepository.saveEntities(tableMetadata, entitySyncStatus.getLastSyncTime(), ContextHolder.dataSyncBoundaryTime(), currentSchemaMetadata);
+        entityRepository.saveEntities(tableMetadata, entitySyncStatus.getLastSyncTime(), OrgIdentityContextHolder.dataSyncBoundaryTime(), currentSchemaMetadata);
 
-        entitySyncStatus.markSuccess(ContextHolder.dataSyncBoundaryTime());
+        entitySyncStatus.markSuccess(OrgIdentityContextHolder.dataSyncBoundaryTime());
         entitySyncStatusRepository.save(entitySyncStatus);
     }
 }

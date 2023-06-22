@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository.sync;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
@@ -59,7 +59,7 @@ public class AnswerConceptSync implements EntitySyncAction {
         String newAnswerConceptName = (String) acm.get("new_answer_concept_name");
         String oldAnswerConceptName = (String) acm.get("old_answer_concept_name");
         String updateTemplate = format("update \"%s\".\"%s\" set \"%s\" = ${updateCondition} where \"%s\" ${whereCondition};",
-                ContextHolder.getDbSchema(), tableMetadata.getName(), columnName, columnName);
+                OrgIdentityContextHolder.getDbSchema(), tableMetadata.getName(), columnName, columnName);
         String query = ColumnMetadata.ConceptType.MultiSelect.name().equals(acm.get("concept_type")) ?
                 getMultiSelectUpdateQuery(updateTemplate, oldAnswerConceptName, newAnswerConceptName, columnName) :
                 getSingleSelectUpdateQuery(updateTemplate, oldAnswerConceptName, newAnswerConceptName);

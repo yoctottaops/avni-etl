@@ -1,6 +1,6 @@
 package org.avniproject.etl.domain.metadata.diff;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.*;
 
@@ -23,7 +23,7 @@ public class AddIndex implements Diff {
                 .append(name)
                 .append(QUOTE)
                 .append(" on ")
-                .append(ContextHolder.getDbSchema())
+                .append(OrgIdentityContextHolder.getDbSchema())
                 .append(DOT)
                 .append(QUOTE)
                 .append(tableName)

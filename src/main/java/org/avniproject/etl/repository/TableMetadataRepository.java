@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -65,7 +65,7 @@ public class TableMetadataRepository {
     private Map<String, Object> addParameters(TableMetadata tableMetadata) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("id", tableMetadata.getId());
-        parameters.put("schema_name", ContextHolder.getDbSchema());
+        parameters.put("schema_name", OrgIdentityContextHolder.getDbSchema());
         parameters.put("name", tableMetadata.getName());
         parameters.put("type", tableMetadata.getType().toString());
         parameters.put("subject_type_uuid", tableMetadata.getSubjectTypeUuid());

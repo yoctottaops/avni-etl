@@ -5,16 +5,16 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class ContextHolder {
+public class OrgIdentityContextHolder {
     private static final ThreadLocal<OrganisationIdentity>  organisationIdentity = new ThreadLocal<>();
     private static Date startTime;
 
 
     public void setOrganisationIdentity(OrganisationIdentity organisationIdentity) {
-        ContextHolder.organisationIdentity.set(organisationIdentity);
+        OrgIdentityContextHolder.organisationIdentity.set(organisationIdentity);
     }
 
-    private ContextHolder() {
+    private OrgIdentityContextHolder() {
     }
 
     public static void setContext(OrganisationIdentity identity) {

@@ -1,7 +1,7 @@
 package org.avniproject.etl.repository.sql;
 
 import org.apache.log4j.Logger;
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.dto.AddressRequest;
 import org.avniproject.etl.dto.ConceptFilterSearch;
 import org.avniproject.etl.dto.MediaSearchRequest;
@@ -85,7 +85,7 @@ public class MediaSearchQueryBuilder {
     }
 
     private void addDefaultParameters() {
-        template.add("schemaName", ContextHolder.getDbSchema());
+        template.add("schemaName", OrgIdentityContextHolder.getDbSchema());
         parameters.put("offset", 0);
         parameters.put("limit", 10);
     }

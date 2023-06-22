@@ -71,7 +71,7 @@ public class TableMetadataTest {
 
     @Test
     public void shouldAddColumnIfMissing() {
-        ContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
+        OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
         TableMetadata oldTable = new TableMetadataBuilder().forPerson().build();
         TableMetadata newTable = new TableMetadataBuilder().forPerson().build();
         newTable.addColumnMetadata(List.of(new ColumnMetadata(new Column("newColumn", Column.Type.text), 24, ColumnMetadata.ConceptType.Text, UUID.randomUUID().toString())));

@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.syncstatus.EntitySyncStatus;
 import org.avniproject.etl.domain.syncstatus.SchemaDataSyncStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class EntitySyncStatusRepository {
                 "where ash.schema_name = :schema";
 
         Map<String, Object> parameters = new HashMap<>(1);
-        parameters.put("schema", ContextHolder.getDbSchema());
+        parameters.put("schema", OrgIdentityContextHolder.getDbSchema());
         List<EntitySyncStatus> entitySyncStatuses = runInOrgContext(() -> new NamedParameterJdbcTemplate(jdbcTemplate).query(sql, parameters, (rs, rowNum) -> new EntitySyncStatus(
                 rs.getInt("id"),
                 rs.getInt("table_metadata_id"),
@@ -74,11 +74,11 @@ public class EntitySyncStatusRepository {
     private Map<String, ?> addParameters(EntitySyncStatus entitySyncStatus) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("id", entitySyncStatus.getId());
-        parameters.put("db_user", ContextHolder.getDbUser());
+        parameters.put("db_user", OrgIdentityContextHolder.getDbUser());
         parameters.put("sync_status", entitySyncStatus.getSyncStatus().toString());
         parameters.put("last_sync_time", entitySyncStatus.getLastSyncTime());
         parameters.put("table_metadata_id", entitySyncStatus.getTableMetadataId());
-        parameters.put("schema_name", ContextHolder.getDbSchema());
+        parameters.put("schema_name", OrgIdentityContextHolder.getDbSchema());
 
         return parameters;
     }

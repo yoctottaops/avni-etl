@@ -1,7 +1,7 @@
 package org.avniproject.etl.service;
 
 import org.apache.log4j.Logger;
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.result.EtlResult;
@@ -9,7 +9,6 @@ import org.avniproject.etl.repository.OrganisationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,7 +45,7 @@ public class EtlService {
     public EtlResult runFor(OrganisationIdentity organisationIdentity) {
         log.info(String.format("Running ETL for schema %s with dbUser %s and schemaUser %s",
                 organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
-        ContextHolder.setContext(organisationIdentity);
+        OrgIdentityContextHolder.setContext(organisationIdentity);
 
         try {
             Organisation organisation = organisationFactory.create(organisationIdentity);

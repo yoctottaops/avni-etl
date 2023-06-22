@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository.sync;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
@@ -39,7 +39,7 @@ public class DuplicateRowDeleteAction implements EntitySyncAction {
     }
 
     private void deleteDuplicateRows(String tableName, Date lastSyncTime) {
-        String schema = ContextHolder.getDbSchema();
+        String schema = OrgIdentityContextHolder.getDbSchema();
         String baseSql = format("delete from \"${schemaName}\".\"${tableName}\"\n" +
                 "where id in (\n" +
                 "    select t1.id\n" +

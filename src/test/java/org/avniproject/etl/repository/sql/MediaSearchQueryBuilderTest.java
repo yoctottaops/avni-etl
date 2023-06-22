@@ -1,7 +1,7 @@
 package org.avniproject.etl.repository.sql;
 
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.dto.AddressRequest;
 import org.avniproject.etl.dto.MediaSearchRequest;
 import org.avniproject.etl.dto.SyncValue;
@@ -17,7 +17,7 @@ public class MediaSearchQueryBuilderTest {
 
     @BeforeEach
     public void setup() {
-        ContextHolder.setContext(new OrganisationIdentityBuilder().withSchemaName("schema").build());
+        OrgIdentityContextHolder.setContext(new OrganisationIdentityBuilder().withSchemaName("schema").build());
     }
 
     @Test

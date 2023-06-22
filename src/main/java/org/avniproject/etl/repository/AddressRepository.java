@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -27,7 +27,7 @@ public class AddressRepository {
         }
 
         HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("schemaName", ContextHolder.getDbSchema());
+        parameters.put("schemaName", OrgIdentityContextHolder.getDbSchema());
         parameters.put("addressLevelTypeNames", addressLevelTypeNames);
 
         Integer numberOfAddressLevelTypes = new NamedParameterJdbcTemplate(jdbcTemplate).queryForObject(sql, parameters, Integer.class);

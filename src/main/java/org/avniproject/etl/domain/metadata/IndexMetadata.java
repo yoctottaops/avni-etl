@@ -1,6 +1,6 @@
 package org.avniproject.etl.domain.metadata;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.Model;
 import org.avniproject.etl.domain.metadata.diff.AddIndex;
 import org.avniproject.etl.domain.metadata.diff.Diff;
@@ -24,7 +24,7 @@ public class IndexMetadata extends Model {
     }
 
     private static String makeIndexName() {
-        return  ContextHolder.getDbSchema() + "_" + UUID.randomUUID() + "_idx";
+        return  OrgIdentityContextHolder.getDbSchema() + "_" + UUID.randomUUID() + "_idx";
     }
 
     public String getName() {

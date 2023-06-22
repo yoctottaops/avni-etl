@@ -1,6 +1,6 @@
 package org.avniproject.etl.domain.metadata.diff;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.Column;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ public class AddColumnTest {
 
     @Test
     public void shouldAddColumn() {
-        ContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
+        OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
         AddColumn addColumn = new AddColumn("table", new Column("name", Column.Type.text));
         assertThat(addColumn.getSql(), is("alter table schema.table add column \"name\" text;"));
     }
@@ -30,7 +30,7 @@ public class AddColumnTest {
     public void shouldAddColumnWithLargeNameAfterShortening() {
         String columnName = "Total silt requested by the family members – Number of trolleys";
         String shortenedColumnName = "Total silt requested by the family members – Nu (1206887472)";
-        ContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
+        OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
         AddColumn addColumn = new AddColumn("table", new Column(columnName, Column.Type.text));
         assertThat(addColumn.getSql(), is("alter table schema.table add column \""+shortenedColumnName+"\" text;"));
     }

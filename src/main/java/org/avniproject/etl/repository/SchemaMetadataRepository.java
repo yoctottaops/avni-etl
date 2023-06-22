@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.Column;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
@@ -190,7 +190,7 @@ public class SchemaMetadataRepository {
                         "       cm.parent_concept_uuid                  parent_concept_uuid\n" +
                         "from table_metadata tm\n" +
                         "         left outer join column_metadata cm on tm.id = cm.table_id\n" +
-                        "     where tm.schema_name = '%s';", ContextHolder.getDbSchema());
+                        "     where tm.schema_name = '%s';", OrgIdentityContextHolder.getDbSchema());
 
         String getIndicesSql = format(
                 "select tm.id                  table_id,\n" +
@@ -212,7 +212,7 @@ public class SchemaMetadataRepository {
                         "from table_metadata tm\n" +
                         "         inner join index_metadata im on tm.id = im.table_metadata_id\n" +
                         "         inner join column_metadata cm on im.column_id = cm.id\n" +
-                        "where tm.schema_name = '%s';", ContextHolder.getDbSchema());
+                        "where tm.schema_name = '%s';", OrgIdentityContextHolder.getDbSchema());
 
         List<Map<String, Object>> tableAndColumnMaps = jdbcTemplate.queryForList(getTablesAndColumnsSql);
         List<Map<String, Object>> indexMaps = jdbcTemplate.queryForList(getIndicesSql);

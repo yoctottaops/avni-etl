@@ -1,6 +1,6 @@
 package org.avniproject.etl.domain.metadata.diff;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.Column;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class AddColumn implements Diff {
     public String getSql() {
         String alter_table_add_column = new StringBuffer()
                 .append("alter table ")
-                .append(ContextHolder.getDbSchema())
+                .append(OrgIdentityContextHolder.getDbSchema())
                 .append(DOT)
                 .append(tableName)
                 .append(" add column ")

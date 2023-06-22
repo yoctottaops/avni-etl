@@ -1,7 +1,7 @@
 package org.avniproject.etl.service;
 
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.repository.OrganisationRepository;
@@ -47,7 +47,7 @@ public class EtlServiceTest {
         OrganisationIdentity organisationIdentity = new OrganisationIdentityBuilder().withId(1).withDbUser("a").build();
         etlService.runFor(organisationIdentity);
 
-        assertThat(ContextHolder.getOrganisationIdentity(), is(organisationIdentity));
+        assertThat(OrgIdentityContextHolder.getOrganisationIdentity(), is(organisationIdentity));
     }
 
     @Test

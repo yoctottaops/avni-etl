@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository.sync;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
@@ -82,7 +82,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
         });
 
         ST template = new ST(medialSql)
-                .add("schemaName", wrapInQuotes(ContextHolder.getDbSchema()))
+                .add("schemaName", wrapInQuotes(OrgIdentityContextHolder.getDbSchema()))
                 .add("tableName", wrapInQuotes(mediaTableMetadata.getName()))
                 .add("conceptColumnName", wrapInQuotes(conceptColumnName))
                 .add("subjectTypeName", wrapStringValue(subjectTypeName))
@@ -114,7 +114,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
     }
 
     private void deleteDuplicateRows(Date lastSyncTime) {
-        String schema = ContextHolder.getDbSchema();
+        String schema = OrgIdentityContextHolder.getDbSchema();
         String sql = new ST(deleteDuplicateMediaSql)
                 .add("schemaName", schema)
                 .render();

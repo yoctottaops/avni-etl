@@ -1,7 +1,7 @@
 package org.avniproject.etl.domain.metadata;
 
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ class IndexMetadataTest {
 
     @BeforeEach
     public void setup() {
-        ContextHolder.setContext(new OrganisationIdentityBuilder().build());
+        OrgIdentityContextHolder.setContext(new OrganisationIdentityBuilder().build());
     }
 
     @Test

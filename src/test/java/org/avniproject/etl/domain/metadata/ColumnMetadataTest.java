@@ -1,6 +1,6 @@
 package org.avniproject.etl.domain.metadata;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.domain.metadata.diff.RenameColumn;
@@ -17,7 +17,7 @@ class ColumnMetadataTest {
 
     @Test
     public void shouldRenameColumnIfNecessary() {
-        ContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
+        OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
         String uuid = UUID.randomUUID().toString();
         ColumnMetadata oldColumnMetadata = new ColumnMetadata(new Column("oldName", Column.Type.text), 12, ColumnMetadata.ConceptType.Text, uuid);
         ColumnMetadata newColumnMetadata = new ColumnMetadata(new Column("newName", Column.Type.text), 12, ColumnMetadata.ConceptType.Text, uuid);

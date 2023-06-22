@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository.sync;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
@@ -64,7 +64,7 @@ public class EntityApprovalStatusSyncAction implements EntitySyncAction {
                 "  and row_number = 1\n" +
                 "  and status notnull;";
         String sql = baseSql
-                .replace("${schemaName}", ContextHolder.getDbSchema())
+                .replace("${schemaName}", OrgIdentityContextHolder.getDbSchema())
                 .replace("${tableName}", tableMetadata.getName())
                 .replace("${entityType}", typeMap.get(tableMetadata.getType()));
 

@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository.sql;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 
@@ -48,7 +48,7 @@ public class TransactionalSyncSqlGenerator {
     public String getSql(String path, TableMetadata tableMetadata, Date startTime, Date endTime) {
         String template = readFile(path);
         String obsColumnName = tableMetadata.getType().equals(TableMetadata.Type.Address) ? "location_properties" : "observations";
-        String text = template.replace("${schema_name}", wrapInQuotes(ContextHolder.getDbSchema()))
+        String text = template.replace("${schema_name}", wrapInQuotes(OrgIdentityContextHolder.getDbSchema()))
                 .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
                 .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
                 .replace("${concept_maps}", getConceptMaps(tableMetadata))

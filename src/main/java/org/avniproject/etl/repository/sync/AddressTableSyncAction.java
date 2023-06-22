@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository.sync;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
@@ -65,7 +65,7 @@ public class AddressTableSyncAction implements EntitySyncAction {
                     "join address_level cal on cal.parent_id = al.id\n" +
                     "join address_level_type calt on calt.id = cal.type_id\n" +
                     "where calt.id = %d\n" +
-                    "and cal.id = a.\"%s id\"", ContextHolder.getDbSchema(), parentLevelName, parentLevelName, childLevelId, childLevelName);
+                    "and cal.id = a.\"%s id\"", OrgIdentityContextHolder.getDbSchema(), parentLevelName, parentLevelName, childLevelId, childLevelName);
             runAddressQuery(query);
             insertParents((Integer) parentLevelMap.get("id"), levelName, (Integer) parentLevelMap.get("parent_id"));
         });

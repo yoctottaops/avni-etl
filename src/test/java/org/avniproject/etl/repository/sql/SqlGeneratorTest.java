@@ -2,7 +2,7 @@ package org.avniproject.etl.repository.sql;
 
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
 import org.avniproject.etl.builder.domain.metadata.TableMetadataBuilder;
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ class SqlGeneratorTest {
 
     @Test
     public void shouldGenerateSql() throws IOException {
-        ContextHolder.setContext(new OrganisationIdentityBuilder().build());
+        OrgIdentityContextHolder.setContext(new OrganisationIdentityBuilder().build());
         TableMetadata tableMetadata = new TableMetadataBuilder()
                 .forIndividual()
                 .withColumnMetadata(new ColumnMetadata(1, "numeric field", 10, ColumnMetadata.ConceptType.Numeric, "uuid-1"))

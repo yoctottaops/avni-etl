@@ -1,6 +1,6 @@
 package org.avniproject.etl.domain.metadata.diff;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.repository.rowMappers.tableMappers.PersonTable;
@@ -14,12 +14,12 @@ public class CreateTableTest {
 
     @BeforeEach
     public void before() {
-        ContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
+        OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
     }
 
     @Test
     public void shouldCreateSqlWithCommonColumns() {
-        ContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
+        OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
         TableMetadata tableMetadata = new TableMetadata();
         tableMetadata.setName("tableName");
 

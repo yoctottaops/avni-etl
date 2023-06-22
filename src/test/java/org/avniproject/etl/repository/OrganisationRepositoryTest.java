@@ -1,7 +1,6 @@
 package org.avniproject.etl.repository;
 
 import org.avniproject.etl.BaseIntegrationTest;
-import org.avniproject.etl.domain.ContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

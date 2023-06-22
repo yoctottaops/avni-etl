@@ -1,6 +1,6 @@
 package org.avniproject.etl.repository;
 
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -58,7 +58,7 @@ public class ColumnMetadataRepository {
     private Map<String, Object> addParameters(Integer tableId, ColumnMetadata columnMetadata) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("id", columnMetadata.getId());
-        parameters.put("schema_name", ContextHolder.getDbSchema());
+        parameters.put("schema_name", OrgIdentityContextHolder.getDbSchema());
         parameters.put("table_id", tableId);
         parameters.put("name", columnMetadata.getName());
         parameters.put("type", columnMetadata.getType().toString());

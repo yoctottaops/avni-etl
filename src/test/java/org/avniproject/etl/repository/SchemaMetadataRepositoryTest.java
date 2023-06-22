@@ -1,7 +1,7 @@
 package org.avniproject.etl.repository;
 
 import org.avniproject.etl.BaseIntegrationTest;
-import org.avniproject.etl.domain.ContextHolder;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.metadata.*;
 import org.avniproject.etl.domain.metadata.diff.Diff;
@@ -25,7 +25,7 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     @BeforeEach
     public void before() {
         OrganisationIdentity orgb = OrganisationIdentity.createForOrganisation("orgc", "orgc");
-        ContextHolder.setContext(orgb);
+        OrgIdentityContextHolder.setContext(orgb);
     }
 
     @Test
