@@ -16,6 +16,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity(debug = false)
@@ -29,6 +34,9 @@ public class ApiSecurity  {
 
     @Value("${avni.idp.type}")
     private IdpType idpType;
+
+    @Value("#{'${avni.security.allowedOrigins}'.split(',')}")
+    private List<String> allowedOrigins;
 
     @Autowired
     public ApiSecurity(AuthService authService) {
@@ -45,8 +53,22 @@ public class ApiSecurity  {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf((csrf) -> csrf.disable())
+        http
+            .cors((cors) -> cors.configurationSource(corsConfigurationSource()))
+            .csrf((csrf) -> csrf.disable())
             .formLogin((formLogin) -> formLogin.disable())
             .httpBasic((httpBasic) -> httpBasic.disable())
             .authorizeRequests().anyRequest().permitAll()
