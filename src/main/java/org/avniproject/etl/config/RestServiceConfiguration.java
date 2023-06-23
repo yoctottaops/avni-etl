@@ -9,7 +9,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 public class RestServiceConfiguration {
-    @Value("${avni.security.allowedOrigins}")
+    @Value("#{'${avni.security.allowedOrigins}'.split(',')}")
     private String allowedOrigins;
 
     @Bean
@@ -17,7 +17,7 @@ public class RestServiceConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins(allowedOrigins).allowedHeaders("*").allowedMethods("*");
+                registry.addMapping("/**").allowedOrigins(allowedOrigins).allowedHeaders("*").allowedMethods("*").allowCredentials(true);
             }
         };
     }
