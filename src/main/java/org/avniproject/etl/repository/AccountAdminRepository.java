@@ -22,7 +22,7 @@ public class AccountAdminRepository {
     }
 
     public List<Map<String, Object>> findByUserId(Long userId) {
-        String sql = format("SELECT * FROM account_admin WHERE id = %d", userId);
+        String sql = format("SELECT * FROM account_admin WHERE admin_id = %d", userId);
 
         return jdbcTemplate.queryForList(sql);
     }
