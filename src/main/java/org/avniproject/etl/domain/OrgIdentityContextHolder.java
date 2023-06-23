@@ -7,8 +7,6 @@ import java.util.Date;
 
 public class OrgIdentityContextHolder {
     private static final ThreadLocal<OrganisationIdentity>  organisationIdentity = new ThreadLocal<>();
-    private static Date startTime;
-
 
     public void setOrganisationIdentity(OrganisationIdentity organisationIdentity) {
         OrgIdentityContextHolder.organisationIdentity.set(organisationIdentity);
@@ -18,8 +16,8 @@ public class OrgIdentityContextHolder {
     }
 
     public static void setContext(OrganisationIdentity identity) {
+        identity.setStartTime(toDate(LocalDateTime.now().minus(Duration.ofSeconds(10))));
         organisationIdentity.set(identity);
-        startTime = toDate(LocalDateTime.now().minus(Duration.ofSeconds(10)));
     }
 
     private static Date toDate(LocalDateTime localDateTime) {
@@ -43,7 +41,7 @@ public class OrgIdentityContextHolder {
     }
 
     public static Date dataSyncBoundaryTime() {
-        return startTime;
+        return organisationIdentity.get().getStartTime();
     }
 
     public static void clear() {

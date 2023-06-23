@@ -1,8 +1,6 @@
 package org.avniproject.etl.domain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class User {
     public static final String USER = "user";
@@ -14,7 +12,6 @@ public class User {
     private String uuid;
     private Long organisationId;
     private boolean isOrgAdmin;
-    private Set<AccountAdmin> accountAdmin = new HashSet<>();
     private boolean isAdmin;
 
     public User(String userName, String uuid, Long organisationId) {
@@ -47,14 +44,6 @@ public class User {
 
     public void setOrgAdmin(boolean orgAdmin) {
         isOrgAdmin = orgAdmin;
-    }
-
-    public Set<AccountAdmin> getAccountAdmin() {
-        return accountAdmin;
-    }
-
-    public void setAccountAdmin(Set<AccountAdmin> accountAdmin) {
-        this.accountAdmin = accountAdmin;
     }
 
     public boolean isAdmin() {

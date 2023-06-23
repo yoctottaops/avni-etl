@@ -2,6 +2,7 @@ package org.avniproject.etl.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class OrganisationIdentity {
@@ -9,6 +10,7 @@ public class OrganisationIdentity {
     private final String schemaName;
     private final String schemaUser;
     private List<String> orgGroupOrgDbUsers;
+    private Date startTime;
 
     private OrganisationIdentity(String dbUser, String schemaName, String schemaUser) {
         this.dbUser = dbUser;
@@ -60,5 +62,13 @@ public class OrganisationIdentity {
 
     public void setOrgGroupOrgDbUsers(List<String> orgGroupOrgDbUsers) {
         this.orgGroupOrgDbUsers = orgGroupOrgDbUsers;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 }
