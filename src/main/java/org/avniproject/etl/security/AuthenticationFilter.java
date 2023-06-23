@@ -2,8 +2,10 @@ package org.avniproject.etl.security;
 
 
 import org.avniproject.etl.config.IdpType;
+import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.User;
 import org.avniproject.etl.domain.UserContextHolder;
+import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +26,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     private final AuthService authService;
+    private final OrganisationRepository organisationRepository;
     private final String defaultUserName;
     private final IdpType idpType;
 
-
-    public AuthenticationFilter(AuthService authService, IdpType idpType, String defaultUserName) {
+    public AuthenticationFilter(AuthService authService, OrganisationRepository organisationRepository, IdpType idpType, String defaultUserName) {
         this.authService = authService;
+        this.organisationRepository = organisationRepository;
         this.idpType = idpType;
         this.defaultUserName = defaultUserName;
     }
@@ -54,6 +57,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             UserContextHolder.create(authService.setupUserContext(user));
+            OrgIdentityContextHolder.setContext(organisationRepository.getOrganisationByUser(user));
             long start = System.currentTimeMillis();
             chain.doFilter(request, response);
             long end = System.currentTimeMillis();
@@ -64,6 +68,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
         finally {
             UserContextHolder.clear();
+            OrgIdentityContextHolder.clear();
             SecurityContextHolder.clearContext();
         }
     }

@@ -1,6 +1,7 @@
 package org.avniproject.etl.security;
 
 import org.avniproject.etl.config.IdpType;
+import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import java.util.List;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ApiSecurity  {
     private final AuthService authService;
+    private final OrganisationRepository organisationRepository;
 
     @Value("${avni.defaultUserName}")
     private String defaultUserName;
@@ -39,12 +41,13 @@ public class ApiSecurity  {
     private List<String> allowedOrigins;
 
     @Autowired
-    public ApiSecurity(AuthService authService) {
+    public ApiSecurity(AuthService authService, OrganisationRepository organisationRepository) {
         this.authService = authService;
+        this.organisationRepository = organisationRepository;
     }
 
     public AuthenticationFilter authenticationFilter() {
-        return new AuthenticationFilter(authService, idpType, defaultUserName);
+        return new AuthenticationFilter(authService, organisationRepository, idpType, defaultUserName);
     }
 
     @Bean
