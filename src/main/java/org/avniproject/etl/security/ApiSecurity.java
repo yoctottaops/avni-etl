@@ -1,7 +1,6 @@
 package org.avniproject.etl.security;
 
 import org.avniproject.etl.config.IdpType;
-import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -29,7 +29,6 @@ import java.util.List;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ApiSecurity  {
     private final AuthService authService;
-    private final OrganisationRepository organisationRepository;
 
     @Value("${avni.defaultUserName}")
     private String defaultUserName;
@@ -41,13 +40,12 @@ public class ApiSecurity  {
     private List<String> allowedOrigins;
 
     @Autowired
-    public ApiSecurity(AuthService authService, OrganisationRepository organisationRepository) {
+    public ApiSecurity(AuthService authService) {
         this.authService = authService;
-        this.organisationRepository = organisationRepository;
     }
 
     public AuthenticationFilter authenticationFilter() {
-        return new AuthenticationFilter(authService, organisationRepository, idpType, defaultUserName);
+        return new AuthenticationFilter(authService, idpType, defaultUserName);
     }
 
     @Bean
@@ -71,9 +69,9 @@ public class ApiSecurity  {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .cors((cors) -> cors.configurationSource(corsConfigurationSource()))
-            .csrf((csrf) -> csrf.disable())
-            .formLogin((formLogin) -> formLogin.disable())
-            .httpBasic((httpBasic) -> httpBasic.disable())
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
             .authorizeRequests().anyRequest().permitAll()
             .and()
             .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

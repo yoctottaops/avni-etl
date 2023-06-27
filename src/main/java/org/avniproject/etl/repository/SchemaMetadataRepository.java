@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
+import static org.avniproject.etl.repository.sql.SqlFile.readSqlFile;
 
 @Repository
 public class SchemaMetadataRepository {
@@ -40,7 +41,7 @@ public class SchemaMetadataRepository {
         List<TableMetadata> tables = new ArrayList<>(getFormTables());
         tables.add(getAddressTable());
         tables.add(MediaTableMetadataBuilder.build());
-
+        tables.addAll(getRepeatableQuestionGroupTables());
         return new SchemaMetadata(tables);
     }
 
@@ -63,6 +64,12 @@ public class SchemaMetadataRepository {
         tableMetadata.setType(TableMetadata.Type.Address);
         tableMetadata.setColumnMetadataList(addressTable.columnMetadata());
         return tableMetadata;
+    }
+
+    private List<TableMetadata> getRepeatableQuestionGroupTables() {
+        String sqlFormat = readSqlFile("repeatableQuestionGroups.sql");
+        String sql = format(sqlFormat, PLACEHOLDER_CONCEPT_UUID);
+        return getTableMetadata(sql);
     }
 
     private List<TableMetadata> getFormTables() {
@@ -104,13 +111,16 @@ public class SchemaMetadataRepository {
                 " and (p.id is null or op.id is not null) and (et.id is null or oet.id is not null)" +
                 " and nafe.id is null;", PLACEHOLDER_CONCEPT_UUID);
 
-        List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
-
-        Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("form_mapping_uuid")));
-        List<TableMetadata> tables = tableMaps.values().stream().map(mapList -> new TableMetadataMapper().create(mapList)).collect(Collectors.toList());
+        List<TableMetadata> tables = getTableMetadata(sql);
         tables.forEach(this::addDecisionConceptColumns);
         tables.stream().filter(t -> !t.isSubjectTable()).forEach(this::addSyncAttributeColumns);
         return tables;
+    }
+
+    private List<TableMetadata> getTableMetadata(String sql) {
+        List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
+        Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("form_mapping_uuid")));
+        return tableMaps.values().stream().map(mapList -> new TableMetadataMapper().create(mapList)).collect(Collectors.toList());
     }
 
     private void addDecisionConceptColumns(TableMetadata tableMetadata) {

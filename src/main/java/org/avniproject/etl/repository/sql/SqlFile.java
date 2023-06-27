@@ -20,4 +20,8 @@ public class SqlFile {
             throw new RuntimeException(e);
         }
     }
+
+    public static String readSqlFile(String fileName) {
+        return readFile(String.format("/sql/etl/%s", fileName));
+    }
 }

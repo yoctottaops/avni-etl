@@ -9,25 +9,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.avniproject.etl.domain.metadata.diff.Strings.COMMA;
-import static org.avniproject.etl.repository.sql.SqlFile.readFile;
+import static org.avniproject.etl.repository.sql.SqlFile.readSqlFile;
 
 public class TransactionalSyncSqlGenerator {
 
     private final Map<TableMetadata.Type, String> typeMap = new HashMap<>();
-    private static final String template = readFile("/sql/etl/conceptMap.sql");
+    private static final String template = readSqlFile("conceptMap.sql");
 
     public TransactionalSyncSqlGenerator() {
-        typeMap.put(TableMetadata.Type.Household, "/sql/etl/individual.sql");
-        typeMap.put(TableMetadata.Type.Individual, "/sql/etl/individual.sql");
-        typeMap.put(TableMetadata.Type.Group, "/sql/etl/individual.sql");
-        typeMap.put(TableMetadata.Type.Person, "/sql/etl/person.sql");
-        typeMap.put(TableMetadata.Type.Encounter, "/sql/etl/generalEncounter.sql");
-        typeMap.put(TableMetadata.Type.ProgramEnrolment, "/sql/etl/programEnrolment.sql");
-        typeMap.put(TableMetadata.Type.ProgramExit, "/sql/etl/programEnrolmentExit.sql");
-        typeMap.put(TableMetadata.Type.ProgramEncounter, "/sql/etl/programEncounter.sql");
-        typeMap.put(TableMetadata.Type.ProgramEncounterCancellation, "/sql/etl/programEncounterCancel.sql");
-        typeMap.put(TableMetadata.Type.IndividualEncounterCancellation, "/sql/etl/generalEncounterCancel.sql");
-        typeMap.put(TableMetadata.Type.ManualProgramEnrolmentEligibility, "/sql/etl/manualProgramEnrolmentEligibility.sql");
+        typeMap.put(TableMetadata.Type.Household, "individual.sql");
+        typeMap.put(TableMetadata.Type.Individual, "individual.sql");
+        typeMap.put(TableMetadata.Type.Group, "individual.sql");
+        typeMap.put(TableMetadata.Type.Person, "person.sql");
+        typeMap.put(TableMetadata.Type.Encounter, "generalEncounter.sql");
+        typeMap.put(TableMetadata.Type.ProgramEnrolment, "programEnrolment.sql");
+        typeMap.put(TableMetadata.Type.ProgramExit, "programEnrolmentExit.sql");
+        typeMap.put(TableMetadata.Type.ProgramEncounter, "programEncounter.sql");
+        typeMap.put(TableMetadata.Type.ProgramEncounterCancellation, "programEncounterCancel.sql");
+        typeMap.put(TableMetadata.Type.IndividualEncounterCancellation, "generalEncounterCancel.sql");
+        typeMap.put(TableMetadata.Type.ManualProgramEnrolmentEligibility, "manualProgramEnrolmentEligibility.sql");
     }
 
     private static String toString(String uuid) {
@@ -45,8 +45,8 @@ public class TransactionalSyncSqlGenerator {
         throw new RuntimeException("Could not generate sql for" + tableMetadata.getType().toString());
     }
 
-    public String getSql(String path, TableMetadata tableMetadata, Date startTime, Date endTime) {
-        String template = readFile(path);
+    public String getSql(String fileName, TableMetadata tableMetadata, Date startTime, Date endTime) {
+        String template = readSqlFile(fileName);
         String obsColumnName = tableMetadata.getType().equals(TableMetadata.Type.Address) ? "location_properties" : "observations";
         String text = template.replace("${schema_name}", wrapInQuotes(OrgIdentityContextHolder.getDbSchema()))
                 .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))

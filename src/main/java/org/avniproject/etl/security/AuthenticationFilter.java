@@ -26,13 +26,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     private final AuthService authService;
-    private final OrganisationRepository organisationRepository;
     private final String defaultUserName;
     private final IdpType idpType;
 
-    public AuthenticationFilter(AuthService authService, OrganisationRepository organisationRepository, IdpType idpType, String defaultUserName) {
+    public AuthenticationFilter(AuthService authService, IdpType idpType, String defaultUserName) {
         this.authService = authService;
-        this.organisationRepository = organisationRepository;
         this.idpType = idpType;
         this.defaultUserName = defaultUserName;
     }
@@ -57,7 +55,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             UserContextHolder.create(authService.setupUserContext(user));
-            OrgIdentityContextHolder.setContext(organisationRepository.getOrganisationByUser(user));
             long start = System.currentTimeMillis();
             chain.doFilter(request, response);
             long end = System.currentTimeMillis();
@@ -80,7 +77,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void logException(HttpServletRequest request, Exception exception) {
-        logger.error("Exception on Request URI", request.getRequestURI());
+        logger.error("Exception on Request URI {}", request.getRequestURI());
         logger.error("Exception Message:", exception);
     }
 }

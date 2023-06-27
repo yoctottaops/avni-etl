@@ -20,15 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
-import static org.avniproject.etl.repository.sql.SqlFile.readFile;
+import static org.avniproject.etl.repository.sql.SqlFile.readSqlFile;
 
 @Repository
 public class MediaTableSyncAction implements EntitySyncAction {
     private final JdbcTemplate jdbcTemplate;
     private final AvniMetadataRepository avniMetadataRepository;
-    private static final String medialSql = readFile("/sql/etl/media.sql.st");
-    private static final String deleteDuplicateMediaSql = readFile("sql/etl/deleteDuplicateMedia.sql.st");
-
+    private static final String medialSql = readSqlFile("media.sql.st");
+    private static final String deleteDuplicateMediaSql = readSqlFile("deleteDuplicateMedia.sql.st");
 
     @Autowired
     public MediaTableSyncAction(JdbcTemplate jdbcTemplate, AvniMetadataRepository metadataRepository) {

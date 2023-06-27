@@ -19,7 +19,6 @@ public class TableMetadata extends Model {
     private String encounterTypeUuid;
     private String formUuid;
     private List<ColumnMetadata> columnMetadataList = new ArrayList<>();
-
     private List<IndexMetadata> indexMetadataList = new ArrayList<>();
 
     public TableMetadata(Integer id) {
@@ -221,7 +220,8 @@ public class TableMetadata extends Model {
         IndividualEncounterCancellation,
         Address,
         Media,
-        ManualProgramEnrolmentEligibility
+        ManualProgramEnrolmentEligibility,
+        QuestionGroup
     }
 
     public boolean isSubjectTable() {
