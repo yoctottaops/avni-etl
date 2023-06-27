@@ -27,13 +27,13 @@ public class AddressTableSyncAction implements EntitySyncAction {
 
 
     @Override
-    public boolean supports(TableMetadata tableMetadata) {
-        return tableMetadata.getType().equals(TableMetadata.Type.Address);
+    public boolean doesntSupport(TableMetadata tableMetadata) {
+        return !tableMetadata.getType().equals(TableMetadata.Type.Address);
     }
 
     @Override
     public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata) {
-        if (!this.supports(tableMetadata)) {
+        if (this.doesntSupport(tableMetadata)) {
             return;
         }
         insertLowestLevelAddresses(tableMetadata, lastSyncTime, dataSyncBoundaryTime);

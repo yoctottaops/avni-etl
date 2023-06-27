@@ -36,13 +36,13 @@ public class EntityApprovalStatusSyncAction implements EntitySyncAction {
     }
 
     @Override
-    public boolean supports(TableMetadata tableMetadata) {
-        return typeMap.containsKey(tableMetadata.getType());
+    public boolean doesntSupport(TableMetadata tableMetadata) {
+        return !typeMap.containsKey(tableMetadata.getType());
     }
 
     @Override
     public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata) {
-        if (!this.supports(tableMetadata)) {
+        if (this.doesntSupport(tableMetadata)) {
             return;
         }
         updateEntitySyncStatus(tableMetadata);

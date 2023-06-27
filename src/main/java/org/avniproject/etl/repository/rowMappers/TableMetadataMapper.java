@@ -11,7 +11,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TableMetadataMapper {
-    public TableMetadata createFromExistingSchema(List<Map<String, Object>> columns, List<Map<String, Object>> indices) {
+    private ColumnMetadata createColumnMetaData(Map<String, Object> map) {
+        return new ColumnMetadata(
+                (Integer) map.get("column_id"),
+                new Column(
+                        (String) map.get("concept_name"),
+                        Column.Type.valueOf((String) map.get("column_type"))
+                ),
+                (Integer) map.get("concept_id"),
+                map.get("concept_type") == null ? null : ColumnMetadata.ConceptType.valueOf((String) map.get("concept_type")),
+                (String) map.get("concept_uuid"),
+                (String) map.get("parent_concept_uuid"));
+    }
+
+    public TableMetadata createFromExistingSchemaMetaData(List<Map<String, Object>> columns, List<Map<String, Object>> indices) {
         TableMetadata tableMetadata = new TableMetadata();
         Map<String, Object> tableDetails = columns.get(0);
         populateCommonColumns(tableMetadata, tableDetails);
@@ -21,33 +34,11 @@ public class TableMetadataMapper {
 
         tableMetadata.addColumnMetadata(columns.stream()
                 .filter(stringObjectMap -> stringObjectMap.get("column_id") != null)
-                .map(
-                        column -> new ColumnMetadata(
-                                (Integer) column.get("column_id"),
-                                new Column(
-                                        (String) column.get("concept_name"),
-                                        Column.Type.valueOf((String) column.get("column_type"))
-                                ),
-                                (Integer) column.get("concept_id"),
-                                column.get("concept_type") == null ? null : ColumnMetadata.ConceptType.valueOf((String) column.get("concept_type")),
-                                (String) column.get("concept_uuid"),
-                                (String) column.get("parent_concept_uuid")))
+                .map(this::createColumnMetaData)
                 .collect(Collectors.toList()));
 
-        tableMetadata.addIndexMetadata(indices.stream().map(index -> new IndexMetadata(
-                (Integer) index.get("index_id"),
-                (String) index.get("index_name"),
-                new ColumnMetadata(
-                        (Integer) index.get("column_id"),
-                        new Column(
-                                (String) index.get("concept_name"),
-                                Column.Type.valueOf((String) index.get("column_type"))
-                        ),
-                        (Integer) index.get("concept_id"),
-                        index.get("concept_type") == null ? null : ColumnMetadata.ConceptType.valueOf((String) index.get("concept_type")),
-                        (String) index.get("concept_uuid"),
-                        (String) index.get("parent_concept_uuid"))
-        )).collect(Collectors.toList()));
+        tableMetadata.addIndexMetadata(indices.stream().map(index ->
+                new IndexMetadata((Integer) index.get("index_id"), (String) index.get("index_name"), createColumnMetaData(index))).collect(Collectors.toList()));
 
         return tableMetadata;
     }

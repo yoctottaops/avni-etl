@@ -25,14 +25,14 @@ public class DuplicateRowDeleteAction implements EntitySyncAction {
     }
 
     @Override
-    public boolean supports(TableMetadata tableMetadata) {
-        return new TransactionalSyncSqlGenerator().supports(tableMetadata) ||
-                tableMetadata.getType().equals(TableMetadata.Type.Address);
+    public boolean doesntSupport(TableMetadata tableMetadata) {
+        return !new TransactionalSyncSqlGenerator().supports(tableMetadata) &&
+                !tableMetadata.getType().equals(TableMetadata.Type.Address);
     }
 
     @Override
     public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata) {
-        if (!this.supports(tableMetadata)) {
+        if (this.doesntSupport(tableMetadata)) {
             return;
         }
         deleteDuplicateRows(tableMetadata.getName(), lastSyncTime);

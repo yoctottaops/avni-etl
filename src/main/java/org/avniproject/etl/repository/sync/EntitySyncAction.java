@@ -6,6 +6,6 @@ import org.avniproject.etl.domain.metadata.TableMetadata;
 import java.util.Date;
 
 public interface EntitySyncAction {
-    boolean supports(TableMetadata tableMetadata);
+    boolean doesntSupport(TableMetadata tableMetadata);
     void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata);
 }

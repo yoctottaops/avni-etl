@@ -37,13 +37,13 @@ public class MediaTableSyncAction implements EntitySyncAction {
     }
 
     @Override
-    public boolean supports(TableMetadata tableMetadata) {
-        return tableMetadata.getType().equals(TableMetadata.Type.Media);
+    public boolean doesntSupport(TableMetadata tableMetadata) {
+        return !tableMetadata.getType().equals(TableMetadata.Type.Media);
     }
 
     @Override
     public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata) {
-        if (!this.supports(tableMetadata)) {
+        if (this.doesntSupport(tableMetadata)) {
             return;
         }
 

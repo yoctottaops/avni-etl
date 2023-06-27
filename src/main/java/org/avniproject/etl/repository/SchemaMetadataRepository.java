@@ -218,7 +218,7 @@ public class SchemaMetadataRepository {
         List<Map<String, Object>> indexMaps = jdbcTemplate.queryForList(getIndicesSql);
         Map<Object, List<Map<String, Object>>> tableMaps = tableAndColumnMaps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("table_id")));
         Map<Object, List<Map<String, Object>>> indices = indexMaps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("table_id")));
-        List<TableMetadata> tables = tableMaps.entrySet().stream().map(table -> new TableMetadataMapper().createFromExistingSchema(table.getValue(), indices.getOrDefault(table.getKey(), new ArrayList<>()))).collect(Collectors.toList());
+        List<TableMetadata> tables = tableMaps.entrySet().stream().map(table -> new TableMetadataMapper().createFromExistingSchemaMetaData(table.getValue(), indices.getOrDefault(table.getKey(), new ArrayList<>()))).collect(Collectors.toList());
         return new SchemaMetadata(tables);
     }
 

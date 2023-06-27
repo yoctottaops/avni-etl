@@ -22,13 +22,13 @@ public class TransactionalTablesSyncAction implements EntitySyncAction {
     }
 
     @Override
-    public boolean supports(TableMetadata tableMetadata) {
-        return new TransactionalSyncSqlGenerator().supports(tableMetadata);
+    public boolean doesntSupport(TableMetadata tableMetadata) {
+        return !new TransactionalSyncSqlGenerator().supports(tableMetadata);
     }
 
     @Override
     public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata) {
-        if (!this.supports(tableMetadata)) {
+        if (this.doesntSupport(tableMetadata)) {
             return;
         }
         runInOrgContext(() -> {

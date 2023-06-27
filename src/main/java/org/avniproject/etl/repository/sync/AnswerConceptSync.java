@@ -30,13 +30,13 @@ public class AnswerConceptSync implements EntitySyncAction {
     }
 
     @Override
-    public boolean supports(TableMetadata tableMetadata) {
-        return new TransactionalSyncSqlGenerator().supports(tableMetadata);
+    public boolean doesntSupport(TableMetadata tableMetadata) {
+        return !new TransactionalSyncSqlGenerator().supports(tableMetadata);
     }
 
     @Override
     public void perform(TableMetadata tableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime, SchemaMetadata currentSchemaMetadata) {
-        if (!this.supports(tableMetadata)) {
+        if (this.doesntSupport(tableMetadata)) {
             return;
         }
         String query = format("select acm.old_answer_concept_name, acm.new_answer_concept_name, cm.name, cm.concept_type\n" +
