@@ -74,7 +74,7 @@ jobs:
       - run: |
           cd ~/
           unzip server.zip
-          mv avni-server-master avni-server
+          mv avni-server-$CIRCLE_BRANCH avni-server
           rm -rf server.zip
       - run: |
           pwd
