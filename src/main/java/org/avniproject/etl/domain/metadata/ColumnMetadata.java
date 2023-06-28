@@ -35,6 +35,7 @@ public class ColumnMetadata extends Model {
         PhoneNumber,
         SingleSelect,
         Subject,
+        Encounter,
         Text,
         Time,
         Video;
