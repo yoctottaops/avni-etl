@@ -3,6 +3,7 @@ package org.avniproject.etl.security;
 
 import org.avniproject.etl.config.IdpType;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
+import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.domain.User;
 import org.avniproject.etl.domain.UserContextHolder;
 import org.avniproject.etl.repository.OrganisationRepository;
@@ -28,11 +29,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final AuthService authService;
     private final String defaultUserName;
     private final IdpType idpType;
+    private final OrganisationRepository organisationRepository;
 
-    public AuthenticationFilter(AuthService authService, IdpType idpType, String defaultUserName) {
+    public AuthenticationFilter(AuthService authService, IdpType idpType, String defaultUserName, OrganisationRepository organisationRepository) {
         this.authService = authService;
         this.idpType = idpType;
         this.defaultUserName = defaultUserName;
+        this.organisationRepository = organisationRepository;
     }
 
     @Override
@@ -55,6 +58,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             UserContextHolder.create(authService.setupUserContext(user));
+            OrganisationIdentity organisationIdentity = organisationRepository.getOrganisationByUser(user);
+            if (organisationIdentity != null) OrgIdentityContextHolder.setContext(organisationIdentity);
             long start = System.currentTimeMillis();
             chain.doFilter(request, response);
             long end = System.currentTimeMillis();
@@ -62,8 +67,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception exception) {
             this.logException(request, exception);
             throw exception;
-        }
-        finally {
+        } finally {
             UserContextHolder.clear();
             OrgIdentityContextHolder.clear();
             SecurityContextHolder.clearContext();
