@@ -132,6 +132,7 @@ public class TransactionalSyncSqlGenerator {
                     return String.format("(%s%s)::NUMERIC as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
                 case Subject:
+                case Encounter:
                 case Location: {
                     return String.format("(%s%s) as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
                 }
