@@ -41,7 +41,7 @@ public class SchemaMetadataRepository {
         List<TableMetadata> tables = new ArrayList<>(getFormTables());
         tables.add(getAddressTable());
         tables.add(MediaTableMetadataBuilder.build());
-        tables.addAll(getRepeatableQuestionGroupTables());
+//        tables.addAll(getRepeatableQuestionGroupTables());
         return new SchemaMetadata(tables);
     }
 
