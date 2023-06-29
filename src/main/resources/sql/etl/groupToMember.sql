@@ -24,5 +24,5 @@ insert into ${schema_name}.${table_name} ("id", "uuid", "is_voided", "created_by
                     AND grp.subject_type_id = rr.group_subject_type_id
         WHERE st.uuid = '${member_subject_type_uuid}'
           AND gst.uuid = '${group_subject_type_uuid}'
-          AND member.last_modified_date_time > '${start_time}'
-          AND member.last_modified_date_time <= '${end_time}');
+          AND gs.last_modified_date_time > '${start_time}'
+          AND gs.last_modified_date_time <= '${end_time}');

@@ -199,9 +199,7 @@ public class SchemaMetadataRepository {
     private void addHeadOfHouseholdColumns(TableMetadata tableMetadata) {
         ColumnMetadata headOfHouseholdIDColumnMetadata = new ColumnMetadata(new Column( "Head of household ID",
                 Column.Type.integer, Column.ColumnType.index), null, null, null);
-        ColumnMetadata headOfHouseholdNameColumnMetadata = new ColumnMetadata(new Column("Head of household",
-                Column.Type.text), null, null, null);
-        tableMetadata.addColumnMetadata(Arrays.asList(headOfHouseholdIDColumnMetadata, headOfHouseholdNameColumnMetadata));
+        tableMetadata.addColumnMetadata(Arrays.asList(headOfHouseholdIDColumnMetadata));
     }
 
     private String getSyncAttributeSql(String columnName) {

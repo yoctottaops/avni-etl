@@ -1,7 +1,6 @@
 insert into ${schema_name}.${table_name} ("id", "uuid", "is_voided", "created_by_id", "last_modified_by_id",
                                           "created_date_time", "last_modified_date_time", "organisation_id",
-                                          "group_subject_id", "member_subject_id", "role", "Head of household ID",
-                                          "Head of household")
+                                          "group_subject_id", "member_subject_id", "role", "Head of household ID")
     (
         select
             gs.id,
@@ -15,10 +14,7 @@ insert into ${schema_name}.${table_name} ("id", "uuid", "is_voided", "created_by
             grp.id                                             AS group_subject_id,
             member.id                                          AS member_subject_id,
             rr.role                                            AS role,
-            gs2.member_subject_id                            AS head_of_family_id,
-            (SELECT concat(head.first_name, ' ', head.last_name) AS concat
-             FROM individual head
-             WHERE head.id = gs2.member_subject_id)          AS head_of_family_name
+            gs2.member_subject_id                            AS head_of_family_id
         FROM public.individual member
                  JOIN subject_type st ON member.subject_type_id = st.id AND st.type::text = 'Person'::text
                  JOIN group_subject gs ON gs.member_subject_id = member.id
@@ -33,5 +29,6 @@ insert into ${schema_name}.${table_name} ("id", "uuid", "is_voided", "created_by
           AND st.uuid = '${member_subject_type_uuid}'
           AND gst.uuid = '${group_subject_type_uuid}'
           AND (gr.role = 'Head of household'::text OR gr.role IS NULL)
-          AND member.last_modified_date_time > '${start_time}'
-          AND member.last_modified_date_time <= '${end_time}');
+          AND ((gs.last_modified_date_time > '${start_time}' AND gs.last_modified_date_time <= '${end_time}')
+                OR
+              (gs2.last_modified_date_time > '${start_time}' AND gs2.last_modified_date_time <= '${end_time}')));
