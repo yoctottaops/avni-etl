@@ -28,6 +28,8 @@ public class TransactionalSyncSqlGenerator {
         typeMap.put(TableMetadata.Type.ProgramEncounterCancellation, "programEncounterCancel.sql");
         typeMap.put(TableMetadata.Type.IndividualEncounterCancellation, "generalEncounterCancel.sql");
         typeMap.put(TableMetadata.Type.ManualProgramEnrolmentEligibility, "manualProgramEnrolmentEligibility.sql");
+        typeMap.put(TableMetadata.Type.GroupToMember, "groupToMember.sql");
+        typeMap.put(TableMetadata.Type.HouseholdToMember, "householdToMember.sql");
     }
 
     private static String toString(String uuid) {
@@ -58,6 +60,8 @@ public class TransactionalSyncSqlGenerator {
                 .replace("${exit_obs_selections}", buildObservationSelection(tableMetadata, "program_exit_observations"))
                 .replace("${cancel_obs_selections}", buildObservationSelection(tableMetadata, "cancel_observations"))
                 .replace("${encounter_type_uuid}", toString(tableMetadata.getEncounterTypeUuid()))
+                .replace("${group_subject_type_uuid}", toString(tableMetadata.getGroupSubjectTypeUuid()))
+                .replace("${member_subject_type_uuid}", toString(tableMetadata.getMemberSubjectTypeUuid()))
                 .replace("${program_uuid}", toString(tableMetadata.getProgramUuid()))
                 .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
                 .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(endTime));

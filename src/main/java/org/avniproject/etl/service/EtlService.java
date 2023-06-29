@@ -51,6 +51,9 @@ public class EtlService {
             Organisation organisation = organisationFactory.create(organisationIdentity);
             Organisation newOrganisation = schemaMigrationService.migrate(organisation);
             syncService.sync(newOrganisation);
+            log.info(String.format("Completed ETL for schema %s with dbUser %s and schemaUser %s",
+                    organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
+            OrgIdentityContextHolder.setContext(organisationIdentity);
         } catch (Exception e) {
             log.error("Could not migrate organisation", e);
             return new EtlResult(false);

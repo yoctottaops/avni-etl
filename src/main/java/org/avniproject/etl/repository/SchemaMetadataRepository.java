@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,6 +42,8 @@ public class SchemaMetadataRepository {
         List<TableMetadata> tables = new ArrayList<>(getFormTables());
         tables.add(getAddressTable());
         tables.add(MediaTableMetadataBuilder.build());
+        tables.addAll(getGroupSubjectTables());
+
 //        tables.addAll(getRepeatableQuestionGroupTables());
         return new SchemaMetadata(tables);
     }
@@ -163,6 +166,42 @@ public class SchemaMetadataRepository {
                                 obj -> obj,
                                 (first, second) -> first
                         )).values()));
+    }
+
+    private List<TableMetadata> getGroupSubjectTables() {
+        String sql = format("select\n" +
+                "    st.uuid                                                                group_subject_type_uuid,\n" +
+                "    ost.name                                                               group_subject_type_name,\n" +
+                "    gr.role                                                                                as role,\n" +
+                "    mst.uuid                                                              member_subject_type_uuid,\n" +
+                "    most.name                                                             member_subject_type_name,\n" +
+                "    CASE\n" +
+                "        WHEN (st.type = 'Group') THEN 'GroupToMember'\n" +
+                "        ELSE 'HouseholdToMember'\n" +
+                "    END AS table_type\n" +
+                "from form_mapping fm\n" +
+                "         inner join form f on fm.form_id = f.id\n" +
+                "         inner join subject_type st on fm.subject_type_id = st.id\n" +
+                "         inner join operational_subject_type ost on st.id = ost.subject_type_id\n" +
+                "         inner join group_role gr on gr.group_subject_type_id = st.id\n" +
+                "         inner join subject_type mst on gr.member_subject_type_id = mst.id\n" +
+                "         inner join operational_subject_type most on mst.id = most.subject_type_id\n" +
+                "where fm.is_voided is false and f.form_type = 'IndividualProfile' and st.type in ('Group','Household');");
+
+        List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
+        Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap ->
+                stringObjectMap.get("group_subject_type_uuid").toString() + stringObjectMap.get("member_subject_type_uuid").toString()));
+        List<TableMetadata> tables = tableMaps.values().stream().map(mapList -> new TableMetadataMapper().create(mapList)).collect(Collectors.toList());
+        tables.stream().filter(t -> t.getType().equals(TableMetadata.Type.HouseholdToMember)).forEach(this::addHeadOfHouseholdColumns);
+        return tables;
+    }
+
+    private void addHeadOfHouseholdColumns(TableMetadata tableMetadata) {
+        ColumnMetadata headOfHouseholdIDColumnMetadata = new ColumnMetadata(new Column( "Head of household ID",
+                Column.Type.integer, Column.ColumnType.index), null, null, null);
+        ColumnMetadata headOfHouseholdNameColumnMetadata = new ColumnMetadata(new Column("Head of household",
+                Column.Type.text), null, null, null);
+        tableMetadata.addColumnMetadata(Arrays.asList(headOfHouseholdIDColumnMetadata, headOfHouseholdNameColumnMetadata));
     }
 
     private String getSyncAttributeSql(String columnName) {

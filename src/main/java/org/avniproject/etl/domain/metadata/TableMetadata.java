@@ -18,6 +18,8 @@ public class TableMetadata extends Model {
     private String programUuid;
     private String encounterTypeUuid;
     private String formUuid;
+    private String groupSubjectTypeUuid;
+    private String memberSubjectTypeUuid;
     private List<ColumnMetadata> columnMetadataList = new ArrayList<>();
     private List<IndexMetadata> indexMetadataList = new ArrayList<>();
 
@@ -34,7 +36,9 @@ public class TableMetadata extends Model {
                 && nullSafeEquals(realTable.getSubjectTypeUuid(), this.subjectTypeUuid)
                 && nullSafeEquals(realTable.getFormUuid(), this.formUuid)
                 && nullSafeEquals(realTable.getEncounterTypeUuid(), this.encounterTypeUuid)
-                && nullSafeEquals(realTable.getProgramUuid(), this.programUuid);
+                && nullSafeEquals(realTable.getProgramUuid(), this.programUuid)
+                && nullSafeEquals(realTable.getGroupSubjectTypeUuid(), this.groupSubjectTypeUuid)
+                && nullSafeEquals(realTable.getMemberSubjectTypeUuid(), this.memberSubjectTypeUuid);
     }
 
     public List<Diff> findChanges(TableMetadata currentTable) {
@@ -193,6 +197,22 @@ public class TableMetadata extends Model {
         this.indexMetadataList = indexMetadataList;
     }
 
+    public String getGroupSubjectTypeUuid() {
+        return groupSubjectTypeUuid;
+    }
+
+    public void setGroupSubjectTypeUuid(String groupSubjectTypeUuid) {
+        this.groupSubjectTypeUuid = groupSubjectTypeUuid;
+    }
+
+    public String getMemberSubjectTypeUuid() {
+        return memberSubjectTypeUuid;
+    }
+
+    public void setMemberSubjectTypeUuid(String memberSubjectTypeUuid) {
+        this.memberSubjectTypeUuid = memberSubjectTypeUuid;
+    }
+
     public List<Diff> createNew() {
         List<Diff> diffs = new ArrayList<>();
         diffs.add(new CreateTable(name, getColumns()));
@@ -221,7 +241,9 @@ public class TableMetadata extends Model {
         Address,
         Media,
         ManualProgramEnrolmentEligibility,
-        QuestionGroup
+        QuestionGroup,
+        GroupToMember,
+        HouseholdToMember
     }
 
     public boolean isSubjectTable() {

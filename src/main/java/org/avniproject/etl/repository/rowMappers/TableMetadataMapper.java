@@ -68,6 +68,8 @@ public class TableMetadataMapper {
         tableMetadata.setFormUuid(((String) tableDetails.get("form_uuid")));
         tableMetadata.setType(getTableType(tableDetails));
         tableMetadata.setSubjectTypeUuid((String) tableDetails.get("subject_type_uuid"));
+        tableMetadata.setGroupSubjectTypeUuid((String) tableDetails.get("group_subject_type_uuid"));
+        tableMetadata.setMemberSubjectTypeUuid((String) tableDetails.get("member_subject_type_uuid"));
         tableMetadata.setEncounterTypeUuid((String) tableDetails.get("encounter_type_uuid"));
         tableMetadata.setProgramUuid((String) tableDetails.get("program_uuid"));
     }
@@ -85,6 +87,9 @@ public class TableMetadataMapper {
             case Household:
             case Individual:
                 return new SubjectTable();
+            case GroupToMember:
+            case HouseholdToMember:
+                return new GroupToMemberTable();
             case Person:
                 return new PersonTable((Boolean) tableDetails.get("subject_type_allow_middle_name"));
             case ProgramEnrolment:
