@@ -230,6 +230,8 @@ public class SchemaMetadataRepository {
                         "       tm.encounter_type_uuid                  encounter_type_uuid,\n" +
                         "       tm.program_uuid                         program_uuid,\n" +
                         "       tm.subject_type_uuid                    subject_type_uuid,\n" +
+                        "       tm.group_subject_type_uuid              group_subject_type_uuid,\n" +
+                        "       tm.member_subject_type_uuid             member_subject_type_uuid,\n" +
                         "       cm.id                                   column_id,\n" +
                         "       cm.type                                 column_type,\n" +
                         "       cm.concept_type                         concept_type,\n" +

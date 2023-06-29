@@ -69,6 +69,8 @@ public class TableMetadataRepository {
         parameters.put("name", tableMetadata.getName());
         parameters.put("type", tableMetadata.getType().toString());
         parameters.put("subject_type_uuid", tableMetadata.getSubjectTypeUuid());
+        parameters.put("group_subject_type_uuid", tableMetadata.getGroupSubjectTypeUuid());
+        parameters.put("member_subject_type_uuid", tableMetadata.getMemberSubjectTypeUuid());
         parameters.put("program_uuid", tableMetadata.getProgramUuid());
         parameters.put("encounter_type_uuid", tableMetadata.getEncounterTypeUuid());
         parameters.put("form_uuid", tableMetadata.getFormUuid());
