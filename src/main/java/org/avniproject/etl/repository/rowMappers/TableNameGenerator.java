@@ -7,11 +7,20 @@ import java.util.stream.IntStream;
 public class TableNameGenerator {
     private static final int POSTGRES_MAX_TABLE_NAME_LENGTH = 63;
 
-    private static final Map<String, List<Integer>> tableTypeTrimmingMap = new HashMap<String, List<Integer>>() {{
-        put("Registration", Arrays.asList(6));
-        put("Encounter", Arrays.asList(6, 20));
-        put("ProgramEnrolment", Arrays.asList(6, 20));
-        put("ProgramEncounter", Arrays.asList(6, 6, 20));
+    public static final String RegistrationRepeatableQuestionGroup = "RegistrationRepeatableQuestionGroup";
+    public static final String EncounterRepeatableQuestionGroup = "EncounterRepeatableQuestionGroup";
+    public static final String ProgramEnrolmentRepeatableQuestionGroup = "ProgramEnrolmentRepeatableQuestionGroup";
+    public static final String ProgramEncounterRepeatableQuestionGroup = "ProgramEncounterRepeatableQuestionGroup";
+
+    private static final Map<String, List<Integer>> tableTypeTrimmingMap = new HashMap<>() {{
+        put("Registration", List.of(6));
+        put(RegistrationRepeatableQuestionGroup, List.of(6, 20));
+        put("Encounter", List.of(6, 20));
+        put(EncounterRepeatableQuestionGroup, List.of(6, 20, 20));
+        put("ProgramEnrolment", List.of(6, 20));
+        put(ProgramEnrolmentRepeatableQuestionGroup, List.of(6, 20, 20));
+        put("ProgramEncounter", List.of(6, 6, 20));
+        put(ProgramEncounterRepeatableQuestionGroup, List.of(6, 6, 20, 20));
     }};
 
     private String buildProperTableName(List<String> entities) {
@@ -22,17 +31,17 @@ public class TableNameGenerator {
         return String.join("_", list);
     }
 
-    public String generateName(List<String> entities, String TableType, String suffix) {
+    public String generateName(List<String> entities, String tableType, String suffix) {
         List<String> entitiesWithSuffix = new ArrayList<>(entities);
         if (suffix != null) {
             entitiesWithSuffix.add(suffix);
         }
         String tableName = buildProperTableName(entitiesWithSuffix);
-        return tableName.length() > POSTGRES_MAX_TABLE_NAME_LENGTH ? getTrimmedTableName(entities, TableType, suffix) : tableName;
+        return tableName.length() > POSTGRES_MAX_TABLE_NAME_LENGTH ? getTrimmedTableName(entities, tableType, suffix) : tableName;
     }
 
-    private String getTrimmedTableName(List<String> entities, String TableType, String suffix) {
-        List<Integer> trimmingList = tableTypeTrimmingMap.get(TableType);
+    private String getTrimmedTableName(List<String> entities, String tableType, String suffix) {
+        List<Integer> trimmingList = tableTypeTrimmingMap.get(tableType);
         List<String> trimmedNameList = IntStream
                 .range(0, entities.size())
                 .mapToObj(i -> getTrimmedName(entities, new StringBuilder(), trimmingList, i, suffix))

@@ -241,9 +241,9 @@ public class TableMetadata extends Model {
         Address,
         Media,
         ManualProgramEnrolmentEligibility,
-        QuestionGroup,
         GroupToMember,
-        HouseholdToMember
+        HouseholdToMember,
+        RepeatableQuestionGroup
     }
 
     public boolean isSubjectTable() {

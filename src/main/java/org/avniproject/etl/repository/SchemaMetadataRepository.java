@@ -70,7 +70,7 @@ public class SchemaMetadataRepository {
     }
 
     private List<TableMetadata> getRepeatableQuestionGroupTables() {
-        String sqlFormat = readSqlFile("repeatableQuestionGroups.sql");
+        String sqlFormat = readSqlFile("repeatableQG/repeatableQuestionGroups.sql");
         String sql = format(sqlFormat, PLACEHOLDER_CONCEPT_UUID);
         return getTableMetadata(sql);
     }

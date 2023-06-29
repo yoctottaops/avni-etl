@@ -5,6 +5,7 @@ import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.IndexMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.repository.rowMappers.tableMappers.*;
+import org.avniproject.etl.repository.rowMappers.tableMappers.repeatableQuestionGroup.RepeatableQuestionGroupTableFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -106,8 +107,10 @@ public class TableMetadataMapper {
                 return new EncounterCancellationTable();
             case ManualProgramEnrolmentEligibility:
                 return new SubjectProgramEligibilityTable();
+            case RepeatableQuestionGroup:
+                return RepeatableQuestionGroupTableFactory.create(tableDetails);
             default:
-                throw new RuntimeException("Cannot create name for table details" + tableDetails);
+                throw new RuntimeException("Cannot create table structure for table details: " + tableDetails);
         }
     }
 }
