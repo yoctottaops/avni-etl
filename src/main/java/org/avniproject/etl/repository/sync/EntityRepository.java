@@ -20,13 +20,15 @@ public class EntityRepository {
                             AddressTableSyncAction addressTableSyncAction,
                             EntityApprovalStatusSyncAction entityApprovalStatusSyncAction,
                             AnswerConceptSync answerConceptSync,
-                            MediaTableSyncAction mediaTableSyncAction) {
+                            MediaTableSyncAction mediaTableSyncAction,
+                            RepeatableQGTransactionTablesSyncAction repeatableQGTransactionTablesSyncAction) {
         entitySyncRepositories.add(transactionalTablesSyncAction);
         entitySyncRepositories.add(addressTableSyncAction);
         entitySyncRepositories.add(duplicateRowDeleteAction);
         entitySyncRepositories.add(entityApprovalStatusSyncAction);
         entitySyncRepositories.add(answerConceptSync);
         entitySyncRepositories.add(mediaTableSyncAction);
+        entitySyncRepositories.add(repeatableQGTransactionTablesSyncAction);
     }
 
     @Transactional

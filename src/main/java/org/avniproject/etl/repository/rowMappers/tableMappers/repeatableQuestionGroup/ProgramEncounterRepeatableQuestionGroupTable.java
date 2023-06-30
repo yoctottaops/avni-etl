@@ -10,14 +10,14 @@ import java.util.Map;
 
 import static org.avniproject.etl.repository.rowMappers.TableNameGenerator.ProgramEncounterRepeatableQuestionGroup;
 import static org.avniproject.etl.repository.rowMappers.TableNameGenerator.RegistrationRepeatableQuestionGroup;
-import static org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns.LastModifiedDateTimeColumn;
+import static org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns.*;
 
 public class ProgramEncounterRepeatableQuestionGroupTable extends Table {
     @Override
     public List<Column> columns() {
         return new Columns()
+                .withColumns(CommonRepeatableGroupColumns)
                 .withColumns(List.of(
-                        LastModifiedDateTimeColumn,
                         new Column("individual_id", Column.Type.integer, Column.ColumnType.index),
                         new Column("address_id", Column.Type.integer, Column.ColumnType.index),
                         new Column("program_enrolment_id", Column.Type.integer, Column.ColumnType.index),

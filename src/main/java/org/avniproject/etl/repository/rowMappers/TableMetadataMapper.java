@@ -73,11 +73,14 @@ public class TableMetadataMapper {
         tableMetadata.setMemberSubjectTypeUuid((String) tableDetails.get("member_subject_type_uuid"));
         tableMetadata.setEncounterTypeUuid((String) tableDetails.get("encounter_type_uuid"));
         tableMetadata.setProgramUuid((String) tableDetails.get("program_uuid"));
+        if (tableDetails.get("table_type").equals("RepeatableQuestionGroup")) {
+            tableMetadata.setRepeatableQuestionGroupConceptUuid((String) tableDetails.get("repeatable_question_group_concept_uuid"));
+        }
     }
 
     private TableMetadata.Type getTableType(Map<String, Object> tableDetails) {
         String tableType = (String) tableDetails.get("table_type");
-        return tableType.equals("IndividualProfile") ?
+        return tableType.equals(TableMetadata.TableType.IndividualProfile.name()) ?
                 TableMetadata.Type.valueOf((String) tableDetails.get("subject_type_type")) :
                 TableMetadata.Type.valueOf(tableType);
     }

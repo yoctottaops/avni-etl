@@ -41,7 +41,7 @@ public class SyncService {
 
     @Transactional
     public void migrateTable(TableMetadata tableMetadata, SchemaDataSyncStatus syncStatus, SchemaMetadata currentSchemaMetadata) {
-        log.info(String.format("Migrating table %s.%s", OrgIdentityContextHolder.getDbSchema(), tableMetadata.getName()));
+        log.info(String.format("Migrating table %s.%s of type %s", OrgIdentityContextHolder.getDbSchema(), tableMetadata.getName(), tableMetadata.getType()));
         EntitySyncStatus entitySyncStatus = syncStatus.startSync(tableMetadata);
         entitySyncStatusRepository.save(entitySyncStatus);
 

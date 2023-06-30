@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 import static org.avniproject.etl.repository.rowMappers.TableNameGenerator.RegistrationRepeatableQuestionGroup;
-import static org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns.LastModifiedDateTimeColumn;
+import static org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns.*;
 
 public class SubjectRepeatableQuestionGroupTable extends Table {
     @Override
     public List<Column> columns() {
         return new Columns()
+                .withColumns(CommonRepeatableGroupColumns)
                 .withColumns(List.of(
-                        LastModifiedDateTimeColumn,
                         new Column("address_id", Column.Type.integer, Column.ColumnType.index),
                         new Column("individual_id", Column.Type.integer, Column.ColumnType.index)
                 ))

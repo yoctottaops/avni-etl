@@ -12,11 +12,11 @@ import static org.avniproject.etl.domain.metadata.diff.Strings.COMMA;
 import static org.avniproject.etl.repository.sql.SqlFile.readSqlFile;
 
 public class RepeatableQuestionGroupSyncSqlGenerator {
-    private final Map<String, String> parentTypeFileMap = new HashMap<>() {{
-        this.put("IndividualProfile", "subjectRepeatableQGObservations.sql");
-        this.put("Encounter", "encounterRepeatableQGObservations.sql");
-        this.put("ProgramEnrolment", "programEnrolmentRepeatableQGObservations.sql");
-        this.put("ProgramEncounter", "programEncounterRepeatableQGObservations.sql");
+    private final Map<TableMetadata.TableType, String> parentTypeFileMap = new HashMap<>() {{
+        this.put(TableMetadata.TableType.IndividualProfile, "subjectRepeatableQGObservations.sql");
+        this.put(TableMetadata.TableType.Encounter, "generalEncounterRepeatableQGObservations.sql");
+        this.put(TableMetadata.TableType.ProgramEnrolment, "programEnrolmentRepeatableQGObservations.sql");
+        this.put(TableMetadata.TableType.ProgramEncounter, "programEncounterRepeatableQGObservations.sql");
     }};
     private static final String obsSqlTemplate = readSqlFile("conceptMap.sql");
 
@@ -30,33 +30,26 @@ public class RepeatableQuestionGroupSyncSqlGenerator {
 
     public String generateSql(TableMetadata tableMetadata, Date startTime, Date endTime) {
         if (supports(tableMetadata)) {
-            return getSql(parentTypeFileMap.get(tableMetadata.getEncounterTypeUuid()), tableMetadata, startTime, endTime);
+            String fileName = "repeatableQG/" + parentTypeFileMap.get(tableMetadata.getParentTableType());
+            return getSql(fileName, tableMetadata, startTime, endTime);
         }
         throw new RuntimeException("Could not generate sql for" + tableMetadata.getType().toString());
     }
 
     public String getSql(String fileName, TableMetadata tableMetadata, Date startTime, Date endTime) {
         String template = readSqlFile(fileName);
-        String obsColumnName = tableMetadata.getType().equals(TableMetadata.Type.Address) ? "location_properties" : "observations";
-        String text = template.replace("${schema_name}", wrapInQuotes(OrgIdentityContextHolder.getDbSchema()))
+        return template.replace("${schema_name}", wrapInQuotes(OrgIdentityContextHolder.getDbSchema()))
                 .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
                 .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
                 .replace("${concept_maps}", getConceptMaps(tableMetadata))
                 .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
                 .replace("${subject_type_uuid}", toString(tableMetadata.getSubjectTypeUuid()))
-                .replace("${selections}", buildObservationSelection(tableMetadata, obsColumnName))
-                .replace("${exit_obs_selections}", buildObservationSelection(tableMetadata, "program_exit_observations"))
-                .replace("${cancel_obs_selections}", buildObservationSelection(tableMetadata, "cancel_observations"))
+                .replace("${selections}", buildObservationSelection(tableMetadata, "observations"))
                 .replace("${encounter_type_uuid}", toString(tableMetadata.getEncounterTypeUuid()))
                 .replace("${program_uuid}", toString(tableMetadata.getProgramUuid()))
+                .replace("${repeatable_question_group_concept_uuid}", toString(tableMetadata.getRepeatableQuestionGroupConceptUuid()))
                 .replace("${start_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(startTime))
                 .replace("${end_time}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(endTime));
-        if (tableMetadata.getType().equals(TableMetadata.Type.Person) && tableMetadata.hasColumn("middle_name")) {
-            text = text.replace("${middle_name}", ",middle_name").replace("${middle_name_select}", ", entity.middle_name                                                               as \"middle_name\"");
-        } else {
-            text = text.replace("${middle_name}", "").replace("${middle_name_select}", "");
-        }
-        return text;
     }
 
     private String getConceptMapName(TableMetadata tableMetadata) {

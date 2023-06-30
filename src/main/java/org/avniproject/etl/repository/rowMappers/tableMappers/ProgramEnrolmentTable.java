@@ -1,6 +1,7 @@
 package org.avniproject.etl.repository.rowMappers.tableMappers;
 
 import org.avniproject.etl.domain.metadata.Column;
+import org.avniproject.etl.domain.metadata.TableMetadata;
 
 import java.util.Arrays;
 import java.util.List;

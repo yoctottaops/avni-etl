@@ -46,7 +46,8 @@ public class TableMetadataRepository {
                 "    subject_type_uuid   = :subject_type_uuid,\n" +
                 "    program_uuid        = :program_uuid,\n" +
                 "    encounter_type_uuid = :encounter_type_uuid,\n" +
-                "    form_uuid           = :form_uuid\n" +
+                "    form_uuid           = :form_uuid,\n" +
+                "    repeatable_question_group_concept_uuid = :repeatable_question_group_concept_uuid\n" +
                 "where id = :id;";
 
         new NamedParameterJdbcTemplate(jdbcTemplate).update(sql, addParameters(tableMetadata));
@@ -74,6 +75,7 @@ public class TableMetadataRepository {
         parameters.put("program_uuid", tableMetadata.getProgramUuid());
         parameters.put("encounter_type_uuid", tableMetadata.getEncounterTypeUuid());
         parameters.put("form_uuid", tableMetadata.getFormUuid());
+        parameters.put("repeatable_question_group_concept_uuid", tableMetadata.getRepeatableQuestionGroupConceptUuid());
 
         return parameters;
     }

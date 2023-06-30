@@ -2,6 +2,7 @@ package org.avniproject.etl.repository;
 
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.util.InterfaceLogger;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public interface JdbcContextWrapper<T> {
@@ -30,8 +31,17 @@ public interface JdbcContextWrapper<T> {
         InterfaceLogger.JdbcContextWrapper.debug(String.format("[%s] Executing with dbUser: %s", OrgIdentityContextHolder.getDbSchema(), dbUser));
         try {
             return execute();
-        } finally {
-            jdbcTemplate.execute("reset role;");
+        } catch (UncategorizedSQLException uncategorizedSQLException) {
+            InterfaceLogger.JdbcContextWrapper.error("Execution failed for SQL: " + uncategorizedSQLException.getSql());
+            throw uncategorizedSQLException;
+        }
+        finally {
+            try {
+                jdbcTemplate.execute("reset role;");
+            } catch (UncategorizedSQLException uncategorizedSQLException) {
+                if (!uncategorizedSQLException.getSQLException().getSQLState().equals("25P02"))
+                    throw uncategorizedSQLException;
+            }
         }
     }
 }

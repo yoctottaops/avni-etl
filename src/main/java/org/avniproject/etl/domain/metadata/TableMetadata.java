@@ -2,6 +2,7 @@ package org.avniproject.etl.domain.metadata;
 
 import org.avniproject.etl.domain.Model;
 import org.avniproject.etl.domain.metadata.diff.*;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ public class TableMetadata extends Model {
     private String formUuid;
     private String groupSubjectTypeUuid;
     private String memberSubjectTypeUuid;
+    private String repeatableQuestionGroupConceptUuid;
     private List<ColumnMetadata> columnMetadataList = new ArrayList<>();
     private List<IndexMetadata> indexMetadataList = new ArrayList<>();
 
@@ -33,12 +35,13 @@ public class TableMetadata extends Model {
     public boolean matches(TableMetadata realTable) {
         if (realTable == null) return false;
         return nullSafeEquals(realTable.getType(), this.getType())
-                && nullSafeEquals(realTable.getSubjectTypeUuid(), this.subjectTypeUuid)
-                && nullSafeEquals(realTable.getFormUuid(), this.formUuid)
-                && nullSafeEquals(realTable.getEncounterTypeUuid(), this.encounterTypeUuid)
-                && nullSafeEquals(realTable.getProgramUuid(), this.programUuid)
-                && nullSafeEquals(realTable.getGroupSubjectTypeUuid(), this.groupSubjectTypeUuid)
-                && nullSafeEquals(realTable.getMemberSubjectTypeUuid(), this.memberSubjectTypeUuid);
+                && nullSafeEquals(realTable.subjectTypeUuid, this.subjectTypeUuid)
+                && nullSafeEquals(realTable.formUuid, this.formUuid)
+                && nullSafeEquals(realTable.encounterTypeUuid, this.encounterTypeUuid)
+                && nullSafeEquals(realTable.programUuid, this.programUuid)
+                && nullSafeEquals(realTable.groupSubjectTypeUuid, this.groupSubjectTypeUuid)
+                && nullSafeEquals(realTable.memberSubjectTypeUuid, this.memberSubjectTypeUuid)
+                && nullSafeEquals(realTable.repeatableQuestionGroupConceptUuid, this.repeatableQuestionGroupConceptUuid);
     }
 
     public List<Diff> findChanges(TableMetadata currentTable) {
@@ -78,10 +81,6 @@ public class TableMetadata extends Model {
                 .stream()
                 .filter(thisColumn -> thisColumn.matches(columnMetadata))
                 .findFirst();
-    }
-
-    public List<ColumnMetadata> findSyncColumns() {
-        return this.columnMetadataList.stream().filter(ColumnMetadata::isSyncAttributeColumn).collect(Collectors.toList());
     }
 
     public List<Column> getColumns() {
@@ -161,10 +160,6 @@ public class TableMetadata extends Model {
         return columnMetadataList;
     }
 
-    public List<ColumnMetadata> getIndexedColumnMetadataList() {
-        return columnMetadataList.stream().filter(columnMetadata -> columnMetadata.getColumn().isIndexed()).collect(Collectors.toList());
-    }
-
     public void setColumnMetadataList(List<ColumnMetadata> columnMetadataList) {
         this.columnMetadataList = columnMetadataList;
     }
@@ -227,6 +222,16 @@ public class TableMetadata extends Model {
         return columnMetadataList.stream().anyMatch(columnMetadata -> columnMetadata.getColumn().getName().equals(columnName));
     }
 
+    public TableType getParentTableType() {
+        if (!StringUtils.hasLength(repeatableQuestionGroupConceptUuid)) return null;
+
+        if (StringUtils.hasLength(encounterTypeUuid))
+            return StringUtils.hasLength(programUuid) ? TableType.ProgramEncounter : TableType.Encounter;
+        if (StringUtils.hasLength(programUuid))
+            return TableType.ProgramEnrolment;
+        return TableType.IndividualProfile;
+    }
+
     public enum Type {
         Individual,
         Person,
@@ -246,11 +251,26 @@ public class TableMetadata extends Model {
         RepeatableQuestionGroup
     }
 
+    public enum TableType {
+        IndividualProfile,
+        Encounter,
+        ProgramEnrolment,
+        ProgramEncounter
+    }
+
     public boolean isSubjectTable() {
         return Arrays.asList(Type.Individual, Type.Person, Type.Household, Type.Group).contains(this.type);
     }
 
     private void addIndexMetadata(IndexMetadata indexMetadata) {
         this.indexMetadataList.add(indexMetadata);
+    }
+
+    public String getRepeatableQuestionGroupConceptUuid() {
+        return repeatableQuestionGroupConceptUuid;
+    }
+
+    public void setRepeatableQuestionGroupConceptUuid(String repeatableQuestionGroupConceptUuid) {
+        this.repeatableQuestionGroupConceptUuid = repeatableQuestionGroupConceptUuid;
     }
 }
