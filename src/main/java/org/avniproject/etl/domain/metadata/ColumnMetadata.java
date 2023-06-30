@@ -38,6 +38,7 @@ public class ColumnMetadata extends Model {
         Encounter,
         Text,
         Time,
+        QuestionGroup,
         Video;
 
         Column.Type getColumnDatatype() {

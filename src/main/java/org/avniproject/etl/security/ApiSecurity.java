@@ -1,5 +1,6 @@
 package org.avniproject.etl.security;
 
+import org.avniproject.etl.config.EtlServiceConfig;
 import org.avniproject.etl.config.IdpType;
 import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.service.AuthService;
@@ -40,15 +41,17 @@ public class ApiSecurity  {
     @Value("#{'${avni.security.allowedOrigins}'.split(',')}")
     private List<String> allowedOrigins;
     private final OrganisationRepository organisationRepository;
+    private final EtlServiceConfig etlServiceConfig;
 
     @Autowired
-    public ApiSecurity(AuthService authService, OrganisationRepository organisationRepository) {
+    public ApiSecurity(AuthService authService, OrganisationRepository organisationRepository, EtlServiceConfig etlServiceConfig) {
         this.authService = authService;
         this.organisationRepository = organisationRepository;
+        this.etlServiceConfig = etlServiceConfig;
     }
 
     public AuthenticationFilter authenticationFilter() {
-        return new AuthenticationFilter(authService, idpType, defaultUserName, organisationRepository);
+        return new AuthenticationFilter(authService, idpType, defaultUserName, organisationRepository, etlServiceConfig);
     }
 
     @Bean

@@ -1,6 +1,7 @@
 package org.avniproject.etl.service;
 
 import org.apache.log4j.Logger;
+import org.avniproject.etl.config.EtlServiceConfig;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
@@ -17,15 +18,17 @@ public class EtlService {
     private final OrganisationFactory organisationFactory;
     private final SchemaMigrationService schemaMigrationService;
     private final SyncService syncService;
+    private final EtlServiceConfig etlServiceConfig;
     private static final Logger log = Logger.getLogger(EtlService.class);
 
     @Autowired
     public EtlService(OrganisationRepository organisationRepository, OrganisationFactory organisationFactory,
-                      SchemaMigrationService schemaMigrationService, SyncService syncService) {
+                      SchemaMigrationService schemaMigrationService, SyncService syncService, EtlServiceConfig etlServiceConfig) {
         this.organisationRepository = organisationRepository;
         this.organisationFactory = organisationFactory;
         this.schemaMigrationService = schemaMigrationService;
         this.syncService = syncService;
+        this.etlServiceConfig = etlServiceConfig;
     }
 
     public EtlResult runFor(String organisationUUID) {
@@ -45,7 +48,7 @@ public class EtlService {
     public EtlResult runFor(OrganisationIdentity organisationIdentity) {
         log.info(String.format("Running ETL for schema %s with dbUser %s and schemaUser %s",
                 organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
-        OrgIdentityContextHolder.setContext(organisationIdentity);
+        OrgIdentityContextHolder.setContext(organisationIdentity, etlServiceConfig);
 
         try {
             Organisation organisation = organisationFactory.create(organisationIdentity);
@@ -53,7 +56,7 @@ public class EtlService {
             syncService.sync(newOrganisation);
             log.info(String.format("Completed ETL for schema %s with dbUser %s and schemaUser %s",
                     organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
-            OrgIdentityContextHolder.setContext(organisationIdentity);
+            OrgIdentityContextHolder.setContext(organisationIdentity, etlServiceConfig);
         } catch (Exception e) {
             log.error("Could not migrate organisation", e);
             return new EtlResult(false);

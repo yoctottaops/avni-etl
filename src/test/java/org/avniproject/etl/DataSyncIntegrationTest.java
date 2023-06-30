@@ -32,11 +32,11 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     }
 
     private String getCurrentTime() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(toDate(LocalDateTime.now().minus(Duration.ofSeconds(10))));
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(toDate(LocalDateTime.now()));
     }
 
     private String getCurrentTime(long subtractSeconds) {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(toDate(LocalDateTime.now().minus(Duration.ofSeconds(10)).minus(Duration.ofSeconds(subtractSeconds))));
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(toDate(LocalDateTime.now().minus(Duration.ofSeconds(subtractSeconds))));
     }
 
     private void runDataSync() {
@@ -264,7 +264,6 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
 
         String newEncounterImage = "https://s3.amazon.com/newEncounterImage.jpg";
         jdbcTemplate.execute("update encounter set observations = observations || jsonb_build_object('44163589-f76d-447d-9b6e-f5c32aa859eb', '" + newEncounterImage + "'), last_modified_date_time = now() where id = 1900;");
-        sleep(11000); //Sync runs from last run to current time minus 10 seconds, so this is essential
         runDataSync();
 
         media = jdbcTemplate.queryForList("select * from orgc.media;");

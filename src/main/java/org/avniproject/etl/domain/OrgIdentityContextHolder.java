@@ -1,5 +1,7 @@
 package org.avniproject.etl.domain;
 
+import org.avniproject.etl.config.EtlServiceConfig;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -15,8 +17,16 @@ public class OrgIdentityContextHolder {
     private OrgIdentityContextHolder() {
     }
 
+    public static void setContext(OrganisationIdentity identity, EtlServiceConfig etlServiceConfig) {
+        OrgIdentityContextHolder.setContext(identity, etlServiceConfig.getCurrentTimeOffsetSeconds());
+    }
+
     public static void setContext(OrganisationIdentity identity) {
-        identity.setStartTime(toDate(LocalDateTime.now().minus(Duration.ofSeconds(10))));
+        OrgIdentityContextHolder.setContext(identity, 0);
+    }
+
+    public static void setContext(OrganisationIdentity identity, int currentTimeOffsetSeconds) {
+        identity.setStartTime(toDate(LocalDateTime.now().minus(Duration.ofSeconds(currentTimeOffsetSeconds))));
         organisationIdentity.set(identity);
     }
 

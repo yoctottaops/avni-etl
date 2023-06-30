@@ -1,6 +1,7 @@
 package org.avniproject.etl.security;
 
 
+import org.avniproject.etl.config.EtlServiceConfig;
 import org.avniproject.etl.config.IdpType;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.OrganisationIdentity;
@@ -30,12 +31,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final String defaultUserName;
     private final IdpType idpType;
     private final OrganisationRepository organisationRepository;
+    private final EtlServiceConfig etlServiceConfig;
 
-    public AuthenticationFilter(AuthService authService, IdpType idpType, String defaultUserName, OrganisationRepository organisationRepository) {
+    public AuthenticationFilter(AuthService authService, IdpType idpType, String defaultUserName, OrganisationRepository organisationRepository, EtlServiceConfig etlServiceConfig) {
         this.authService = authService;
         this.idpType = idpType;
         this.defaultUserName = defaultUserName;
         this.organisationRepository = organisationRepository;
+        this.etlServiceConfig = etlServiceConfig;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             }
             UserContextHolder.create(authService.setupUserContext(user));
             OrganisationIdentity organisationIdentity = organisationRepository.getOrganisationByUser(user);
-            if (organisationIdentity != null) OrgIdentityContextHolder.setContext(organisationIdentity);
+            if (organisationIdentity != null) OrgIdentityContextHolder.setContext(organisationIdentity, etlServiceConfig);
             long start = System.currentTimeMillis();
             chain.doFilter(request, response);
             long end = System.currentTimeMillis();
