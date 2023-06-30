@@ -92,9 +92,7 @@ public class RepeatableQuestionGroupSyncSqlGenerator {
         if (columns.isEmpty()) return "";
 
         String columnSelects = columns.parallelStream().map(column -> {
-            String obsColumn = column.getColumn().isSyncAttributeColumn() ?
-                    "ind.observations"
-                    : String.format("entity.%s", obsColumnName);
+            String obsColumn = String.format("entity.%s", obsColumnName);
             String columnName = column.getName();
             switch (column.getConceptType()) {
                 case SingleSelect:

@@ -18,6 +18,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataSyncIntegrationTest extends BaseIntegrationTest {
 
@@ -162,6 +163,17 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         assertThat(person.containsKey("Question group Child 2"), is(true));
         assertThat(Objects.equals(person.get("Question group Child 1"), "value 1"), is(true));
         assertThat(Objects.equals(person.get("Question group Child 2"), "value 2"), is(true));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql", "/repeatableQuestionGroupObs-test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void repeatedQGObservationsArePopulatedInTheirOwnTable() {
+        runDataSync();
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(format("select * from orgc.person_general_encounter_asset_info where encounter_id = %d", 2001));
+        assertEquals(2, list.size());
+        assertEquals(100, ((BigDecimal)(list.get(0).get("Asset Info Bitcoin"))).intValue());
+        assertEquals("FTX", list.get(0).get("Asset Info Exchange"));
     }
 
     @Test
