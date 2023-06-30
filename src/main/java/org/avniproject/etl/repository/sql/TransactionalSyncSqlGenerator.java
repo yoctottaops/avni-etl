@@ -1,20 +1,17 @@
 package org.avniproject.etl.repository.sql;
 
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
-import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.avniproject.etl.domain.metadata.diff.Strings.COMMA;
 import static org.avniproject.etl.repository.sql.SqlFile.readSqlFile;
 
 public class TransactionalSyncSqlGenerator {
-
     private final Map<TableMetadata.Type, String> typeMap = new HashMap<>();
-    private static final String template = readSqlFile("conceptMap.sql");
 
     public TransactionalSyncSqlGenerator() {
         typeMap.put(TableMetadata.Type.Household, "individual.sql");
@@ -50,15 +47,15 @@ public class TransactionalSyncSqlGenerator {
     public String getSql(String fileName, TableMetadata tableMetadata, Date startTime, Date endTime) {
         String template = readSqlFile(fileName);
         String obsColumnName = tableMetadata.getType().equals(TableMetadata.Type.Address) ? "location_properties" : "observations";
-        String text = template.replace("${schema_name}", wrapInQuotes(OrgIdentityContextHolder.getDbSchema()))
-                .replace("${table_name}", wrapInQuotes(tableMetadata.getName()))
-                .replace("${observations_to_insert_list}", getListOfObservations(tableMetadata))
-                .replace("${concept_maps}", getConceptMaps(tableMetadata))
-                .replace("${cross_join_concept_maps}", "cross join " + getConceptMapName(tableMetadata))
+        String text = template.replace("${schema_name}", TransactionDataSyncHelper.wrapInQuotes(OrgIdentityContextHolder.getDbSchema()))
+                .replace("${table_name}", TransactionDataSyncHelper.wrapInQuotes(tableMetadata.getName()))
+                .replace("${observations_to_insert_list}", TransactionDataSyncHelper.getListOfObservations(tableMetadata))
+                .replace("${concept_maps}", TransactionDataSyncHelper.getConceptMaps(tableMetadata))
+                .replace("${cross_join_concept_maps}", "cross join " + TransactionDataSyncHelper.getConceptMapName(tableMetadata))
                 .replace("${subject_type_uuid}", toString(tableMetadata.getSubjectTypeUuid()))
-                .replace("${selections}", buildObservationSelection(tableMetadata, obsColumnName))
-                .replace("${exit_obs_selections}", buildObservationSelection(tableMetadata, "program_exit_observations"))
-                .replace("${cancel_obs_selections}", buildObservationSelection(tableMetadata, "cancel_observations"))
+                .replace("${selections}", TransactionDataSyncHelper.buildObservationSelection(tableMetadata, obsColumnName))
+                .replace("${exit_obs_selections}", TransactionDataSyncHelper.buildObservationSelection(tableMetadata, "program_exit_observations"))
+                .replace("${cancel_obs_selections}", TransactionDataSyncHelper.buildObservationSelection(tableMetadata, "cancel_observations"))
                 .replace("${encounter_type_uuid}", toString(tableMetadata.getEncounterTypeUuid()))
                 .replace("${group_subject_type_uuid}", toString(tableMetadata.getGroupSubjectTypeUuid()))
                 .replace("${member_subject_type_uuid}", toString(tableMetadata.getMemberSubjectTypeUuid()))
@@ -72,80 +69,4 @@ public class TransactionalSyncSqlGenerator {
         }
         return text;
     }
-
-    private String getConceptMapName(TableMetadata tableMetadata) {
-        return tableMetadata.getName() + "_" + "concept_maps";
-    }
-
-    private String getConceptMaps(TableMetadata tableMetadata) {
-        List<String> names = new ArrayList<>();
-        names.add("'dummy'");
-        names.addAll(tableMetadata.getNonDefaultColumnMetadataList().stream().map(columnMetadata -> wrapInSingleQuotes(columnMetadata.getConceptUuid())).collect(Collectors.toList()));
-
-        return template
-                .replace("${mapName}", getConceptMapName(tableMetadata))
-                .replace("${conceptUuids}", String.join(", ", names));
-    }
-
-    private StringBuffer getListOfObservations(TableMetadata tableMetadata) {
-        StringBuffer list = new StringBuffer();
-        if (tableMetadata.hasNonDefaultColumns()) {
-            list.append(COMMA);
-        }
-        List<ColumnMetadata> columns = tableMetadata.getNonDefaultColumnMetadataList();
-        if (columns.isEmpty()) return list;
-
-        List<String> names = columns.stream().map(columnMetadata -> wrapInQuotes(columnMetadata.getName())).collect(Collectors.toList());
-        String columnNames = String.join(", ", names);
-        return list.append(columnNames);
-    }
-
-    private String wrapInQuotes(String name) {
-        return "\"" + name + "\"";
-    }
-
-    private String wrapInSingleQuotes(String name) {
-        return "'" + name + "'";
-    }
-
-    private String buildObservationSelection(TableMetadata tableMetadata, String obsColumnName) {
-        List<ColumnMetadata> columns = tableMetadata.getNonDefaultColumnMetadataList();
-        if (columns.isEmpty()) return "";
-
-        String columnSelects = columns.parallelStream().map(column -> {
-            String obsColumn = column.getColumn().isSyncAttributeColumn() ?
-                    "ind.observations"
-                    : String.format("entity.%s", obsColumnName);
-            String columnName = column.getName();
-            switch (column.getConceptType()) {
-                case SingleSelect:
-                case MultiSelect: {
-                    return String.format("public.get_coded_string_value(%s%s, %s.map)::TEXT as \"%s\"",
-                            obsColumn, column.getJsonbExtractor(), getConceptMapName(tableMetadata), column.getName());
-                }
-                case Date: {
-                    return String.format("((%s%s)::timestamptz AT time zone 'asia/kolkata')::date as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
-                }
-                case DateTime: {
-                    return String.format("(%s%s)::timestamptz AT time zone 'asia/kolkata' as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
-                }
-                case Time: {
-                    return String.format("(%s%s)::TIME as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
-                }
-                case Numeric: {
-                    return String.format("(%s%s)::NUMERIC as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
-                }
-                case Subject:
-                case Encounter:
-                case Location: {
-                    return String.format("(%s%s) as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
-                }
-                default: {
-                    return String.format("(%s%s)::TEXT as \"%s\"", obsColumn, column.getTextExtractor(), columnName);
-                }
-            }
-        }).collect(Collectors.joining(",\n"));
-        return "," + columnSelects;
-    }
-
 }
