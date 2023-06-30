@@ -129,6 +129,17 @@ jobs:
         hostname: "int-staging.avniproject.org"
         env: "staging"
 
+  PRERELEASE_deploy:
+    docker:
+      - image: circleci/openjdk:11-jdk
+        environment:
+          ANSIBLE_HOST_KEY_CHECKING: no
+    working_directory: ~/
+    steps:
+      - deploy:
+          hostname: "int-prerelease.avniproject.org"
+          env: "prerelease"
+
   PRODUCTION_deploy:
     docker:
       - image: circleci/openjdk:11-jdk
@@ -157,6 +168,13 @@ workflows:
             only: main
         requires:
           - STAGING_approve
+    - PRERELEASE_approve:
+        type: approval
+        requires:
+          - build
+    - PRERELEASE_deploy:
+        requires:
+          - PRERELEASE_approve
     - PRODUCTION_approve:
         type: approval
         requires:
