@@ -33,7 +33,7 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldGetAllTablesForAnOrganisation() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
-        assertThat(schemaMetadata.getTableMetadata().size(), is(12));
+        assertThat(schemaMetadata.getTableMetadata().size(), is(13));
     }
 
     @Test

@@ -11,13 +11,12 @@ import java.util.Map;
 import static org.avniproject.etl.repository.sql.SqlFile.readSqlFile;
 
 public class RepeatableQuestionGroupSyncSqlGenerator {
-    private final Map<TableMetadata.TableType, String> parentTypeFileMap = new HashMap<>() {{
+    private static final Map<TableMetadata.TableType, String> parentTypeFileMap = new HashMap<>() {{
         this.put(TableMetadata.TableType.IndividualProfile, "subjectRepeatableQGObservations.sql");
         this.put(TableMetadata.TableType.Encounter, "generalEncounterRepeatableQGObservations.sql");
         this.put(TableMetadata.TableType.ProgramEnrolment, "programEnrolmentRepeatableQGObservations.sql");
         this.put(TableMetadata.TableType.ProgramEncounter, "programEncounterRepeatableQGObservations.sql");
     }};
-    private static final String obsSqlTemplate = readSqlFile("conceptMap.sql");
 
     private static String toString(String uuid) {
         return uuid == null ? "" : uuid;
