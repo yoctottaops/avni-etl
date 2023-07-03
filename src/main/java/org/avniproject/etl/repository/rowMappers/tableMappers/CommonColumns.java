@@ -9,6 +9,7 @@ public class CommonColumns {
     public static final Column LastModifiedDateTimeColumn = new Column("last_modified_date_time", Column.Type.timestampWithTimezone);
     public static final Column IsVoidedColumn = new Column("is_voided", Column.Type.bool);
     public static final Column OrganisationIdColumn = new Column("organisation_id", Column.Type.integer, Column.ColumnType.index);
+    public static final Column SerialIdColumn = new Column("id", Column.Type.serial, Column.ColumnType.index);
 
     public static final List<Column> commonColumns = Arrays.asList(
             new Column("uuid", Column.Type.text, Column.ColumnType.index),
@@ -20,5 +21,5 @@ public class CommonColumns {
             OrganisationIdColumn
         );
 
-    public static final List<Column> CommonRepeatableGroupColumns = List.of(LastModifiedDateTimeColumn, IsVoidedColumn, OrganisationIdColumn);
+    public static final List<Column> CommonRepeatableGroupColumns = List.of(SerialIdColumn, LastModifiedDateTimeColumn, IsVoidedColumn, OrganisationIdColumn);
 }

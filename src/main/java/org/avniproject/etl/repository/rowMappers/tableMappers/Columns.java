@@ -5,6 +5,7 @@ import org.avniproject.etl.domain.metadata.Column;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns.SerialIdColumn;
 import static org.avniproject.etl.repository.rowMappers.tableMappers.CommonColumns.commonColumns;
 
 public class Columns {
@@ -20,7 +21,7 @@ public class Columns {
     }
 
     public Columns withSerialIdColumn() {
-        columns.add(new Column("id", Column.Type.serial, Column.ColumnType.index));
+        columns.add(SerialIdColumn);
         return this;
     }
 

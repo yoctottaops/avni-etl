@@ -4,6 +4,7 @@ import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
+import org.avniproject.etl.repository.sql.RepeatableQuestionGroupSyncSqlGenerator;
 import org.avniproject.etl.repository.sql.TransactionalSyncSqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +28,7 @@ public class DuplicateRowDeleteAction implements EntitySyncAction {
     @Override
     public boolean doesntSupport(TableMetadata tableMetadata) {
         return !new TransactionalSyncSqlGenerator().supports(tableMetadata) &&
+                !new RepeatableQuestionGroupSyncSqlGenerator().supports(tableMetadata) &&
                 !tableMetadata.getType().equals(TableMetadata.Type.Address);
     }
 
