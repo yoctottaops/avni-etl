@@ -1,3 +1,14 @@
+help:
+	@IFS=$$'\n' ; \
+	help_lines=(`fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//'`); \
+	for help_line in $${help_lines[@]}; do \
+	    IFS=$$'#' ; \
+	    help_split=($$help_line) ; \
+	    help_command=`echo $${help_split[0]} | sed -e 's/^ *//' -e 's/ *$$//'` ; \
+	    help_info=`echo $${help_split[2]} | sed -e 's/^ *//' -e 's/ *$$//'` ; \
+	    printf "%-30s %s\n" $$help_command $$help_info ; \
+	done
+
 build_jar: ## Builds the jar file
 	./gradlew clean build -x test
 
@@ -26,7 +37,7 @@ start: boot_run
 debug:
 	./gradlew bootRun -Dagentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
-delete_organisation:
+delete_organisation: ## Delete organisation
 ifndef orgSchema
 	@echo "Provde the orgSchema variable"
 	exit 1

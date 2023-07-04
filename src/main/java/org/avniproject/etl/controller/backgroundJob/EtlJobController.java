@@ -98,7 +98,7 @@ public class EtlJobController {
                 .withIdentity(scheduledJobConfig.getTriggerKey(jobScheduleRequest.getEntityUUID()))
                 .forJob(jobDetail)
                 .withSchedule(simpleSchedule().withIntervalInMinutes(scheduledJobConfig.getRepeatIntervalInMinutes()).repeatForever())
-                .startAt(DateTimeUtil.nowPlusSeconds(20))
+                .startAt(DateTimeUtil.nowPlusSeconds(5))
                 .build();
 
         scheduler.scheduleJob(trigger);
