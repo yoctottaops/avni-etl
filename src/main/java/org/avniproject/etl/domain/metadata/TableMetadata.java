@@ -248,7 +248,8 @@ public class TableMetadata extends Model {
         ManualProgramEnrolmentEligibility,
         GroupToMember,
         HouseholdToMember,
-        RepeatableQuestionGroup
+        RepeatableQuestionGroup,
+        Checklist
     }
 
     public enum TableType {

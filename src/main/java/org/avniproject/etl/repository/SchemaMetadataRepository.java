@@ -10,6 +10,7 @@ import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.MediaTableMetadataBuilder;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.tableMappers.AddressTable;
+import org.avniproject.etl.repository.rowMappers.tableMappers.ChecklistTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -45,6 +46,7 @@ public class SchemaMetadataRepository {
         tables.addAll(getGroupSubjectTables());
 
         tables.addAll(getRepeatableQuestionGroupTables());
+        //tables.addAll(getChecklistTables());
         return new SchemaMetadata(tables);
     }
 
@@ -72,7 +74,7 @@ public class SchemaMetadataRepository {
     private List<TableMetadata> getRepeatableQuestionGroupTables() {
         String sqlFormat = readSqlFile("repeatableQG/repeatableQuestionGroups.sql");
         String sql = format(sqlFormat, PLACEHOLDER_CONCEPT_UUID);
-        return getTableMetadata(sql);
+        return getTableMetadataForForm(sql);
     }
 
     private List<TableMetadata> getFormTables() {
@@ -114,13 +116,28 @@ public class SchemaMetadataRepository {
                 " and (p.id is null or op.id is not null) and (et.id is null or oet.id is not null)" +
                 " and nafe.id is null;", PLACEHOLDER_CONCEPT_UUID);
 
-        List<TableMetadata> tables = getTableMetadata(sql);
+        List<TableMetadata> tables = getTableMetadataForForm(sql);
         tables.forEach(this::addDecisionConceptColumns);
         tables.stream().filter(t -> !t.isSubjectTable()).forEach(this::addSyncAttributeColumns);
         return tables;
     }
 
-    private List<TableMetadata> getTableMetadata(String sql) {
+    private List<TableMetadata> getChecklistTables() {
+        String sql = readSqlFile("checklist/checklistMetadata.sql");
+        List<Map<String, Object>> checklistTypes = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
+        ChecklistTable checklistTable = new ChecklistTable(checklistTypes);
+
+        Map<String, Object> tableDetails = checklistTypes.get(0);
+
+        return checklistTypes.stream().map(x -> {
+            TableMetadata tableMetadata = new TableMetadata();
+            tableMetadata.setName(checklistTable.name(tableDetails));
+            tableMetadata.setType(TableMetadata.Type.Checklist);
+            return tableMetadata;
+        }).collect(Collectors.toList());
+    }
+
+    private List<TableMetadata> getTableMetadataForForm(String sql) {
         List<Map<String, Object>> maps = runInOrgContext(() -> jdbcTemplate.queryForList(sql), jdbcTemplate);
         Map<Object, List<Map<String, Object>>> tableMaps = maps.stream().collect(Collectors.groupingBy(stringObjectMap -> stringObjectMap.get("form_mapping_uuid")));
         return tableMaps.values().stream().map(mapList -> new TableMetadataMapper().create(mapList)).collect(Collectors.toList());

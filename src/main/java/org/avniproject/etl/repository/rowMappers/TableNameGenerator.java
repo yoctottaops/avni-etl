@@ -12,7 +12,7 @@ public class TableNameGenerator {
     public static final String ProgramEnrolmentRepeatableQuestionGroup = "ProgramEnrolmentRepeatableQuestionGroup";
     public static final String ProgramEncounterRepeatableQuestionGroup = "ProgramEncounterRepeatableQuestionGroup";
 
-    private static final Map<String, List<Integer>> tableTypeTrimmingMap = new HashMap<>() {{
+    private static final Map<String, List<Integer>> trims = new HashMap<>() {{
         put("Registration", List.of(6));
         put(RegistrationRepeatableQuestionGroup, List.of(6, 20));
         put("Encounter", List.of(6, 20));
@@ -41,7 +41,7 @@ public class TableNameGenerator {
     }
 
     private String getTrimmedTableName(List<String> entities, String tableType, String suffix) {
-        List<Integer> trimmingList = tableTypeTrimmingMap.get(tableType);
+        List<Integer> trimmingList = trims.get(tableType);
         List<String> trimmedNameList = IntStream
                 .range(0, entities.size())
                 .mapToObj(i -> getTrimmedName(entities, new StringBuilder(), trimmingList, i, suffix))
