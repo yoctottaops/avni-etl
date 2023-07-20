@@ -3,6 +3,8 @@ package org.avniproject.etl.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 @Component
 public class CognitoConfig {
     @Value("${cognito.poolid}")
@@ -17,5 +19,9 @@ public class CognitoConfig {
 
     public String getClientId() {
         return clientId;
+    }
+
+    public boolean isConfigured() {
+        return !("dummy".equals(poolId) || "dummy".equals(clientId));
     }
 }

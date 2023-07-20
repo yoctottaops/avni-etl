@@ -29,6 +29,12 @@ public class AvniKeycloakConfig {
     @Value("${keycloak.realm}")
     private String realm;
 
+    @Value("${keycloak.auth-server-url}")
+    private String authServerUrl;
+
+    @Value("${keycloak.credentials.secret}")
+    private String credentialsSecret;
+
     public String getVerifyTokenAudience() {
         return verifyTokenAudience;
     }
@@ -59,5 +65,9 @@ public class AvniKeycloakConfig {
 
     public String getClient() {
         return client;
+    }
+
+    public boolean isConfigured() {
+        return !("dummy".equals(authServerUrl) || "dummy".equals(this.credentialsSecret));
     }
 }

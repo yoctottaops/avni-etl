@@ -1,9 +1,10 @@
 package org.avniproject.etl.service;
 
 import com.auth0.jwk.SigningKeyNotFoundException;
+import org.avniproject.etl.config.AvniKeycloakConfig;
+import org.avniproject.etl.config.CognitoConfig;
 import org.avniproject.etl.config.IdpType;
 import org.avniproject.etl.domain.User;
-import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.repository.UserRepository;
 import org.avniproject.etl.security.IAMAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,44 +13,44 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class IdpServiceFactory {
-    @Autowired
-    private OrganisationRepository organisationRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired(required = false)
     private CognitoAuthServiceImpl cognitoAuthService;
 
-    @Autowired(required = false)
     private KeycloakAuthService keycloakAuthService;
 
     @Value("${avni.idp.type}")
     private IdpType idpType;
 
-    public IdpServiceFactory() {
+    private final CognitoConfig cognitoConfig;
+
+    private final AvniKeycloakConfig avniKeycloakConfig;
+
+    @Autowired
+    public IdpServiceFactory(UserRepository userRepository, CognitoConfig cognitoConfig, AvniKeycloakConfig avniKeycloakConfig) {
+        this.userRepository = userRepository;
+        this.cognitoConfig = cognitoConfig;
+        this.avniKeycloakConfig = avniKeycloakConfig;
     }
 
-    public IdpServiceFactory(OrganisationRepository organisationRepository, CognitoAuthServiceImpl cognitoAuthService,  KeycloakAuthService keycloakAuthService, IdpType idpType) {
-        this.organisationRepository = organisationRepository;
+    @Autowired(required = false)
+    public void setCognitoAuthService(CognitoAuthServiceImpl cognitoAuthService) {
         this.cognitoAuthService = cognitoAuthService;
+    }
+
+    @Autowired(required = false)
+    public void setKeycloakAuthService(KeycloakAuthService keycloakAuthService) {
         this.keycloakAuthService = keycloakAuthService;
-        this.idpType = idpType;
     }
 
     public IAMAuthService getAuthService() {
-        switch (idpType) {
-            case cognito:
-                return cognitoAuthService;
-            case keycloak:
-                return keycloakAuthService;
-            case both:
-                return new CompositeIAMAuthService(cognitoAuthService, keycloakAuthService);
-            case none:
-                return new NoIAMAuthService(userRepository);
-            default:
-                throw new RuntimeException(String.format("IdpType: %s is not supported", idpType));
-        }
+        return switch (idpType) {
+            case cognito -> cognitoAuthService;
+            case keycloak -> keycloakAuthService;
+            case both -> new CompositeIAMAuthService(cognitoAuthService, keycloakAuthService);
+            case none -> new NoIAMAuthService(userRepository, cognitoConfig, avniKeycloakConfig);
+            default -> throw new RuntimeException(String.format("IdpType: %s is not supported", idpType));
+        };
     }
 
     public static class CompositeIAMAuthService implements IAMAuthService {
@@ -71,19 +72,5 @@ public class IdpServiceFactory {
         }
     }
 
-    @Service
-    public static class NoIAMAuthService implements IAMAuthService {
-        private final UserRepository userRepository;
-
-        @Autowired
-        public NoIAMAuthService(UserRepository userRepository) {
-            this.userRepository = userRepository;
-        }
-
-        @Override
-        public User getUserFromToken(String userName) {
-            return userRepository.findByUsername(userName);
-        }
-    }
 }
 
