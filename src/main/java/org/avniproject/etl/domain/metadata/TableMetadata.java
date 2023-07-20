@@ -32,16 +32,16 @@ public class TableMetadata extends Model {
     public TableMetadata() {
     }
 
-    public boolean matches(TableMetadata realTable) {
-        if (realTable == null) return false;
-        return nullSafeEquals(realTable.getType(), this.getType())
-                && nullSafeEquals(realTable.subjectTypeUuid, this.subjectTypeUuid)
-                && nullSafeEquals(realTable.formUuid, this.formUuid)
-                && nullSafeEquals(realTable.encounterTypeUuid, this.encounterTypeUuid)
-                && nullSafeEquals(realTable.programUuid, this.programUuid)
-                && nullSafeEquals(realTable.groupSubjectTypeUuid, this.groupSubjectTypeUuid)
-                && nullSafeEquals(realTable.memberSubjectTypeUuid, this.memberSubjectTypeUuid)
-                && nullSafeEquals(realTable.repeatableQuestionGroupConceptUuid, this.repeatableQuestionGroupConceptUuid);
+    public boolean matches(TableMetadata other) {
+        if (other == null) return false;
+        return nullSafeEquals(other.getType(), this.getType())
+                && nullSafeEquals(other.subjectTypeUuid, this.subjectTypeUuid)
+                && nullSafeEquals(other.type, this.type)
+                && nullSafeEquals(other.encounterTypeUuid, this.encounterTypeUuid)
+                && nullSafeEquals(other.programUuid, this.programUuid)
+                && nullSafeEquals(other.groupSubjectTypeUuid, this.groupSubjectTypeUuid)
+                && nullSafeEquals(other.memberSubjectTypeUuid, this.memberSubjectTypeUuid)
+                && nullSafeEquals(other.repeatableQuestionGroupConceptUuid, this.repeatableQuestionGroupConceptUuid);
     }
 
     public List<Diff> findChanges(TableMetadata currentTable) {

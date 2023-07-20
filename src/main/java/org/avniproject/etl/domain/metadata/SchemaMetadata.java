@@ -21,26 +21,17 @@ public class SchemaMetadata {
         this.tableMetadata = tableMetadata;
     }
 
-    public List<Diff> findChanges(SchemaMetadata currentSchema) {
+    public List<Diff> findChanges(SchemaMetadata current) {
         List<TableMetadata> newTables = this.getTableMetadata();
         List<Diff> diffs = new ArrayList<>();
         newTables.forEach(newTable -> {
-            diffs.addAll(findChanges(currentSchema, newTable));
+            diffs.addAll(findChanges(current, newTable));
         });
         return diffs;
     }
 
     public Optional<TableMetadata> findMatchingTable(TableMetadata newTable) {
         return this.getTableMetadata().stream().filter(currentTable -> currentTable.matches(newTable)).findFirst();
-    }
-
-    public Optional<ColumnMetadata> findMatchingColumn(TableMetadata newTable, ColumnMetadata columnMetadata) {
-        Optional<TableMetadata> optionalTable = findMatchingTable(newTable);
-        if (optionalTable.isPresent()) {
-            TableMetadata table = optionalTable.get();
-            return table.getColumnMetadataList().stream().filter(currentColumn -> currentColumn.matches(columnMetadata)).findFirst();
-        }
-        return Optional.empty();
     }
 
     public List<TableMetadata> getAllSubjectTables() {

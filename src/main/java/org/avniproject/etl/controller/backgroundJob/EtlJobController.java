@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.avniproject.etl.config.ScheduledJobConfig.SYNC_JOB_GROUP;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -111,5 +112,11 @@ public class EtlJobController {
     public String deleteJob(@PathVariable String id) throws SchedulerException {
         boolean jobDeleted = scheduler.deleteJob(scheduledJobConfig.getJobKey(id));
         return jobDeleted ? "Job Deleted" : "Job Not Deleted";
+    }
+
+    @PreAuthorize("hasAnyAuthority('admin')")
+    @DeleteMapping(value = "/job/ff8ad747-b567-46fe-9075-91d17082de15") // since this is not for production usage kept the url cryptic so that is is not accidentally used
+    public void deleteAllJobs() throws SchedulerException {
+        scheduler.clear();
     }
 }
