@@ -4,10 +4,7 @@ import org.avniproject.etl.domain.Model;
 import org.avniproject.etl.domain.metadata.diff.*;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
@@ -258,6 +255,11 @@ public class TableMetadata extends Model {
         ProgramEnrolment,
         ProgramEncounter
     }
+
+    public static final Map<TableType, String> qgParentColumnIds = Map.of(TableType.IndividualProfile, "individual_id",
+                                                                            TableType.Encounter, "encounter_id",
+                                                                            TableType.ProgramEnrolment, "enrolment_id",
+                                                                            TableType.ProgramEncounter, "program_encounter_id");
 
     public boolean isSubjectTable() {
         return Arrays.asList(Type.Individual, Type.Person, Type.Household, Type.Group).contains(this.type);

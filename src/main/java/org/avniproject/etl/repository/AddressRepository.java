@@ -13,7 +13,7 @@ import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 
 @Repository
 public class AddressRepository {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
     private static final String sql = readFile("/sql/api/ensureAddressColumnExists.sql.st");
 
     @Autowired

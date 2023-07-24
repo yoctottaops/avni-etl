@@ -24,11 +24,11 @@ public class EntityRepository {
                             RepeatableQGTransactionTablesSyncAction repeatableQGTransactionTablesSyncAction) {
         entitySyncRepositories.add(transactionalTablesSyncAction);
         entitySyncRepositories.add(addressTableSyncAction);
+        entitySyncRepositories.add(repeatableQGTransactionTablesSyncAction);
         entitySyncRepositories.add(duplicateRowDeleteAction);
         entitySyncRepositories.add(entityApprovalStatusSyncAction);
         entitySyncRepositories.add(answerConceptSync);
         entitySyncRepositories.add(mediaTableSyncAction);
-        entitySyncRepositories.add(repeatableQGTransactionTablesSyncAction);
     }
 
     @Transactional

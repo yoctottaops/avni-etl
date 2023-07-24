@@ -174,6 +174,10 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         assertEquals(2, list.size());
         assertEquals(100, ((BigDecimal)(list.get(0).get("Asset Info Bitcoin"))).intValue());
         assertEquals("FTX", list.get(0).get("Asset Info Exchange"));
+
+        jdbcTemplate.execute("update encounter set last_modified_date_time = current_timestamp where id = 2001");
+        runDataSync();
+        assertEquals(2, list.size());
     }
 
     @Test
