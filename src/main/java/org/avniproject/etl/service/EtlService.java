@@ -5,7 +5,6 @@ import org.avniproject.etl.config.EtlServiceConfig;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
-import org.avniproject.etl.domain.result.EtlResult;
 import org.avniproject.etl.repository.OrganisationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,37 +30,29 @@ public class EtlService {
         this.etlServiceConfig = etlServiceConfig;
     }
 
-    public EtlResult runFor(String organisationUUID) {
+    public void runFor(String organisationUUID) {
         OrganisationIdentity organisationIdentity = organisationRepository.getOrganisation(organisationUUID);
-        return this.runFor(organisationIdentity);
+        this.runFor(organisationIdentity);
     }
 
-    public List<EtlResult> runForOrganisationGroup(String organisationGroupUUID) {
+    public void runForOrganisationGroup(String organisationGroupUUID) {
         List<OrganisationIdentity> organisationIdentities = organisationRepository.getOrganisationGroup(organisationGroupUUID);
-        return this.runFor(organisationIdentities);
+        this.runFor(organisationIdentities);
     }
 
-    public List<EtlResult> runFor(List<OrganisationIdentity> organisationIdentities) {
-        return organisationIdentities.stream().map(this::runFor).toList();
+    public void runFor(List<OrganisationIdentity> organisationIdentities) {
+        organisationIdentities.forEach(this::runFor);
     }
 
-    public EtlResult runFor(OrganisationIdentity organisationIdentity) {
+    public void runFor(OrganisationIdentity organisationIdentity) {
         log.info(String.format("Running ETL for schema %s with dbUser %s and schemaUser %s",
                 organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
         OrgIdentityContextHolder.setContext(organisationIdentity, etlServiceConfig);
-
-        try {
-            Organisation organisation = organisationFactory.create(organisationIdentity);
-            Organisation newOrganisation = schemaMigrationService.migrate(organisation);
-            syncService.sync(newOrganisation);
-            log.info(String.format("Completed ETL for schema %s with dbUser %s and schemaUser %s",
-                    organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
-            OrgIdentityContextHolder.setContext(organisationIdentity, etlServiceConfig);
-        } catch (Exception e) {
-            log.error("Could not migrate organisation", e);
-            return new EtlResult(false);
-        }
-
-        return new EtlResult(true);
+        Organisation organisation = organisationFactory.create(organisationIdentity);
+        Organisation newOrganisation = schemaMigrationService.migrate(organisation);
+        syncService.sync(newOrganisation);
+        log.info(String.format("Completed ETL for schema %s with dbUser %s and schemaUser %s",
+                organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
+        OrgIdentityContextHolder.setContext(organisationIdentity, etlServiceConfig);
     }
 }

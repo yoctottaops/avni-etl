@@ -23,7 +23,7 @@ public class ScheduledJobService {
     private final Scheduler scheduler;
     private final ScheduledJobConfig scheduledJobConfig;
 
-    private static final String HISTORY_QUERY = "select sjr.started_at, sjr.ended_at, sjr.error_message from qrtz_job_details qjd\n" +
+    private static final String HISTORY_QUERY = "select sjr.started_at, sjr.ended_at, sjr.error_message, sjr.success from qrtz_job_details qjd\n" +
             "    left outer join scheduled_job_run sjr on sjr.job_name = qjd.job_name\n" +
             "     where sjr.job_name = ?" +
             "order by 1 desc\n";
@@ -55,8 +55,7 @@ public class ScheduledJobService {
     }
 
     public List<EtlJobHistoryItem> getJobHistory(String organisationUUID) {
-        String query = HISTORY_QUERY + "limit 1";
-        return jdbcTemplate.query(query, ps -> ps.setString(1, organisationUUID), new EtlJobHistoryItemMapper());
+        return jdbcTemplate.query(HISTORY_QUERY, ps -> ps.setString(1, organisationUUID), new EtlJobHistoryItemMapper());
     }
 
     static class EtlJobLatestStatusResponseMapper implements RowMapper<EtlJobSummary> {
@@ -77,6 +76,7 @@ public class ScheduledJobService {
             etlJobLatestStatusResponse.setStartedAt(rs.getDate(1));
             etlJobLatestStatusResponse.setEndedAt(rs.getDate(2));
             etlJobLatestStatusResponse.setErrorMessage(rs.getString(3));
+            etlJobLatestStatusResponse.setSuccess(rs.getBoolean(4));
             return etlJobLatestStatusResponse;
         }
     }

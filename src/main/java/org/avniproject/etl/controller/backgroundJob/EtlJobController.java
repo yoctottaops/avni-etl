@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.avniproject.etl.config.ScheduledJobConfig.SYNC_JOB_GROUP;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -48,9 +47,9 @@ public class EtlJobController {
     }
 
     @PreAuthorize("hasAnyAuthority('admin')")
-    @GetMapping("/job/{id}")
-    public ResponseEntity getJob(@PathVariable String id) throws SchedulerException {
-        EtlJobSummary latestJobRun = scheduledJobService.getLatestJobRun(id);
+    @GetMapping("/job/{entityUUID}")
+    public ResponseEntity getJob(@PathVariable String entityUUID) throws SchedulerException {
+        EtlJobSummary latestJobRun = scheduledJobService.getLatestJobRun(entityUUID);
         if (latestJobRun == null)
             return ResponseEntity.notFound().build();
         return new ResponseEntity(latestJobRun, HttpStatus.OK);
@@ -63,9 +62,9 @@ public class EtlJobController {
     }
 
     @PreAuthorize("hasAnyAuthority('admin')")
-    @GetMapping("/job/history/{id}")
-    public List<EtlJobHistoryItem> getJobHistory(@PathVariable String id) {
-        return scheduledJobService.getJobHistory(id);
+    @GetMapping("/job/history/{entityUUID}")
+    public List<EtlJobHistoryItem> getJobHistory(@PathVariable String entityUUID) {
+        return scheduledJobService.getJobHistory(entityUUID);
     }
 
     @PreAuthorize("hasAnyAuthority('admin')")
@@ -112,11 +111,5 @@ public class EtlJobController {
     public String deleteJob(@PathVariable String id) throws SchedulerException {
         boolean jobDeleted = scheduler.deleteJob(scheduledJobConfig.getJobKey(id));
         return jobDeleted ? "Job Deleted" : "Job Not Deleted";
-    }
-
-    @PreAuthorize("hasAnyAuthority('admin')")
-    @DeleteMapping(value = "/job/ff8ad747-b567-46fe-9075-91d17082de15") // since this is not for production usage kept the url cryptic so that is is not accidentally used
-    public void deleteAllJobs() throws SchedulerException {
-        scheduler.clear();
     }
 }

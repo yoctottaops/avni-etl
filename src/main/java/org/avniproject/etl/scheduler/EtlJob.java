@@ -24,8 +24,8 @@ public class EtlJob implements Job {
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
         String entityId = scheduledJobConfig.getEntityId(jobDetail);
         if (jobDataMap.get(ScheduledJobConfig.ENTITY_TYPE).equals(JobEntityType.Organisation))
-            context.setResult(etlService.runFor(entityId));
+            etlService.runFor(entityId);
         else
-            context.setResult(etlService.runForOrganisationGroup(entityId));
+            etlService.runForOrganisationGroup(entityId);
     }
 }

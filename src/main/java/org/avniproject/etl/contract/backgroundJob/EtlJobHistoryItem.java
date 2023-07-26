@@ -6,6 +6,7 @@ public class EtlJobHistoryItem {
     private Date startedAt;
     private Date endedAt;
     private String errorMessage;
+    private boolean success;
 
     public Date getStartedAt() {
         return startedAt;
@@ -29,5 +30,13 @@ public class EtlJobHistoryItem {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public boolean getSuccess() {
+        return success;
     }
 }

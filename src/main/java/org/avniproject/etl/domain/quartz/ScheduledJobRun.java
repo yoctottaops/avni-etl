@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.avniproject.etl.util.ExceptionUtil;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 
 import java.util.Date;
@@ -40,7 +41,13 @@ public class ScheduledJobRun {
 
     public void ended(JobExecutionException jobException) {
         this.endedAt = new Date();
-        errorMessage = ExceptionUtil.getStackTraceAsString(jobException);
+        errorMessage = ExceptionUtil.getStackTraceAsString(getAppException(jobException));
+    }
+
+    private Throwable getAppException(Throwable throwable) {
+        if (throwable.getCause() instanceof SchedulerException)
+            return getAppException(throwable.getCause());
+        return throwable.getCause();
     }
 
     public Long getId() {

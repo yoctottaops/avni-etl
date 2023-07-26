@@ -1,7 +1,6 @@
 package org.avniproject.etl.scheduler;
 
 import org.avniproject.etl.domain.quartz.ScheduledJobRun;
-import org.avniproject.etl.domain.result.EtlResult;
 import org.avniproject.etl.repository.quartz.ScheduledJobRunRepository;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -39,8 +38,7 @@ public class EtlJobListener implements JobListener {
     public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
         ScheduledJobRun scheduledJobRun = scheduledJobRunRepository.getLastRun(context.getJobDetail().getKey().getName());
         scheduledJobRun.ended(jobException);
-        EtlResult result = (EtlResult) context.getResult();
-        scheduledJobRun.setSuccess(result.isSuccess());
+        scheduledJobRun.setSuccess(jobException == null);
         scheduledJobRunRepository.save(scheduledJobRun);
     }
 }
