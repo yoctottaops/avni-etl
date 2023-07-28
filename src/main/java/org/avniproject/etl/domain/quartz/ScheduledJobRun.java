@@ -41,7 +41,8 @@ public class ScheduledJobRun {
 
     public void ended(JobExecutionException jobException) {
         this.endedAt = new Date();
-        errorMessage = ExceptionUtil.getStackTraceAsString(getAppException(jobException));
+        if (jobException != null)
+            errorMessage = ExceptionUtil.getStackTraceAsString(getAppException(jobException));
     }
 
     private Throwable getAppException(Throwable throwable) {
