@@ -31,12 +31,15 @@ public class MediaController {
     @PreAuthorize("hasAnyAuthority('organisation_admin','admin')")
     @PostMapping("/media/search")
     public ResponseEntity search(HttpServletRequest request,
-                                 @RequestBody MediaSearchRequest mediaSearchRequest,
+                                 @RequestBody(required = false) MediaSearchRequest mediaSearchRequest,
                                  @PathParam("size") int size,
                                  @PathParam("page") int page) {
         try {
-            return ResponseEntity.ok(mediaService.search(mediaSearchRequest, new Page(page, size)));
-        } catch (IllegalArgumentException exception) {
+            MediaSearchRequest modifiedRequest = mediaSearchRequest;
+            if (mediaSearchRequest == null)
+                modifiedRequest = new MediaSearchRequest();
+            return ResponseEntity.ok(mediaService.search(modifiedRequest, new Page(page, size)));
+        } catch (Exception exception) {
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }

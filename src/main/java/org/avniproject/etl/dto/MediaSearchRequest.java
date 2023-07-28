@@ -7,13 +7,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class MediaSearchRequest {
-    private List<AddressRequest> addresses;
-    private List<String> subjectTypeNames;
-    private List<String> programNames;
-    private List<String> encounterTypeNames;
-    private List<String> imageConcepts;
-    private List<SyncValue> syncValues;
-    private List<ConceptFilter> conceptFilters;
+    private List<AddressRequest> addresses = new ArrayList<>();
+    private List<String> subjectTypeNames = new ArrayList<>();
+    private List<String> programNames = new ArrayList<>();
+    private List<String> encounterTypeNames = new ArrayList<>();
+    private List<String> imageConcepts = new ArrayList<>();
+    private List<SyncValue> syncValues = new ArrayList<>();
+    private List<ConceptFilter> conceptFilters = new ArrayList<>();
     private Date fromDate;
     private Date toDate;
 
@@ -21,9 +21,6 @@ public final class MediaSearchRequest {
     }
 
     public List<AddressRequest> getAddresses() {
-        if (addresses == null) {
-            addresses = new ArrayList<>();
-        }
         return addresses;
     }
 
@@ -68,9 +65,6 @@ public final class MediaSearchRequest {
     }
 
     public List<SyncValue> getSyncValues() {
-        if (syncValues == null) {
-            syncValues = new ArrayList<>();
-        }
         return syncValues;
     }
 
@@ -79,9 +73,6 @@ public final class MediaSearchRequest {
     }
 
     public List<ConceptFilter> getConceptFilters() {
-        if (conceptFilters == null) {
-            conceptFilters = new ArrayList<>();
-        }
         return conceptFilters;
     }
 
