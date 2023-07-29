@@ -8,6 +8,8 @@ import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.domain.metadata.diff.Diff;
 import org.avniproject.etl.repository.rowMappers.ColumnMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.MediaTableMetadataBuilder;
+import org.avniproject.etl.repository.rowMappers.SyncTelemetryTableMetadataBuilder;
+import org.avniproject.etl.repository.rowMappers.UserTableMetadataBuilder;
 import org.avniproject.etl.repository.rowMappers.TableMetadataMapper;
 import org.avniproject.etl.repository.rowMappers.tableMappers.AddressTable;
 import org.avniproject.etl.repository.rowMappers.tableMappers.ChecklistTable;
@@ -43,6 +45,8 @@ public class SchemaMetadataRepository {
         List<TableMetadata> tables = new ArrayList<>(getFormTables());
         tables.add(getAddressTable());
         tables.add(MediaTableMetadataBuilder.build());
+        tables.add(SyncTelemetryTableMetadataBuilder.build());
+        tables.add(UserTableMetadataBuilder.build());
         tables.addAll(getGroupSubjectTables());
 
         tables.addAll(getRepeatableQuestionGroupTables());
