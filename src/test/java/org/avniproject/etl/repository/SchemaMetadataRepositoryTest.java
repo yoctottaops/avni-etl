@@ -33,7 +33,7 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
     @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void shouldGetAllTablesForAnOrganisation() {
         SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
-        assertThat(schemaMetadata.getTableMetadata().size(), is(13));
+        assertThat(schemaMetadata.getTableMetadata().size(), is(15));
     }
 
     @Test
@@ -79,6 +79,25 @@ public class SchemaMetadataRepositoryTest extends BaseIntegrationTest {
         assertThat(mediaTable.isPresent(), is(true));
     }
 
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void shouldGetSyncTelemetryTable() {
+        SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
+        Optional<TableMetadata> syncTelemetryTable = schemaMetadata.getTableMetadata().stream().filter(tableMetadata1 -> tableMetadata1.getName().equals("sync_telemetry")).findFirst();
+
+        assertThat(syncTelemetryTable.isPresent(), is(true));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void shouldGetUserTable() {
+        SchemaMetadata schemaMetadata = schemaMetadataRepository.getNewSchemaMetadata();
+        Optional<TableMetadata> userTable = schemaMetadata.getTableMetadata().stream().filter(tableMetadata1 -> tableMetadata1.getName().equals("user")).findFirst();
+
+        assertThat(userTable.isPresent(), is(true));
+    }
 
     @Test
     @Sql({"/test-data-teardown.sql", "/test-data.sql"})

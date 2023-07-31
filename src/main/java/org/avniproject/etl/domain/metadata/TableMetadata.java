@@ -246,7 +246,9 @@ public class TableMetadata extends Model {
         GroupToMember,
         HouseholdToMember,
         RepeatableQuestionGroup,
-        Checklist
+        Checklist,
+        SyncTelemetry,
+        User
     }
 
     public enum TableType {

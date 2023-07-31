@@ -93,4 +93,22 @@ public class TableMetadataBuilder {
         formUuid = null;
         return withType(TableMetadata.Type.Address);
     }
+
+    public TableMetadataBuilder forSyncTelemetry() {
+        name = "SyncTelemetry";
+        type = TableMetadata.Type.SyncTelemetry;
+        programUuid = null;
+        encounterTypeUuid = null;
+
+        return this;
+    }
+
+    public TableMetadataBuilder forUser() {
+        name = "User";
+        type = TableMetadata.Type.User;
+        programUuid = null;
+        encounterTypeUuid = null;
+
+        return this;
+    }
 }
