@@ -17,5 +17,8 @@ public class TableTest {
 
         assertThat(new ProgramEnrolmentTable().columns().size(), is(16));
         assertThat(new ProgramExitTable().columns().size(), is(16));
+
+        assertThat(new SyncTelemetryTable().columns().size(), is(18));
+        assertThat(new UserTable().columns().size(), is(13));
     }
 }

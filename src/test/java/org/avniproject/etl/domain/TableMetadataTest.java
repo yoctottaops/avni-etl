@@ -41,10 +41,13 @@ public class TableMetadataTest {
         TableMetadata anotherProgramProgramEncounter = new TableMetadataBuilder().forProgramEncounter("2", "1").build();
         TableMetadata anotherProgramProgramEncounterCancellation = new TableMetadataBuilder().forProgramEncounterCancellation("2", "1").build();
         TableMetadata addressTable = new TableMetadataBuilder().forAddress().build();
+        TableMetadata syncTelemetryTable = new TableMetadataBuilder().forSyncTelemetry().build();
+        TableMetadata userTable = new TableMetadataBuilder().forUser().build();
 
         List<TableMetadata> tables = Arrays.asList(person, programEnrolment, anotherProgramEnrolment,
                 programExit, anotherProgramExit, programEncounter, programEncounterCancellation,
-                anotherProgramProgramEncounter, anotherProgramProgramEncounterCancellation, addressTable);
+                anotherProgramProgramEncounter, anotherProgramProgramEncounterCancellation, addressTable,
+                syncTelemetryTable, userTable);
 
         tables.forEach(firstTable -> {
             tables.forEach(secondTable -> {
