@@ -1,7 +1,5 @@
 package org.avniproject.etl.repository.sync;
 
-import org.apache.log4j.Logger;
-import org.avniproject.etl.controller.backgroundJob.EtlJobController;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
