@@ -3,21 +3,16 @@ package org.avniproject.etl.controller;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.dto.UserActivityDTO;
 import org.avniproject.etl.repository.ReportRepository;
+import org.avniproject.etl.service.EtlService;
 import org.avniproject.etl.service.ReportService;
 import org.avniproject.etl.util.ReportUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@PreAuthorize("hasAnyAuthority('organisation_admin','admin')")
-@RequestMapping("/reports")
 public class ReportController {
 
     private final ReportService reportService;
@@ -31,7 +26,7 @@ public class ReportController {
         this.reportUtil = reportUtil;
     }
 
-    @GetMapping("/hr/userActivity")
+    @RequestMapping(value = "reports/hr/userActivity", method = RequestMethod.GET)
     public ResponseEntity getUserActivity(@RequestParam(value = "start_date", required = false) String startDate,
                                           @RequestParam(value = "endDate", required = false) String endDate,
                                           @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds)
@@ -52,21 +47,15 @@ public class ReportController {
         }
     }
 
-    @GetMapping("/hr/syncFailures")
-    public ResponseEntity getUserWiseSyncFailures(@RequestParam(value = "start_date", required = false) String startDate,
+    @RequestMapping(value = "/report/hr/syncFailures",method = RequestMethod.GET)
+    public List<UserActivityDTO> getUserWiseSyncFailures(@RequestParam(value = "startDate", required = false) String startDate,
                                                   @RequestParam(value = "endDate", required = false) String endDate,
                                                   @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds){
-        try {
-            List<UserActivityDTO> userActivity = reportRepository.getUserSyncFailures(
+            return reportRepository.generateUserSyncFailures(
                     OrgIdentityContextHolder.getDbSchema(),
                     reportUtil.getDateDynamicWhere(startDate, endDate, "sync_start_time"),
                     reportUtil.getDynamicUserWhere(userIds, "u.id")
             );
-            return ResponseEntity.ok(userActivity);
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 
 
