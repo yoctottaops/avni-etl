@@ -17,13 +17,11 @@ import java.util.*;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataSyncIntegrationTest extends BaseIntegrationTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private EtlService etlService;
@@ -302,5 +300,21 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
 
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
         assertThat("Media table number of rows has not changed since last run", media.size(), is(3));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void userTableShouldUpdateWithOldUserData() throws InterruptedException {
+        runDataSync();
+
+        assertThat(countOfRowsIn("orgc.users"), is(equalTo(1L)));
+
+        String sql = "update public.users set last_modified_date_time = now() where id = 3453;";
+        jdbcTemplate.execute(sql);
+
+        runDataSync();
+
+        assertThat(countOfRowsIn("orgc.users"), is(equalTo(1L)));
     }
 }

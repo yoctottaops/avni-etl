@@ -41,7 +41,6 @@ public class UserTableSyncAction implements EntitySyncAction{
 
     private void insertData(TableMetadata userTableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
         syncNewerRows(userTableMetadata,lastSyncTime, dataSyncBoundaryTime);
-
     }
 
     private void syncNewerRows(TableMetadata userTableMetadata, Date lastSyncTime, Date dataSyncBoundaryTime) {
@@ -62,7 +61,5 @@ public class UserTableSyncAction implements EntitySyncAction{
 
     private String wrapInQuotes(String parameter) {
         return parameter == null ? "null" : "\"" + parameter + "\"";
-
     }
-
 }

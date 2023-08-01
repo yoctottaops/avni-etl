@@ -8,7 +8,7 @@ import java.util.Map;
 public class UserTable extends Table{
     @Override
     public String name(Map<String, Object> tableDetails) {
-        return "user";
+        return "users";
     }
 
     @Override

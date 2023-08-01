@@ -4,11 +4,7 @@ import org.avniproject.etl.BaseIntegrationTest;
 import org.avniproject.etl.domain.OrganisationIdentity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -17,9 +13,6 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private EtlService etlService;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     @Sql({"/test-data-teardown.sql", "/test-data.sql"})
@@ -36,11 +29,6 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring"), equalTo(1L));
         assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring_cancel"), equalTo(1L));
         assertThat(countOfRowsIn("orgc.sync_telemetry"), equalTo(1L));
-        assertThat(countOfRowsIn("orgc.user"), equalTo(1L));
-    }
-
-    private Long countOfRowsIn(String tableName) {
-        List<Map<String, Object>> countResult = jdbcTemplate.queryForList(String.format("select count(*) as cnt from %s", tableName));
-        return (Long) countResult.get(0).get("cnt");
+        assertThat(countOfRowsIn("orgc.users"), equalTo(1L));
     }
 }

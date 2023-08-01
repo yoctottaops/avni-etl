@@ -1,5 +1,7 @@
 package org.avniproject.etl.repository.sync;
 
+import org.apache.log4j.Logger;
+import org.avniproject.etl.controller.backgroundJob.EtlJobController;
 import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
@@ -46,9 +48,7 @@ public class DuplicateRowDeleteAction implements EntitySyncAction {
 
     @Override
     public boolean doesntSupport(TableMetadata tableMetadata) {
-        return !new TransactionalSyncSqlGenerator().supports(tableMetadata) &&
-                !new RepeatableQuestionGroupSyncSqlGenerator().supports(tableMetadata) &&
-                !tableMetadata.getType().equals(TableMetadata.Type.Address);
+        return !supports(tableMetadata);
     }
 
     @Override
@@ -77,5 +77,12 @@ public class DuplicateRowDeleteAction implements EntitySyncAction {
             jdbcTemplate.execute(finalSql);
             return NullObject.instance();
         }, jdbcTemplate);
+    }
+
+    private boolean supports(TableMetadata tableMetadata) {
+        return new TransactionalSyncSqlGenerator().supports(tableMetadata) ||
+                new RepeatableQuestionGroupSyncSqlGenerator().supports(tableMetadata) ||
+                tableMetadata.getType().equals(TableMetadata.Type.User) ||
+                tableMetadata.getType().equals(TableMetadata.Type.Address);
     }
 }
