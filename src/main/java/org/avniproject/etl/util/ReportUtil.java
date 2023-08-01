@@ -1,9 +1,12 @@
 package org.avniproject.etl.util;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 import static java.lang.String.format;
 
+@Service
 public class ReportUtil {
     public String getDateDynamicWhere(String startDate, String endDate, String columnName) {
         if (startDate != null) {

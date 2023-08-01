@@ -5,9 +5,11 @@ import org.avniproject.etl.repository.rowMappers.reports.UserActivityMapper;
 import org.avniproject.etl.repository.rowMappers.reports.UserCountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class ReportRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -73,13 +75,14 @@ public class ReportRepository {
         return jdbcTemplate.query(query, new UserActivityMapper());
     }
 
-    public List<UserActivityDTO> getUserSyncFailures(String orgSchemaName, String syncTelemetryWhere, String userWhere) {
+    public List<UserActivityDTO> generateUserSyncFailures(String orgSchemaName, String syncTelemetryWhere, String userWhere) {
         String baseQuery = "select coalesce(u.name, u.username) as name, \n" +
                 "       count(*) as count\n" +
                 "from ${schemaName}.sync_telemetry st\n" +
-                "         join ${schemaName}.users u on st.user_id = u.id\n" +
+                "         join ${schemaName}.user u on st.user_id = u.id\n" +
                 "where sync_status = 'incomplete'\n" +
-                "and u.is_voided = false and u.organisation_id notnull\n" +
+                "and (u.is_voided = false or u.is_voided isnull)\n" +
+                "and u.organisation_id notnull\n" +
                 "${syncTelemetryWhere}\n"+
                 "${userWhere}\n"+
                 "group by 1\n" +
