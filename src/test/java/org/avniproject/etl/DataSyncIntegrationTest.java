@@ -4,7 +4,6 @@ import org.avniproject.etl.domain.OrganisationIdentity;
 import org.avniproject.etl.service.EtlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
@@ -15,15 +14,12 @@ import java.time.ZoneId;
 import java.util.*;
 
 import static java.lang.String.format;
-import static java.lang.Thread.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataSyncIntegrationTest extends BaseIntegrationTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private EtlService etlService;
@@ -302,5 +298,23 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
 
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
         assertThat("Media table number of rows has not changed since last run", media.size(), is(3));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void userTableShouldUpdateWithOldUserData() throws InterruptedException {
+        String numberOfUserRows = "select count(*) from orgc.users where id = 3453;";
+
+        runDataSync();
+        Long numberOfRowsAfterFirstRun = countOfRowsIn("orgc.users");
+
+        String updateLastModifiedDateTimeSql = "update public.users set last_modified_date_time = now() where id = 3453;";
+        jdbcTemplate.execute(updateLastModifiedDateTimeSql);
+
+        runDataSync();
+
+        Long numberOfRowsAfterSecondRun = countOfRowsIn("orgc.users");
+        assertThat(numberOfRowsAfterSecondRun, is(equalTo(numberOfRowsAfterFirstRun)));
     }
 }

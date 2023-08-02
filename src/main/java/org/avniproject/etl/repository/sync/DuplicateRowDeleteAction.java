@@ -46,9 +46,7 @@ public class DuplicateRowDeleteAction implements EntitySyncAction {
 
     @Override
     public boolean doesntSupport(TableMetadata tableMetadata) {
-        return !new TransactionalSyncSqlGenerator().supports(tableMetadata) &&
-                !new RepeatableQuestionGroupSyncSqlGenerator().supports(tableMetadata) &&
-                !tableMetadata.getType().equals(TableMetadata.Type.Address);
+        return !supports(tableMetadata);
     }
 
     @Override
@@ -77,5 +75,12 @@ public class DuplicateRowDeleteAction implements EntitySyncAction {
             jdbcTemplate.execute(finalSql);
             return NullObject.instance();
         }, jdbcTemplate);
+    }
+
+    private boolean supports(TableMetadata tableMetadata) {
+        return new TransactionalSyncSqlGenerator().supports(tableMetadata) ||
+                new RepeatableQuestionGroupSyncSqlGenerator().supports(tableMetadata) ||
+                tableMetadata.getType().equals(TableMetadata.Type.User) ||
+                tableMetadata.getType().equals(TableMetadata.Type.Address);
     }
 }
