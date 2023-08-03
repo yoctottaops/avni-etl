@@ -1,11 +1,13 @@
 package org.avniproject.etl.repository;
 
 import org.avniproject.etl.dto.AggregateReportResult;
+import org.apache.log4j.Logger;
 import org.avniproject.etl.dto.UserActivityDTO;
 import org.avniproject.etl.repository.rowMappers.reports.AggregateReportMapper;
 import org.avniproject.etl.repository.rowMappers.reports.UserActivityMapper;
 import org.avniproject.etl.repository.rowMappers.reports.UserCountMapper;
 import org.avniproject.etl.repository.rowMappers.reports.UserDetailsMapper;
+import org.avniproject.etl.service.EtlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -15,13 +17,14 @@ import java.util.List;
 @Component
 public class ReportRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private static final Logger log = Logger.getLogger(EtlService.class);
 
     @Autowired
     public ReportRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<UserActivityDTO> getUserActivity(String orgSchemaName, String subjectWhere, String encounterWhere, String enrolmentWhere, String userWhere) {
+    public List<UserActivityDTO> generateUserActivity(String orgSchemaName, String subjectWhere, String encounterWhere, String enrolmentWhere, String userWhere) {
         String baseQuery = "with registrations as (\n" +
                 "    select last_modified_by_id, count(*) as registration_count\n" +
                 "    from ${schemaName}.individual\n" +
@@ -75,6 +78,7 @@ public class ReportRepository {
                 .replace("${encounterWhere}", encounterWhere)
                 .replace("${enrolmentWhere}", enrolmentWhere)
                 .replace("${userWhere}", userWhere);
+        log.info(query);
         return jdbcTemplate.query(query, new UserActivityMapper());
     }
 
@@ -82,7 +86,7 @@ public class ReportRepository {
         String baseQuery = "select coalesce(u.name, u.username) as name, \n" +
                 "       count(*) as count\n" +
                 "from ${schemaName}.sync_telemetry st\n" +
-                "         join ${schemaName}.user u on st.user_id = u.id\n" +
+                "         join ${schemaName}.users u on st.user_id = u.id\n" +
                 "where sync_status = 'incomplete'\n" +
                 "and (u.is_voided = false or u.is_voided isnull)\n" +
                 "and u.organisation_id notnull\n" +
@@ -122,7 +126,7 @@ public class ReportRepository {
                 "from ${schemaName}.users u\n" +
                 "         join\n" +
                 "     (select user_id,\n" +
-                "             coalesce(device_info ->> 'brand', device_name)                          as device_model,\n" +
+                "             device_name                          as device_model,\n" +
                 "             row_number() over (partition by user_id order by sync_start_time desc ) as rn\n" +
                 "      from ${schemaName}.sync_telemetry) l on l.user_id = u.id and rn = 1\n" +
                 "where (u.is_voided = false or u.is_voided isnull) and u.organisation_id notnull \n" +
@@ -143,7 +147,7 @@ public class ReportRepository {
                 "         join\n" +
                 "     (select user_id,\n" +
                 "             app_version,\n" +
-                "             coalesce(device_info ->> 'brand', device_name)                          as device_model,\n" +
+                "             device_name                          as device_model,\n" +
                 "             sync_start_time,\n" +
                 "             row_number() over (partition by user_id order by sync_start_time desc ) as rn\n" +
                 "      from ${schemaName}.sync_telemetry\n" +
@@ -156,5 +160,79 @@ public class ReportRepository {
                 .replace("${schemaName}", orgSchemaName)
                 .replace("${userWhere}", userWhere);
         return jdbcTemplate.query(query, new UserDetailsMapper());
+    }
+
+    public List<AggregateReportResult> generateCompletedVisitsOnTimeByProportion(String proportionCondition, String orgSchemaName, String encounterWhere, String userWhere) {
+        String baseQuery = "with program_enc_data as (\n" +
+                "    select last_modified_by_id,\n" +
+                "           count(*) filter ( where encounter_date_time <= max_visit_date_time )                       visits_done_on_time,\n" +
+                "           count(*) filter ( where encounter_date_time notnull and earliest_visit_date_time notnull ) total_scheduled\n" +
+                "    from program_encounter\n" +
+                "    where is_voided = false\n" +
+                "    ${encounterWhere}\n" +
+                "    group by last_modified_by_id\n" +
+                "),\n" +
+                "     general_enc_data as (\n" +
+                "         select last_modified_by_id,\n" +
+                "                count(*) filter ( where encounter_date_time <= max_visit_date_time )              visits_done_on_time,\n" +
+                "                count(*)\n" +
+                "                filter ( where encounter_date_time notnull and earliest_visit_date_time notnull ) total_scheduled\n" +
+                "         from encounter\n" +
+                "         where is_voided = false\n" +
+                "         ${encounterWhere}\n" +
+                "         group by last_modified_by_id\n" +
+                "     )\n" +
+                "select coalesce(u.name, u.username)                                                as indicator,\n" +
+                "       coalesce(ged.visits_done_on_time, 0) + coalesce(ped.visits_done_on_time, 0) as count\n" +
+                "from users u\n" +
+                "          join general_enc_data ged on ged.last_modified_by_id = u.id\n" +
+                "          join program_enc_data ped on ped.last_modified_by_id = u.id\n" +
+                "where u.organisation_id notnull\n" +
+                "  and is_voided = false\n" +
+                "  and coalesce(ged.visits_done_on_time, 0) + coalesce(ped.visits_done_on_time, 0) > 0\n" +
+                "  ${userWhere}\n" +
+                "  and ((coalesce(ged.visits_done_on_time, 0.0) + coalesce(ped.visits_done_on_time, 0.0)) /\n" +
+                "       nullif((coalesce(ged.total_scheduled, 0) + coalesce(ped.total_scheduled, 0)), 0)) ${proportion_condition}\n";
+        String query = baseQuery
+                .replace("${proportion_condition}", proportionCondition)
+                .replace("${schemaName}", orgSchemaName)
+                .replace("${encounterWhere}", encounterWhere)
+                .replace("${userWhere}", userWhere);
+        return jdbcTemplate.query(query, new AggregateReportMapper());
+    }
+
+    public List<AggregateReportResult> generateUserCancellingMostVisits(String orgSchemaName, String encounterWhere, String userWhere) {
+        String baseQuery = "with program_enc_data as (\n" +
+                "    select last_modified_by_id,\n" +
+                "           count(*) filter ( where cancel_date_time notnull ) cancelled_visits\n" +
+                "    from program_encounter\n" +
+                "    where is_voided = false\n" +
+                "    ${encounterWhere}\n" +
+                "    group by last_modified_by_id\n" +
+                "),\n" +
+                "     general_enc_data as (\n" +
+                "         select last_modified_by_id,\n" +
+                "                count(*) filter ( where cancel_date_time notnull ) cancelled_visits\n" +
+                "         from encounter\n" +
+                "         where is_voided = false\n" +
+                "         ${encounterWhere}\n" +
+                "         group by last_modified_by_id\n" +
+                "     )\n" +
+                "select coalesce(u.name, u.username)                                          as indicator,\n" +
+                "       coalesce(ged.cancelled_visits, 0) + coalesce(ped.cancelled_visits, 0) as count\n" +
+                "from users u\n" +
+                "          join general_enc_data ged on ged.last_modified_by_id = u.id\n" +
+                "          join program_enc_data ped on ped.last_modified_by_id = u.id\n" +
+                "where u.organisation_id notnull\n" +
+                "  and is_voided = false\n" +
+                "  and coalesce(ged.cancelled_visits, 0) + coalesce(ped.cancelled_visits, 0) > 0 \n" +
+                "  ${userWhere}\n" +
+                "order by coalesce(ged.cancelled_visits, 0.0) + coalesce(ped.cancelled_visits, 0.0) desc\n" +
+                "limit 5;";
+        String query = baseQuery
+                .replace("${schemaName}", orgSchemaName)
+                .replace("${encounterWhere}", encounterWhere)
+                .replace("${userWhere}", userWhere);
+        return jdbcTemplate.query(query, new AggregateReportMapper());
     }
 }
