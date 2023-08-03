@@ -4,11 +4,9 @@ import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.dto.AggregateReportResult;
 import org.avniproject.etl.dto.UserActivityDTO;
 import org.avniproject.etl.repository.ReportRepository;
-import org.avniproject.etl.service.EtlService;
 import org.avniproject.etl.service.ReportService;
 import org.avniproject.etl.util.ReportUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,24 +26,16 @@ public class ReportController {
     }
 
     @RequestMapping(value = "reports/hr/userActivity", method = RequestMethod.GET)
-    public ResponseEntity getUserActivity(@RequestParam(value = "start_date", required = false) String startDate,
+    public List<UserActivityDTO> getUserActivity(@RequestParam(value = "startDate", required = false) String startDate,
                                           @RequestParam(value = "endDate", required = false) String endDate,
-                                          @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds)
-    {
-        try {
-            List<UserActivityDTO> userActivity = reportRepository.getUserActivity(
+                                          @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds){
+            return reportRepository.generateUserActivity(
                    OrgIdentityContextHolder.getDbSchema(),
                    reportUtil.getDateDynamicWhere(startDate, endDate, "registration_date"),
                    reportUtil.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
                    reportUtil.getDateDynamicWhere(startDate, endDate, "enrolment_date_time"),
                    reportUtil.getDynamicUserWhere(userIds, "u.id")
             );
-
-            return ResponseEntity.ok(userActivity);
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 
     @RequestMapping(value = "/report/hr/syncFailures",method = RequestMethod.GET)
@@ -83,6 +73,38 @@ public class ReportController {
                 reportUtil.getDynamicUserWhere(userIds, "u.id"));
     }
 
+    @RequestMapping(value = "/report/hr/championUsers", method = RequestMethod.GET)
+    public List<AggregateReportResult> getChampionUsers(@RequestParam(value = "startDate", required = false) String startDate,
+                                                        @RequestParam(value = "endDate", required = false) String endDate,
+                                                        @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return reportRepository.generateCompletedVisitsOnTimeByProportion(
+                ">= 0.8",
+                OrgIdentityContextHolder.getDbSchema(),
+                reportUtil.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
+                reportUtil.getDynamicUserWhere(userIds, "u.id"));
+    }
+
+    @RequestMapping(value = "/report/hr/nonPerformingUsers", method = RequestMethod.GET)
+    public List<AggregateReportResult> getNonPerformingUsers(@RequestParam(value = "startDate", required = false) String startDate,
+                                                             @RequestParam(value = "endDate", required = false) String endDate,
+                                                             @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return reportRepository.generateCompletedVisitsOnTimeByProportion(
+                "<= 0.5",
+                OrgIdentityContextHolder.getDbSchema(),
+                reportUtil.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
+                reportUtil.getDynamicUserWhere(userIds, "u.id")
+        );
+    }
+
+    @RequestMapping(value = "/report/hr/mostCancelled", method = RequestMethod.GET)
+    public List<AggregateReportResult> getUsersCancellingMostVisits(@RequestParam(value = "startDate", required = false) String startDate,
+                                                                    @RequestParam(value = "endDate", required = false) String endDate,
+                                                                    @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return reportRepository.generateUserCancellingMostVisits(
+                OrgIdentityContextHolder.getDbSchema(),
+                reportUtil.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
+                reportUtil.getDynamicUserWhere(userIds, "u.id"));
+    }
 
 
 }
