@@ -1,6 +1,7 @@
 package org.avniproject.etl.controller;
 
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
+import org.avniproject.etl.dto.AggregateReportResult;
 import org.avniproject.etl.dto.UserActivityDTO;
 import org.avniproject.etl.repository.ReportRepository;
 import org.avniproject.etl.service.EtlService;
@@ -56,6 +57,30 @@ public class ReportController {
                     reportUtil.getDateDynamicWhere(startDate, endDate, "sync_start_time"),
                     reportUtil.getDynamicUserWhere(userIds, "u.id")
             );
+    }
+
+    @RequestMapping(value = "/report/hr/deviceModels", method = RequestMethod.GET)
+    public List<AggregateReportResult> getUserWiseDeviceModels(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+
+        return reportRepository.generateUserDeviceModels(
+                OrgIdentityContextHolder.getDbSchema(),
+                reportUtil.getDynamicUserWhere(userIds, "u.id"));
+    }
+
+    @RequestMapping(value = "/report/hr/appVersions", method = RequestMethod.GET)
+    public List<AggregateReportResult> getUserWiseAppVersions(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+
+        return reportRepository.generateUserAppVersions(
+                OrgIdentityContextHolder.getDbSchema(),
+                reportUtil.getDynamicUserWhere(userIds, "u.id"));
+    }
+
+    @RequestMapping(value = "/report/hr/userDetails", method = RequestMethod.GET)
+    public List<UserActivityDTO> getUserDetails(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+
+        return reportRepository.generateUserDetails(
+                OrgIdentityContextHolder.getDbSchema(),
+                reportUtil.getDynamicUserWhere(userIds, "u.id"));
     }
 
 
