@@ -5,11 +5,14 @@ import org.avniproject.etl.config.StubEtlServiceConfig;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.Organisation;
 import org.avniproject.etl.domain.OrganisationIdentity;
+import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.repository.OrganisationRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -57,10 +60,12 @@ public class EtlServiceTest {
 
         OrganisationIdentity organisationIdentity = new OrganisationIdentityBuilder().withId(1).withDbUser("a").build();
         Organisation organisation = mock(Organisation.class);
+        when(organisation.getSchemaMetadata()).thenReturn(new SchemaMetadata(List.of()));
         when(organisationFactory.create(organisationIdentity)).thenReturn(organisation);
+
         Organisation newOrganisation = mock(Organisation.class);
         when(schemaMigrationService.migrate(organisation)).thenReturn(newOrganisation);
-
+        when(newOrganisation.getSchemaMetadata()).thenReturn(new SchemaMetadata(List.of()));
         etlService.runFor(organisationIdentity);
 
         verify(organisationFactory).create(organisationIdentity);
