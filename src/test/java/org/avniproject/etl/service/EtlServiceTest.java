@@ -47,8 +47,11 @@ public class EtlServiceTest {
     @Test
     public void runForOrganisationShouldSetContextForOrganisation() {
         EtlService etlService = new EtlService(organisationRepository, organisationFactory, schemaMigrationService, syncService, new StubEtlServiceConfig());
-
         OrganisationIdentity organisationIdentity = new OrganisationIdentityBuilder().withId(1).withDbUser("a").build();
+
+        Organisation organisation = mock(Organisation.class);
+        when(organisation.getSchemaMetadata()).thenReturn(new SchemaMetadata(List.of()));
+        when(organisationFactory.create(organisationIdentity)).thenReturn(organisation);
         etlService.runFor(organisationIdentity);
 
         assertThat(OrgIdentityContextHolder.getOrganisationIdentity(), is(organisationIdentity));
