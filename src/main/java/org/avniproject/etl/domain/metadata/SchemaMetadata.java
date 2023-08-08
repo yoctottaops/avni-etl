@@ -4,7 +4,11 @@ import org.avniproject.etl.domain.metadata.diff.Diff;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 public class SchemaMetadata {
     private List<TableMetadata> tableMetadata;
@@ -68,5 +72,11 @@ public class SchemaMetadata {
                         oldSchemaMetadata
                                 .findMatchingTable(newTable)
                                 .ifPresent(newTable::mergeWith));
+    }
+
+    public String getCountsByType() {
+        Map<TableMetadata.Type, List<TableMetadata>> grouped = this.tableMetadata.stream().collect(groupingBy(TableMetadata::getType));
+        List<String> strings = grouped.entrySet().stream().map(x -> String.format("%s-%d", x.getKey(), x.getValue().size())).collect(Collectors.toList());
+        return String.join(";", strings);
     }
 }

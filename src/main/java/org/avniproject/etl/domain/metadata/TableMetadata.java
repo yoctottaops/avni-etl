@@ -278,4 +278,12 @@ public class TableMetadata extends Model {
     public void setRepeatableQuestionGroupConceptUuid(String repeatableQuestionGroupConceptUuid) {
         this.repeatableQuestionGroupConceptUuid = repeatableQuestionGroupConceptUuid;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                '}';
+    }
 }

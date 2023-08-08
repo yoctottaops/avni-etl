@@ -45,11 +45,12 @@ public class EtlService {
     }
 
     public void runFor(OrganisationIdentity organisationIdentity) {
-        log.info(String.format("Running ETL for schema %s with dbUser %s and schemaUser %s",
-                organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
+        log.info(String.format("Running ETL for %s", organisationIdentity.toString()));
         OrgIdentityContextHolder.setContext(organisationIdentity, etlServiceConfig);
         Organisation organisation = organisationFactory.create(organisationIdentity);
+        log.info(String.format("Old organisation schema summary %s", organisation.getSchemaMetadata().getCountsByType()));
         Organisation newOrganisation = schemaMigrationService.migrate(organisation);
+        log.info(String.format("New organisation after migration, schema summary %s", organisation.getSchemaMetadata().getCountsByType()));
         syncService.sync(newOrganisation);
         log.info(String.format("Completed ETL for schema %s with dbUser %s and schemaUser %s",
                 organisationIdentity.getSchemaName(), organisationIdentity.getDbUser(), organisationIdentity.getSchemaUser()));
