@@ -52,6 +52,7 @@ public class EtlServiceTest {
         Organisation organisation = mock(Organisation.class);
         when(organisation.getSchemaMetadata()).thenReturn(new SchemaMetadata(List.of()));
         when(organisationFactory.create(organisationIdentity)).thenReturn(organisation);
+        when(schemaMigrationService.migrate(organisation)).thenReturn(organisation);
         etlService.runFor(organisationIdentity);
 
         assertThat(OrgIdentityContextHolder.getOrganisationIdentity(), is(organisationIdentity));
