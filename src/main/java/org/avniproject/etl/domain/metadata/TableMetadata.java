@@ -260,7 +260,7 @@ public class TableMetadata extends Model {
 
     public static final Map<TableType, String> qgParentColumnIds = Map.of(TableType.IndividualProfile, "individual_id",
                                                                             TableType.Encounter, "encounter_id",
-                                                                            TableType.ProgramEnrolment, "enrolment_id",
+                                                                            TableType.ProgramEnrolment, "program_enrolment_id",
                                                                             TableType.ProgramEncounter, "program_encounter_id");
 
     public boolean isSubjectTable() {

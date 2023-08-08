@@ -1,11 +1,11 @@
 --[SQL template for auto generated view]
 insert into ${schema_name}.${table_name} (
-    "individual_id", "enrolment_id", "address_id", "is_voided", "organisation_id", "last_modified_date_time"
+    "individual_id", "program_enrolment_id", "address_id", "is_voided", "organisation_id", "last_modified_date_time"
     ${observations_to_insert_list}
 )
 (${concept_maps}
 SELECT entity.individual_id                                                                "individual_id",
-       entity.enrolment_id                                                                 "enrolment_id",
+       entity.program_enrolment_id                                                         "program_enrolment_id",
        entity.address_id                                                                   "address_id",
        entity.is_voided                                                                    "is_voided",
        entity.organisation_id                                                              "organisation_id",
@@ -14,7 +14,7 @@ SELECT entity.individual_id                                                     
 FROM (
     select jsonb_array_elements((mainTable.observations ->> '${repeatable_question_group_concept_uuid}')::jsonb)  as observations,
     individual_id                                                                                     as individual_id,
-    mainTable.id                                                                                     as enrolment_id,
+    mainTable.id                                                                                     as program_enrolment_id,
     mainTable.address_id                                                                             as address_id,
     mainTable.is_voided                                                                              as is_voided,
     mainTable.organisation_id                                                                        as organisation_id,

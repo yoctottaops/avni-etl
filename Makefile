@@ -38,12 +38,20 @@ debug:
 	./gradlew bootRun -Dagentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
 delete_organisation: ## Delete organisation
-ifndef orgSchema
-	@echo "Provde the orgSchema variable"
-	exit 1
-endif
 ifndef db
 	@echo "Provde the db variable"
 	exit 1
 endif
-	-psql -h localhost -Uopenchs ${db} -c "select delete_etl_metadata_for_schema('${orgSchema}', '${orgSchema}')";
+ifndef orgSchema
+	@echo "Provde the orgSchema variable"
+	exit 1
+endif
+ifndef dbUser
+	@echo "Provde the dbUser variable"
+	exit 1
+endif
+ifndef dbOwner
+	@echo "Provde the dbOwner variable"
+	exit 1
+endif
+	-psql -h localhost -U openchs $(db) -c "select delete_etl_metadata_for_schema('$(orgSchema)', '$(dbUser)', '$(dbOwner)')";

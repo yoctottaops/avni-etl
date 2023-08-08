@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.avniproject.etl.config.ScheduledJobConfig.SYNC_JOB_GROUP;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -88,6 +89,8 @@ public class EtlJobController {
         jobDetail.setJobClass(EtlJob.class);
         jobDetail.setDurability(true);
         jobDetail.setKey(scheduledJobConfig.getJobKey(jobScheduleRequest.getEntityUUID()));
+        jobDetail.setDescription(organisationIdentity == null ?
+                organisationIdentitiesInGroup.stream().map(OrganisationIdentity::toString).collect(Collectors.joining(";")) : organisationIdentity.toString());
         jobDetail.setGroup(SYNC_JOB_GROUP);
         jobDetail.setName(jobScheduleRequest.getEntityUUID());
         JobDataMap jobDataMap = scheduledJobConfig.createJobData(jobScheduleRequest.getJobEntityType());
