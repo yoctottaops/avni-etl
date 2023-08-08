@@ -46,7 +46,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
             return;
         }
 
-        currentSchemaMetadata.getTableMetadata().stream().forEach(thisTableMetadata -> {
+        currentSchemaMetadata.getTableMetadata().forEach(thisTableMetadata -> {
             List<ColumnMetadata> mediaColumns = thisTableMetadata.findColumnsMatchingConceptType(ColumnMetadata.ConceptType.Image, ColumnMetadata.ConceptType.Video);
             mediaColumns.forEach(mediaColumn -> {
                 insertData(tableMetadata, thisTableMetadata, mediaColumn, lastSyncTime, dataSyncBoundaryTime);

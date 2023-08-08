@@ -88,6 +88,7 @@ public class TableMetadata extends Model {
     }
 
     public List<ColumnMetadata> findColumnsMatchingConceptType(ColumnMetadata.ConceptType... conceptTypes) {
+        if (type.equals(Type.RepeatableQuestionGroup)) return List.of();
         return this.getColumnMetadataList().stream().filter(columnMetadata -> Arrays.stream(conceptTypes).anyMatch(conceptType -> nullSafeEquals(columnMetadata.getConceptType(), conceptType))).collect(Collectors.toList());
     }
 
