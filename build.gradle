@@ -30,6 +30,12 @@ dependencies {
 	implementation 'org.keycloak:keycloak-admin-client:21.0.2'
 	implementation 'org.antlr:ST4:4.3.4'
     implementation 'org.hibernate:hibernate-validator:7.0.5.Final'
+	implementation "joda-time:joda-time:2.9.4"
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.6'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.12.6'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.6'
+	implementation 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.12.6'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.12.6'
 }
 
 tasks.named('test') {
