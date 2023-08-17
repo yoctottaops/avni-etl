@@ -25,7 +25,7 @@ public class ReportController {
         this.reportUtil = reportUtil;
     }
 
-    @RequestMapping(value = "reports/hr/userActivity", method = RequestMethod.GET)
+    @RequestMapping(value = "report/hr/userActivity", method = RequestMethod.GET)
     public List<UserActivityDTO> getUserActivity(@RequestParam(value = "startDate", required = false) String startDate,
                                           @RequestParam(value = "endDate", required = false) String endDate,
                                           @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds){
