@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 public class User {
     public static final String USER = "user";
-    public static final String ORGANISATION_ADMIN = "organisation_admin";
+    public static final String ANALYTICS_USER = "analytics_user";
     public static final String ADMIN = "admin";
 
     private Long id;
     private String username;
     private String uuid;
     private Long organisationId;
-    private boolean isOrgAdmin;
+    private boolean hasAnalyticsAccess;
     private boolean isAdmin;
 
     public User(String userName, String uuid, Long organisationId) {
@@ -20,12 +20,13 @@ public class User {
         this.organisationId = organisationId;
     }
 
-    public User(Long id, String userName, String uuid, Long organisationId, boolean isOrgAdmin) {
+    public User(Long id, String username, String uuid, Long organisationId, boolean hasAnalyticsAccess, boolean isAdmin) {
         this.id = id;
-        this.username = userName;
+        this.username = username;
         this.uuid = uuid;
         this.organisationId = organisationId;
-        this.isOrgAdmin = isOrgAdmin;
+        this.hasAnalyticsAccess = hasAnalyticsAccess;
+        this.isAdmin = isAdmin;
     }
 
     public String getUsername() {
@@ -38,12 +39,12 @@ public class User {
 
     public Long getOrganisationId() { return this.organisationId; }
 
-    public boolean isOrgAdmin() {
-        return isOrgAdmin;
+    public boolean isHasAnalyticsAccess() {
+        return hasAnalyticsAccess;
     }
 
-    public void setOrgAdmin(boolean orgAdmin) {
-        isOrgAdmin = orgAdmin;
+    public void setHasAnalyticsAccess(boolean hasAnalyticsAccess) {
+        this.hasAnalyticsAccess = hasAnalyticsAccess;
     }
 
     public boolean isAdmin() {
@@ -76,12 +77,9 @@ public class User {
 
     public String[] getRoles() {
         ArrayList<String> roles = new ArrayList<>();
-        if (!(isOrgAdmin || isAdmin())) roles.add(USER);
+        roles.add(USER);
+        if (isHasAnalyticsAccess()) roles.add(ANALYTICS_USER);
         if (isAdmin()) roles.add(ADMIN);
-        if (isOrgAdmin) {
-            roles.add(ORGANISATION_ADMIN);
-            roles.add(USER);
-        }
         return roles.toArray(new String[0]);
     }
 }
