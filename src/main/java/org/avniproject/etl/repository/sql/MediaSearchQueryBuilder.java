@@ -2,15 +2,15 @@ package org.avniproject.etl.repository.sql;
 
 import org.apache.log4j.Logger;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
-import org.avniproject.etl.dto.AddressRequest;
-import org.avniproject.etl.dto.ConceptFilterSearch;
-import org.avniproject.etl.dto.MediaSearchRequest;
-import org.avniproject.etl.dto.SyncValue;
+import org.avniproject.etl.dto.*;
+import org.springframework.util.CollectionUtils;
 import org.stringtemplate.v4.ST;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.avniproject.etl.repository.sql.SqlFile.readFile;
 
@@ -43,7 +43,7 @@ public class MediaSearchQueryBuilder {
         addParameter("subjectTypeNames", request.getSubjectTypeNames());
         addParameter("programNames", request.getProgramNames());
         addParameter("encounterTypeNames", request.getEncounterTypeNames());
-        addParameter("imageConcepts", request.getImageConcepts());
+        addParameter("imageConcepts", getConceptNames(request.getImageConcepts()));
         addParameter("fromDate", request.getFromDate());
         addParameter("toDate", request.getToDate());
 
@@ -58,6 +58,13 @@ public class MediaSearchQueryBuilder {
             addParameter("syncConceptName_" + index, syncValue.getSyncConceptName());
             addParameter("syncConceptValues_" + index, syncValue.getSyncConceptValues());
         }
+    }
+
+    private List<String> getConceptNames(List<ConceptDTO> imageConcepts) {
+        if(CollectionUtils.isEmpty(imageConcepts)) {
+            return Collections.emptyList();
+        }
+        return imageConcepts.stream().map(concept -> concept.getName()).collect(Collectors.toList());
     }
 
     public MediaSearchQueryBuilder withPage(Page page) {

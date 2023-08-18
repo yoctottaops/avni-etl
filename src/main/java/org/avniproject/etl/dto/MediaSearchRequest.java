@@ -11,7 +11,7 @@ public final class MediaSearchRequest {
     private List<String> subjectTypeNames = new ArrayList<>();
     private List<String> programNames = new ArrayList<>();
     private List<String> encounterTypeNames = new ArrayList<>();
-    private List<String> imageConcepts = new ArrayList<>();
+    private List<ConceptDTO> imageConcepts = new ArrayList<>();
     private List<SyncValue> syncValues = new ArrayList<>();
     private List<ConceptFilter> conceptFilters = new ArrayList<>();
     private Date fromDate;
@@ -56,11 +56,11 @@ public final class MediaSearchRequest {
         this.encounterTypeNames = encounterTypeNames;
     }
 
-    public List<String> getImageConcepts() {
+    public List<ConceptDTO> getImageConcepts() {
         return imageConcepts;
     }
 
-    public void setImageConcepts(List<String> imageConcepts) {
+    public void setImageConcepts(List<ConceptDTO> imageConcepts) {
         this.imageConcepts = imageConcepts;
     }
 
