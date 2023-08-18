@@ -2,7 +2,9 @@ package org.avniproject.etl.repository.sql;
 
 import org.avniproject.etl.builder.OrganisationIdentityBuilder;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
+import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.dto.AddressRequest;
+import org.avniproject.etl.dto.ConceptDTO;
 import org.avniproject.etl.dto.MediaSearchRequest;
 import org.avniproject.etl.dto.SyncValue;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,5 +103,18 @@ public class MediaSearchQueryBuilderTest {
         Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
         assertThat(query.sql(), containsString("and media.created_date_time >= :fromDate"));
         assertThat(query.parameters(), hasEntry("fromDate", fromDate));
+    }
+
+    @Test
+    public void shouldHandleImageConcepts() {
+        MediaSearchRequest mediaSearchRequest = new MediaSearchRequest();
+        List<ConceptDTO> imageConcepts = new ArrayList<>();
+        imageConcepts.add(new ConceptDTO(ColumnMetadata.ConceptType.Image,"fa171bc5-81b9-4842-8014-b3449f069889", "Image - Farmland"));
+        mediaSearchRequest.setImageConcepts(imageConcepts);
+        List<String> imageConceptsStringList = Arrays.asList("Image - Farmland");
+
+        Query query = new MediaSearchQueryBuilder().withMediaSearchRequest(mediaSearchRequest).build();
+        assertThat(query.sql(), containsString("and media.concept_name in (:imageConcepts)"));
+        assertThat(query.parameters(), hasEntry("imageConcepts", imageConceptsStringList));
     }
 }
