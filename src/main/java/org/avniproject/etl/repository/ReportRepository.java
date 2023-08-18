@@ -261,7 +261,7 @@ public class ReportRepository {
         "          coalesce(sum(distinct ped.visits_done_on_time), 0) as ped_visits_on_time,\n" +
         "          coalesce(sum(distinct ged.total_scheduled), 0) as ged_total_scheduled,\n" +
         "          coalesce(sum(distinct ped.total_scheduled), 0) as ped_total_scheduled\n" +
-        "   from org1_schema.users u \n" +
+        "   from ${schemaName}.users u \n" +
         "       left join general_enc_data ged on ged.last_modified_by_id = u.id\n" +
         "       left join program_enc_data ped on ped.last_modified_by_id = u.id\n" +
         "   where u.organisation_id notnull\n" +
@@ -282,37 +282,67 @@ public class ReportRepository {
     }
 
     public List<AggregateReportResult> generateUserCancellingMostVisits(String orgSchemaName, String encounterWhere, String userWhere) {
-        String baseQuery = "with program_enc_data as (\n" +
-                "    select last_modified_by_id,\n" +
-                "           count(*) filter ( where cancel_date_time notnull ) cancelled_visits\n" +
-                "    from program_encounter\n" +
+        SchemaMetadata schema = schemaMetadataRepository.getExistingSchemaMetadata();
+        List<TableMetadata> encounterTables = schema.getAllEncounterTables().stream().toList();
+        List<TableMetadata> programEncounterTables = schema.getAllProgramEncounterTables().stream().toList();
+
+        StringBuilder query = new StringBuilder();
+        String baseQuery1 = "    select last_modified_by_id,\n" +
+                "           count(*) " +
+                "filter ( where cancel_date_time notnull ) " +
+                "cancelled_visits\n" +
+                "    from ${schemaName}.${programEncounter}\n" +
                 "    where is_voided = false\n" +
                 "    ${encounterWhere}\n" +
-                "    group by last_modified_by_id\n" +
-                "),\n" +
-                "     general_enc_data as (\n" +
-                "         select last_modified_by_id,\n" +
-                "                count(*) filter ( where cancel_date_time notnull ) cancelled_visits\n" +
-                "         from encounter\n" +
+                "    group by last_modified_by_id\n" ;
+        baseQuery1 = baseQuery1.replace("${schemaName}", orgSchemaName)
+                .replace("${encounterWhere}", encounterWhere);
+        query.append("with program_enc_data as (\n" );
+        query.append(baseQuery1.replace("${programEncounter}", programEncounterTables.get(0).getName()));
+        for (int i = 1; i < programEncounterTables.size(); i++) {
+            query.append("union all\n");
+            query.append(baseQuery1.replace("${programEncounter}", programEncounterTables.get(i).getName()));
+        }
+        query.append("),\n");
+
+        String baseQuery2 = "         select last_modified_by_id,\n" +
+                "                count(*) " +
+                "filter ( where cancel_date_time notnull )" +
+                " cancelled_visits\n" +
+                "         from ${schemaName}.${encounter}\n" +
                 "         where is_voided = false\n" +
                 "         ${encounterWhere}\n" +
-                "         group by last_modified_by_id\n" +
-                "     )\n" +
-                "select coalesce(u.name, u.username)                                          as indicator,\n" +
-                "       coalesce(ged.cancelled_visits, 0) + coalesce(ped.cancelled_visits, 0) as count\n" +
-                "from users u\n" +
-                "          join general_enc_data ged on ged.last_modified_by_id = u.id\n" +
-                "          join program_enc_data ped on ped.last_modified_by_id = u.id\n" +
+                "         group by last_modified_by_id\n" ;
+        baseQuery2 = baseQuery2.replace("${schemaName}", orgSchemaName)
+                .replace("${encounterWhere}", encounterWhere);
+        query.append("general_enc_data as (\n");
+        query.append(baseQuery2.replace("${encounter}", encounterTables.get(0).getName()));
+        for (int i = 1 ; i < encounterTables.size() ; i++) {
+            query.append("union all\n" );
+            query.append(baseQuery2.replace("${encounter}", encounterTables.get(i).getName()));
+        }
+        query.append("),\n");
+
+        String baseQuery3 ="table1 as (\n" +
+                "select coalesce(u.name, u.username)       as indicator,\n" +
+                "       coalesce(sum(distinct ged.cancelled_visits), 0)  as ged_cancelled_visits,\n" +
+                "       coalesce(sum(distinct ped.cancelled_visits), 0)  as ped_cancelled_visits\n" +
+                "from ${schemaName}.users u\n" +
+                "          left join general_enc_data ged on ged.last_modified_by_id = u.id\n" +
+                "          left join program_enc_data ped on ped.last_modified_by_id = u.id\n" +
                 "where u.organisation_id notnull\n" +
-                "  and is_voided = false\n" +
+                "  and (is_voided = false or is_voided isnull)\n" +
                 "  and coalesce(ged.cancelled_visits, 0) + coalesce(ped.cancelled_visits, 0) > 0 \n" +
                 "  ${userWhere}\n" +
-                "order by coalesce(ged.cancelled_visits, 0.0) + coalesce(ped.cancelled_visits, 0.0) desc\n" +
+                "  group by u.name,u.username	\n" +
+                ")\n" +
+                "select  indicator,\n" +
+                "        ged_cancelled_visits + ped_cancelled_visits as count\n" +
+                "from table1\n" +
+                "order by ged_cancelled_visits + ped_cancelled_visits desc\n" +
                 "limit 5;";
-        String query = baseQuery
-                .replace("${schemaName}", orgSchemaName)
-                .replace("${encounterWhere}", encounterWhere)
-                .replace("${userWhere}", userWhere);
-        return jdbcTemplate.query(query, new AggregateReportMapper());
+        query.append(baseQuery3.replace("${schemaName}", orgSchemaName)
+                .replace("${userWhere}", userWhere));
+        return jdbcTemplate.query(query.toString(), new AggregateReportMapper());
     }
 }
