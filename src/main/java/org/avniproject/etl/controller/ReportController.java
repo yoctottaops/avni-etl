@@ -78,7 +78,7 @@ public class ReportController {
                                                         @RequestParam(value = "endDate", required = false) String endDate,
                                                         @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
         return reportRepository.generateCompletedVisitsOnTimeByProportion(
-                ">= 0.8",
+                ">= 0.5",
                 OrgIdentityContextHolder.getDbSchema(),
                 reportUtil.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
                 reportUtil.getDynamicUserWhere(userIds, "u.id"));
