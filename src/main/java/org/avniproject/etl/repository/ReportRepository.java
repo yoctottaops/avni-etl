@@ -216,42 +216,69 @@ public class ReportRepository {
     }
 
     public List<AggregateReportResult> generateCompletedVisitsOnTimeByProportion(String proportionCondition, String orgSchemaName, String encounterWhere, String userWhere) {
-        String baseQuery = "with program_enc_data as (\n" +
-                "    select last_modified_by_id,\n" +
-                "           count(*) filter ( where encounter_date_time <= max_visit_date_time )                       visits_done_on_time,\n" +
+        SchemaMetadata schema = schemaMetadataRepository.getExistingSchemaMetadata();
+        List<TableMetadata> encounterTables = schema.getAllEncounterTables().stream().toList();
+        List<TableMetadata> programEncounterTables = schema.getAllProgramEncounterTables().stream().toList();
+
+        StringBuilder query = new StringBuilder();
+        String baseQuery1 = "select last_modified_by_id,\n" +
+                "           count(*) filter ( where encounter_date_time <= max_visit_date_time )    visits_done_on_time,\n" +
                 "           count(*) filter ( where encounter_date_time notnull and earliest_visit_date_time notnull ) total_scheduled\n" +
-                "    from program_encounter\n" +
+                "    from ${schemaName}.${programEncounter}\n" +
                 "    where is_voided = false\n" +
                 "    ${encounterWhere}\n" +
-                "    group by last_modified_by_id\n" +
-                "),\n" +
-                "     general_enc_data as (\n" +
-                "         select last_modified_by_id,\n" +
-                "                count(*) filter ( where encounter_date_time <= max_visit_date_time )              visits_done_on_time,\n" +
-                "                count(*)\n" +
-                "                filter ( where encounter_date_time notnull and earliest_visit_date_time notnull ) total_scheduled\n" +
-                "         from encounter\n" +
+                "    group by last_modified_by_id\n" ;
+        baseQuery1 = baseQuery1.replace("${schemaName}", orgSchemaName)
+                .replace("${encounterWhere}", encounterWhere);
+        query.append("with program_enc_data as (\n" );
+        query.append(baseQuery1.replace("${programEncounter}", programEncounterTables.get(0).getName()));
+        for (int i = 1; i < programEncounterTables.size(); i++) {
+            query.append("union all\n");
+            query.append(baseQuery1.replace("${programEncounter}", programEncounterTables.get(i).getName()));
+        }
+        query.append("),\n");
+
+        String baseQuery2 = "select last_modified_by_id,\n" +
+                "                count(*) filter ( where encounter_date_time <= max_visit_date_time )  visits_done_on_time,\n" +
+                "                count(*) filter ( where encounter_date_time notnull and earliest_visit_date_time notnull ) total_scheduled\n" +
+                "         from ${schemaName}.${encounter}\n" +
                 "         where is_voided = false\n" +
                 "         ${encounterWhere}\n" +
-                "         group by last_modified_by_id\n" +
-                "     )\n" +
-                "select coalesce(u.name, u.username)                                                as indicator,\n" +
-                "       coalesce(ged.visits_done_on_time, 0) + coalesce(ped.visits_done_on_time, 0) as count\n" +
-                "from users u\n" +
-                "          join general_enc_data ged on ged.last_modified_by_id = u.id\n" +
-                "          join program_enc_data ped on ped.last_modified_by_id = u.id\n" +
-                "where u.organisation_id notnull\n" +
-                "  and is_voided = false\n" +
-                "  and coalesce(ged.visits_done_on_time, 0) + coalesce(ped.visits_done_on_time, 0) > 0\n" +
-                "  ${userWhere}\n" +
-                "  and ((coalesce(ged.visits_done_on_time, 0.0) + coalesce(ped.visits_done_on_time, 0.0)) /\n" +
-                "       nullif((coalesce(ged.total_scheduled, 0) + coalesce(ped.total_scheduled, 0)), 0)) ${proportion_condition}\n";
-        String query = baseQuery
-                .replace("${proportion_condition}", proportionCondition)
+                "         group by last_modified_by_id\n" ;
+        baseQuery2 = baseQuery2.replace("${schemaName}", orgSchemaName)
+                .replace("${encounterWhere}", encounterWhere);
+        query.append("general_enc_data as (\n");
+        query.append(baseQuery2.replace("${encounter}", encounterTables.get(0).getName()));
+        for (int i = 1 ; i < encounterTables.size() ; i++) {
+            query.append("union all\n" );
+            query.append(baseQuery2.replace("${encounter}", encounterTables.get(i).getName()));
+        }
+        query.append("),\n");
+
+        String baseQuery3 = "table1 as (\n" +
+        "   select coalesce(u.name, u.username)    as indicator,\n" +
+        "          coalesce(sum(distinct ged.visits_done_on_time), 0) as ged_visits_on_time,\n" +
+        "          coalesce(sum(distinct ped.visits_done_on_time), 0) as ped_visits_on_time,\n" +
+        "          coalesce(sum(distinct ged.total_scheduled), 0) as ged_total_scheduled,\n" +
+        "          coalesce(sum(distinct ped.total_scheduled), 0) as ped_total_scheduled\n" +
+        "   from org1_schema.users u \n" +
+        "       left join general_enc_data ged on ged.last_modified_by_id = u.id\n" +
+        "       left join program_enc_data ped on ped.last_modified_by_id = u.id\n" +
+        "   where u.organisation_id notnull\n" +
+        "       and (is_voided = false or is_voided isnull)\n" +
+        "   ${userWhere}\n" +
+        "   group by u.name,u.username	\n" +
+        ")\n" +
+        "select  indicator,\n" +
+        "        ged_visits_on_time + ped_visits_on_time as count\n" +
+        "from table1\n" +
+        "where ged_visits_on_time + ped_visits_on_time > 0\n" +
+        "       and ((ged_visits_on_time + ped_visits_on_time) /\n" +
+                "nullif(ged_total_scheduled + ped_total_scheduled, 0)) ${proportion_condition};";
+        query.append(baseQuery3.replace("${proportion_condition}", proportionCondition)
                 .replace("${schemaName}", orgSchemaName)
-                .replace("${encounterWhere}", encounterWhere)
-                .replace("${userWhere}", userWhere);
-        return jdbcTemplate.query(query, new AggregateReportMapper());
+                .replace("${userWhere}", userWhere));
+        return jdbcTemplate.query(query.toString(), new AggregateReportMapper());
     }
 
     public List<AggregateReportResult> generateUserCancellingMostVisits(String orgSchemaName, String encounterWhere, String userWhere) {
