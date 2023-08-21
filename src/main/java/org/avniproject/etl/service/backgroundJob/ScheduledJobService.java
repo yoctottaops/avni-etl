@@ -62,8 +62,8 @@ public class ScheduledJobService {
         @Override
         public EtlJobSummary mapRow(ResultSet rs, int rowNum) throws SQLException {
             EtlJobSummary etlJobLatestStatusResponse = new EtlJobSummary();
-            etlJobLatestStatusResponse.setLastStartAt(rs.getDate(1));
-            etlJobLatestStatusResponse.setLastEndedAt(rs.getDate(2));
+            etlJobLatestStatusResponse.setLastStartAt(rs.getTimestamp(1));
+            etlJobLatestStatusResponse.setLastEndedAt(rs.getTimestamp(2));
             etlJobLatestStatusResponse.setErrorMessage(rs.getString(3));
             return etlJobLatestStatusResponse;
         }
