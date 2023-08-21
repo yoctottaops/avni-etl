@@ -1,9 +1,13 @@
 package org.avniproject.etl.contract.backgroundJob;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class EtlJobHistoryItem {
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSS")
     private Date startedAt;
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSS")
     private Date endedAt;
     private String errorMessage;
     private boolean success;
