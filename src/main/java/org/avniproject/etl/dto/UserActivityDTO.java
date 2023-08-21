@@ -11,8 +11,14 @@ public class UserActivityDTO {
     private Long programEncounterCount;
     private Long generalEncounterCount;
     private Long count;
+    private String androidVersion;
     private String appVersion;
     private String deviceModel;
+    private String syncStatus;
+    private String syncSource;
+    private DateTime syncStart;
+    private DateTime syncEnd;
+    private DateTime lastSuccessfulSync;
 
     public String getUserName() {
         return userName;
@@ -70,6 +76,14 @@ public class UserActivityDTO {
         this.count = count;
     }
 
+    public String getAndroidVersion() {
+        return androidVersion;
+    }
+
+    public void setAndroidVersion(String androidVersion) {
+        this.androidVersion = androidVersion;
+    }
+
     public String getAppVersion() {
         return appVersion;
     }
@@ -94,5 +108,35 @@ public class UserActivityDTO {
         this.lastSuccessfulSync = lastSuccessfulSync;
     }
 
-    private DateTime lastSuccessfulSync;
+    public DateTime getSyncStart() {
+        return syncStart;
+    }
+
+    public void setSyncStart(DateTime syncStart) {
+        this.syncStart = syncStart;
+    }
+
+    public DateTime getSyncEnd() {
+        return syncEnd;
+    }
+
+    public void setSyncEnd(DateTime syncEnd) {
+        this.syncEnd = syncEnd;
+    }
+
+    public String getSyncStatus() {
+        return syncStatus;
+    }
+
+    public void setSyncStatus(String syncStatus) {
+        this.syncStatus = syncStatus;
+    }
+
+    public String getSyncSource() {
+        return syncSource;
+    }
+
+    public void setSyncSource(String syncSource) {
+        this.syncSource = syncSource;
+    }
 }

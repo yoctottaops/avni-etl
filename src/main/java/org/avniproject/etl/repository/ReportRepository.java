@@ -5,18 +5,13 @@ import org.avniproject.etl.domain.metadata.TableMetadata;
 import org.avniproject.etl.dto.AggregateReportResult;
 import org.apache.log4j.Logger;
 import org.avniproject.etl.dto.UserActivityDTO;
-import org.avniproject.etl.repository.rowMappers.reports.AggregateReportMapper;
-import org.avniproject.etl.repository.rowMappers.reports.UserActivityMapper;
-import org.avniproject.etl.repository.rowMappers.reports.UserCountMapper;
-import org.avniproject.etl.repository.rowMappers.reports.UserDetailsMapper;
+import org.avniproject.etl.repository.rowMappers.reports.*;
 import org.avniproject.etl.service.EtlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Component
 public class ReportRepository {
@@ -32,7 +27,7 @@ public class ReportRepository {
 
     public List<UserActivityDTO> generateUserActivity(String orgSchemaName, String subjectWhere, String encounterWhere, String enrolmentWhere, String userWhere) {
         SchemaMetadata schema = schemaMetadataRepository.getExistingSchemaMetadata();
-        List<TableMetadata> subjectTables = Stream.of(schema.getAllSubjectTables()).flatMap(Collection::stream).toList();
+        List<TableMetadata> subjectTables = schema.getAllSubjectTables().stream().toList();
         List<TableMetadata> encounterTables = schema.getAllEncounterTables().stream().toList();
         List<TableMetadata> programEnrolmentTables = schema.getAllProgramEnrolmentTables().stream().toList();
         List<TableMetadata> programEncounterTables = schema.getAllProgramEncounterTables().stream().toList();
@@ -215,6 +210,22 @@ public class ReportRepository {
         return jdbcTemplate.query(query, new UserDetailsMapper());
     }
 
+    public List<UserActivityDTO> generateLatestSyncs(String orgSchemaName, String syncTelemetryWhere, String userWhere) {
+        String baseQuery = "SELECT coalesce(u.name,u.username) as name, \n" +
+                "           android_version, app_version, device_name, sync_start_time, sync_end_time, sync_status, sync_source\n" +
+                "FROM public.sync_telemetry st\n" +
+                "join ${schemaName}.users u on st.last_modified_by_id = u.id\n" +
+                "where (u.is_voided = false or u.is_voided isnull) and u.organisation_id notnull\n" +
+                "${syncTelemetryWhere}\n"+
+                "${userWhere}\n"+
+                "order by 6 desc\n" +
+                "limit 10;\n";
+        String query = baseQuery
+                .replace("${schemaName}", orgSchemaName)
+                .replace("${syncTelemetryWhere}", syncTelemetryWhere)
+                .replace("${userWhere}", userWhere);
+        return jdbcTemplate.query(query, new LatestSyncMapper());
+    }
     public List<AggregateReportResult> generateCompletedVisitsOnTimeByProportion(String proportionCondition, String orgSchemaName, String encounterWhere, String userWhere) {
         SchemaMetadata schema = schemaMetadataRepository.getExistingSchemaMetadata();
         List<TableMetadata> encounterTables = schema.getAllEncounterTables().stream().toList();
