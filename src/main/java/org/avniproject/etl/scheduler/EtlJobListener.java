@@ -49,7 +49,7 @@ public class EtlJobListener implements JobListener {
                 log.error("Error in job run", jobException);
             }
             ScheduledJobRun scheduledJobRun = scheduledJobRunRepository.getLastRun(context.getJobDetail().getKey().getName());
-            scheduledJobRun.ended(jobException);
+            scheduledJobRun.ended(jobException, context.getTrigger());
             scheduledJobRun.setSuccess(jobException == null);
             scheduledJobRunRepository.save(scheduledJobRun);
         } catch (Exception exception) {
