@@ -11,7 +11,6 @@ public class UserContext {
     private final Collection<String> roles = new HashSet<>();
     private Organisation organisation;
     private User user;
-    private String authToken;
 
     public User getUser() {
         return user;
@@ -42,13 +41,5 @@ public class UserContext {
 
     public void setOrganisation(Organisation organisation) {
         this.organisation = organisation;
-    }
-
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
     }
 }

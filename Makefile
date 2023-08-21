@@ -9,6 +9,8 @@ help:
 	    printf "%-30s %s\n" $$help_command $$help_info ; \
 	done
 
+include makefiles/utils.mk
+
 build_jar: ## Builds the jar file
 	./gradlew clean build -x test
 
@@ -36,14 +38,3 @@ start: boot_run
 
 debug:
 	./gradlew bootRun -Dagentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-
-delete_organisation: ## Delete organisation
-ifndef orgSchema
-	@echo "Provde the orgSchema variable"
-	exit 1
-endif
-ifndef db
-	@echo "Provde the db variable"
-	exit 1
-endif
-	-psql -h localhost -Uopenchs ${db} -c "select delete_etl_metadata_for_schema('${orgSchema}', '${orgSchema}')";

@@ -88,6 +88,7 @@ public class TableMetadata extends Model {
     }
 
     public List<ColumnMetadata> findColumnsMatchingConceptType(ColumnMetadata.ConceptType... conceptTypes) {
+        if (type.equals(Type.RepeatableQuestionGroup)) return List.of();
         return this.getColumnMetadataList().stream().filter(columnMetadata -> Arrays.stream(conceptTypes).anyMatch(conceptType -> nullSafeEquals(columnMetadata.getConceptType(), conceptType))).collect(Collectors.toList());
     }
 
@@ -260,7 +261,7 @@ public class TableMetadata extends Model {
 
     public static final Map<TableType, String> qgParentColumnIds = Map.of(TableType.IndividualProfile, "individual_id",
                                                                             TableType.Encounter, "encounter_id",
-                                                                            TableType.ProgramEnrolment, "enrolment_id",
+                                                                            TableType.ProgramEnrolment, "program_enrolment_id",
                                                                             TableType.ProgramEncounter, "program_encounter_id");
 
     public boolean isSubjectTable() {
@@ -277,5 +278,13 @@ public class TableMetadata extends Model {
 
     public void setRepeatableQuestionGroupConceptUuid(String repeatableQuestionGroupConceptUuid) {
         this.repeatableQuestionGroupConceptUuid = repeatableQuestionGroupConceptUuid;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                '}';
     }
 }

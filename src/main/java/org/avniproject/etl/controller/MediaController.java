@@ -20,7 +20,7 @@ public class MediaController {
         this.mediaService = mediaService;
     }
 
-    @PreAuthorize("hasAnyAuthority('organisation_admin','admin')")
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @GetMapping("/media")
     public ResponseEntity list(HttpServletRequest request,
                                       @PathParam("size") int size,
@@ -28,7 +28,7 @@ public class MediaController {
         return search(request, new MediaSearchRequest(), size, page);
     }
 
-    @PreAuthorize("hasAnyAuthority('organisation_admin','admin')")
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @PostMapping("/media/search")
     public ResponseEntity search(HttpServletRequest request,
                                  @RequestBody(required = false) MediaSearchRequest mediaSearchRequest,

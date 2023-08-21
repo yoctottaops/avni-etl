@@ -2,7 +2,6 @@ package org.avniproject.etl.service;
 
 import com.auth0.jwk.SigningKeyNotFoundException;
 import org.avniproject.etl.domain.User;
-import org.avniproject.etl.repository.AccountAdminRepository;
 import org.avniproject.etl.security.IAMAuthService;
 import org.avniproject.etl.security.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,24 +13,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
+    public final static SimpleGrantedAuthority ANALYTICS_USER_AUTHORITY = new SimpleGrantedAuthority(User.ANALYTICS_USER);
     public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(User.USER);
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(User.ADMIN);
-    public final static SimpleGrantedAuthority ORGANISATION_ADMIN_AUTHORITY = new SimpleGrantedAuthority(User.ORGANISATION_ADMIN);
-    public final static List<SimpleGrantedAuthority> ALL_AUTHORITIES = Arrays.asList(USER_AUTHORITY, ADMIN_AUTHORITY, ORGANISATION_ADMIN_AUTHORITY);
+    public final static List<SimpleGrantedAuthority> ALL_AUTHORITIES = Arrays.asList(USER_AUTHORITY, ANALYTICS_USER_AUTHORITY, ADMIN_AUTHORITY);
 
     private final IdpServiceFactory idpServiceFactory;
-    private final AccountAdminRepository accountAdminRepository;
 
     @Autowired
-    public AuthService(IdpServiceFactory idpServiceFactory, AccountAdminRepository accountAdminRepository) {
+    public AuthService(IdpServiceFactory idpServiceFactory) {
         this.idpServiceFactory = idpServiceFactory;
-        this.accountAdminRepository = accountAdminRepository;
     }
 
     public User authenticate(String token) {
@@ -45,8 +41,6 @@ public class AuthService {
 
     public UserContext setupUserContext(User user) {
         UserContext userContext = new UserContext();
-        List<Map<String, Object>> accountAdmins = accountAdminRepository.findByUserId(user.getId());
-        user.setAdmin(accountAdmins.size() > 0);
         userContext.setUser(user);
         List<SimpleGrantedAuthority> authorities = ALL_AUTHORITIES.stream()
             .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))

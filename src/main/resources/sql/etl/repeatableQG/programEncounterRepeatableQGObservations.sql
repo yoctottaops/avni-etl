@@ -1,11 +1,11 @@
 --[SQL template for auto generated view]
 insert into ${schema_name}.${table_name} (
-    "individual_id", "enrolment_id", "program_encounter_id", "address_id", "is_voided", "organisation_id", "last_modified_date_time"
+    "individual_id", "program_enrolment_id", "program_encounter_id", "address_id", "is_voided", "organisation_id", "last_modified_date_time"
     ${observations_to_insert_list}
 )
 (${concept_maps}
 SELECT entity.individual_id                                                                "individual_id",
-   entity.enrolment_id                                                                      "enrolment_id",
+   entity.program_enrolment_id                                                             "program_enrolment_id",
        entity.program_encounter_id                                                         "program_encounter_id",
        entity.address_id                                                                   "address_id",
        entity.is_voided                                                                    "is_voided",
@@ -15,7 +15,7 @@ SELECT entity.individual_id                                                     
 FROM (
     select jsonb_array_elements((mainTable.observations ->> '${repeatable_question_group_concept_uuid}')::jsonb)  as observations,
     mainTable.id                                                                                     as program_encounter_id,
-    mainTable.program_enrolment_id                                                                    as enrolment_id,
+    mainTable.program_enrolment_id                                                                    as program_enrolment_id,
     enrolment.individual_id                                                                           as individual_id,
     mainTable.address_id                                                                             as address_id,
     mainTable.is_voided                                                                              as is_voided,
