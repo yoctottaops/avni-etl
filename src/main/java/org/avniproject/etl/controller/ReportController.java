@@ -80,6 +80,17 @@ public class ReportController {
     }
 
     @PreAuthorize("hasAnyAuthority('analytics_user')")
+    @RequestMapping(value = "/report/hr/latestSyncs", method = RequestMethod.GET)
+    public List<UserActivityDTO> getLatestSyncs(@RequestParam(value = "startDate", required = false) String startDate,
+                                                @RequestParam(value = "endDate", required = false) String endDate,
+                                                @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+
+        return reportRepository.generateLatestSyncs(
+                OrgIdentityContextHolder.getDbSchema(),
+                reportUtil.getDateDynamicWhere(startDate, endDate, "sync_end_time"),
+                reportUtil.getDynamicUserWhere(userIds, "u.id"));
+    }
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "/report/hr/championUsers", method = RequestMethod.GET)
     public List<AggregateReportResult> getChampionUsers(@RequestParam(value = "startDate", required = false) String startDate,
                                                         @RequestParam(value = "endDate", required = false) String endDate,
