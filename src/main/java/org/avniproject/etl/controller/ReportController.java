@@ -7,6 +7,7 @@ import org.avniproject.etl.repository.ReportRepository;
 import org.avniproject.etl.service.ReportService;
 import org.avniproject.etl.util.ReportUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class ReportController {
         this.reportUtil = reportUtil;
     }
 
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "report/hr/userActivity", method = RequestMethod.GET)
     public List<UserActivityDTO> getUserActivity(@RequestParam(value = "startDate", required = false) String startDate,
                                           @RequestParam(value = "endDate", required = false) String endDate,
@@ -38,6 +40,7 @@ public class ReportController {
             );
     }
 
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "/report/hr/syncFailures",method = RequestMethod.GET)
     public List<UserActivityDTO> getUserWiseSyncFailures(@RequestParam(value = "startDate", required = false) String startDate,
                                                   @RequestParam(value = "endDate", required = false) String endDate,
@@ -49,6 +52,7 @@ public class ReportController {
             );
     }
 
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "/report/hr/deviceModels", method = RequestMethod.GET)
     public List<AggregateReportResult> getUserWiseDeviceModels(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
 
@@ -57,6 +61,7 @@ public class ReportController {
                 reportUtil.getDynamicUserWhere(userIds, "u.id"));
     }
 
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "/report/hr/appVersions", method = RequestMethod.GET)
     public List<AggregateReportResult> getUserWiseAppVersions(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
 
@@ -65,6 +70,7 @@ public class ReportController {
                 reportUtil.getDynamicUserWhere(userIds, "u.id"));
     }
 
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "/report/hr/userDetails", method = RequestMethod.GET)
     public List<UserActivityDTO> getUserDetails(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
 
@@ -73,6 +79,7 @@ public class ReportController {
                 reportUtil.getDynamicUserWhere(userIds, "u.id"));
     }
 
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "/report/hr/championUsers", method = RequestMethod.GET)
     public List<AggregateReportResult> getChampionUsers(@RequestParam(value = "startDate", required = false) String startDate,
                                                         @RequestParam(value = "endDate", required = false) String endDate,
@@ -84,6 +91,7 @@ public class ReportController {
                 reportUtil.getDynamicUserWhere(userIds, "u.id"));
     }
 
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "/report/hr/nonPerformingUsers", method = RequestMethod.GET)
     public List<AggregateReportResult> getNonPerformingUsers(@RequestParam(value = "startDate", required = false) String startDate,
                                                              @RequestParam(value = "endDate", required = false) String endDate,
@@ -96,6 +104,7 @@ public class ReportController {
         );
     }
 
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "/report/hr/mostCancelled", method = RequestMethod.GET)
     public List<AggregateReportResult> getUsersCancellingMostVisits(@RequestParam(value = "startDate", required = false) String startDate,
                                                                     @RequestParam(value = "endDate", required = false) String endDate,
