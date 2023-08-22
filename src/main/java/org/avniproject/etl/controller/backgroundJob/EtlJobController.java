@@ -15,6 +15,7 @@ import org.avniproject.etl.util.DateTimeUtil;
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.impl.JobDetailImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,28 @@ public class EtlJobController {
         if (latestJobRun != null)
             return ResponseEntity.badRequest().body("Job already present");
 
+        JobDetailImpl jobDetail = getJobDetail(jobScheduleRequest, organisationIdentity, organisationIdentitiesInGroup);
+        scheduler.addJob(jobDetail, false);
+        Trigger trigger = getTrigger(jobScheduleRequest, jobDetail);
+        scheduler.scheduleJob(trigger);
+        logger.info(String.format("Job Scheduled for %s:%s", jobScheduleRequest.getJobEntityType(), jobScheduleRequest.getEntityUUID()));
+        return ResponseEntity.ok().body("Job Scheduled!");
+    }
+
+    private Trigger getTrigger(JobScheduleRequest jobScheduleRequest, JobDetailImpl jobDetail) {
+        SimpleScheduleBuilder scheduleBuilder = simpleSchedule()
+                .withIntervalInMinutes(scheduledJobConfig.getRepeatIntervalInMinutes()).repeatForever();
+
+        Trigger trigger = newTrigger()
+                .withIdentity(scheduledJobConfig.getTriggerKey(jobScheduleRequest.getEntityUUID()))
+                .forJob(jobDetail)
+                .withSchedule(scheduleBuilder)
+                .startAt(DateTimeUtil.nowPlusSeconds(5))
+                .build();
+        return trigger;
+    }
+
+    private JobDetailImpl getJobDetail(JobScheduleRequest jobScheduleRequest, OrganisationIdentity organisationIdentity, List<OrganisationIdentity> organisationIdentitiesInGroup) {
         JobDetailImpl jobDetail = new JobDetailImpl();
         jobDetail.setJobClass(EtlJob.class);
         jobDetail.setDurability(true);
@@ -95,18 +118,7 @@ public class EtlJobController {
         jobDetail.setName(jobScheduleRequest.getEntityUUID());
         JobDataMap jobDataMap = scheduledJobConfig.createJobData(jobScheduleRequest.getJobEntityType());
         jobDetail.setJobDataMap(jobDataMap);
-        scheduler.addJob(jobDetail, false);
-
-        Trigger trigger = newTrigger()
-                .withIdentity(scheduledJobConfig.getTriggerKey(jobScheduleRequest.getEntityUUID()))
-                .forJob(jobDetail)
-                .withSchedule(simpleSchedule().withIntervalInMinutes(scheduledJobConfig.getRepeatIntervalInMinutes()).repeatForever())
-                .startAt(DateTimeUtil.nowPlusSeconds(5))
-                .build();
-
-        scheduler.scheduleJob(trigger);
-        logger.info(String.format("Job Scheduled for %s:%s", jobScheduleRequest.getJobEntityType(), jobScheduleRequest.getEntityUUID()));
-        return ResponseEntity.ok().body("Job Scheduled!");
+        return jobDetail;
     }
 
     @PreAuthorize("hasAnyAuthority('admin')")
