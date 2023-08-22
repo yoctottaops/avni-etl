@@ -4,7 +4,6 @@ import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.dto.AggregateReportResult;
 import org.avniproject.etl.dto.UserActivityDTO;
 import org.avniproject.etl.repository.ReportRepository;
-import org.avniproject.etl.service.ReportService;
 import org.avniproject.etl.util.ReportUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,13 +14,11 @@ import java.util.List;
 @RestController
 public class ReportController {
 
-    private final ReportService reportService;
     private final ReportRepository reportRepository;
     private final ReportUtil reportUtil;
 
     @Autowired
-    public ReportController(ReportService reportService, ReportRepository reportRepository, ReportUtil reportUtil) {
-        this.reportService = reportService;
+    public ReportController(ReportRepository reportRepository, ReportUtil reportUtil) {
         this.reportRepository = reportRepository;
         this.reportUtil = reportUtil;
     }
