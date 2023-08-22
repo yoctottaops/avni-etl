@@ -12,22 +12,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class KeycloakAuthService extends BaseIAMService {
     private final Logger logger = LoggerFactory.getLogger(KeycloakAuthService.class);
-//    private final AdapterConfig adapterConfig;
+    private final AdapterConfig adapterConfig;
     private final AvniKeycloakConfig avniKeycloakConfig;
 
     @Autowired
-    public KeycloakAuthService(UserRepository userRepository, AvniKeycloakConfig avniKeycloakConfig) {
+    public KeycloakAuthService(UserRepository userRepository, AdapterConfig adapterConfig, AvniKeycloakConfig avniKeycloakConfig) {
         super(userRepository);
-//        this.adapterConfig = adapterConfig;
+        this.adapterConfig = adapterConfig;
         this.avniKeycloakConfig = avniKeycloakConfig;
     }
 
     @Override
     public void logConfiguration() {
         logger.debug("Keycloak configuration");
-//        logger.debug(String.format("Keycloak server: %s", adapterConfig.getAuthServerUrl()));
-//        logger.debug(String.format("Realm name: %s", adapterConfig.getRealm()));
-//        logger.debug(String.format("Audience name: %s", adapterConfig.getResource()));
+        logger.debug(String.format("Keycloak server: %s", adapterConfig.getAuthServerUrl()));
+        logger.debug(String.format("Realm name: %s", adapterConfig.getRealm()));
+        logger.debug(String.format("Audience name: %s", adapterConfig.getResource()));
     }
 
     protected String getJwkProviderUrl() {
@@ -35,8 +35,7 @@ public class KeycloakAuthService extends BaseIAMService {
     }
 
     protected String getIssuer() {
-        return "Hello";
-//        return String.format(avniKeycloakConfig.getRealmsUrlFormat(), adapterConfig.getAuthServerUrl(), adapterConfig.getRealm());
+        return String.format(avniKeycloakConfig.getRealmsUrlFormat(), adapterConfig.getAuthServerUrl(), adapterConfig.getRealm());
     }
     @Override
     protected String getUserUuidField() {
