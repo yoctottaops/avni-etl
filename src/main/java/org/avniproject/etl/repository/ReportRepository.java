@@ -22,6 +22,15 @@ public class ReportRepository {
         this.schemaMetadataRepository = schemaMetadataRepository;
     }
 
+    public List<UserActivityDTO> generateSummaryTable(String orgSchemaName){
+        String baseQuery = "select name, type \n" +
+                "from public.table_metadata\n" +
+                "where schema_name = '${schemaName}'\n" +
+                "order by type;";
+        String query= baseQuery.replace("${schemaName}", orgSchemaName);
+        return jdbcTemplate.query(query, new SummaryTableMapper());
+    }
+
     public List<UserActivityDTO> generateUserActivity(String orgSchemaName, String subjectWhere, String encounterWhere, String enrolmentWhere, String userWhere) {
         SchemaMetadata schema = schemaMetadataRepository.getExistingSchemaMetadata();
         List<String> subjectTableNames = schema.getAllSubjectTableNames().stream().toList();

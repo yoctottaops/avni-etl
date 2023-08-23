@@ -24,6 +24,16 @@ public class ReportController {
     }
 
     @PreAuthorize("hasAnyAuthority('analytics_user')")
+    @RequestMapping(value = "/report/aggregate/summaryTable", method = RequestMethod.GET)
+    public List<UserActivityDTO> getSummaryTable(@RequestParam(value = "startDate", required = false) String startDate,
+                                                 @RequestParam(value = "endDate", required = false) String endDate,
+                                                 @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds){
+        return reportRepository.generateSummaryTable(
+                OrgIdentityContextHolder.getDbSchema()
+        );
+    }
+
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
     @RequestMapping(value = "report/hr/userActivity", method = RequestMethod.GET)
     public List<UserActivityDTO> getUserActivity(@RequestParam(value = "startDate", required = false) String startDate,
                                           @RequestParam(value = "endDate", required = false) String endDate,
