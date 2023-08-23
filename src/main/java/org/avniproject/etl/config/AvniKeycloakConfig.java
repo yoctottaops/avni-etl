@@ -32,6 +32,9 @@ public class AvniKeycloakConfig {
     @Value("${keycloak.auth-server-url}")
     private String authServerUrl;
 
+    @Value("${keycloak.resource}")
+    private String resource;
+
     @Value("${keycloak.credentials.secret}")
     private String credentialsSecret;
 
@@ -45,6 +48,10 @@ public class AvniKeycloakConfig {
 
     public String getPreferredUserName() {
         return preferredUserName;
+    }
+
+    public String getAuthServerUrl() {
+        return authServerUrl;
     }
 
     public String getCustomUserUUID() {
@@ -69,5 +76,9 @@ public class AvniKeycloakConfig {
 
     public boolean isConfigured() {
         return !("dummy".equals(authServerUrl) || "dummy".equals(this.credentialsSecret));
+    }
+
+    public String getResource() {
+        return resource;
     }
 }

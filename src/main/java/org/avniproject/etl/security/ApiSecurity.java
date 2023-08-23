@@ -4,6 +4,7 @@ import org.avniproject.etl.config.EtlServiceConfig;
 import org.avniproject.etl.config.IdpType;
 import org.avniproject.etl.repository.OrganisationRepository;
 import org.avniproject.etl.service.AuthService;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -83,5 +84,10 @@ public class ApiSecurity  {
             .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(authenticationFilter(), BasicAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public KeycloakSpringBootConfigResolver keycloakConfigResolver() {
+        return new KeycloakSpringBootConfigResolver();
     }
 }

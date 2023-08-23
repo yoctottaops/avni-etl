@@ -6,10 +6,11 @@ import org.avniproject.etl.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 @Service
-
+@ConditionalOnExpression("'${avni.idp.type}'=='cognito' or '${avni.idp.type}'=='both'")
 public class CognitoAuthServiceImpl extends BaseIAMService {
     private static final String COGNITO_URL = "https://cognito-idp.ap-south-1.amazonaws.com/";
     private final Logger logger = LoggerFactory.getLogger(CognitoAuthServiceImpl.class);
