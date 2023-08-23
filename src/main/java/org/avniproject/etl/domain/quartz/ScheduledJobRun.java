@@ -35,11 +35,12 @@ public class ScheduledJobRun {
     public static ScheduledJobRun create(JobDetail jobDetail, Trigger trigger) {
         ScheduledJobRun scheduledJobRun = new ScheduledJobRun();
         scheduledJobRun.jobName = jobDetail.getKey().getName();
-        scheduledJobRun.startedAt = trigger.getStartTime();
+        scheduledJobRun.startedAt = trigger.getNextFireTime();
         return scheduledJobRun;
     }
 
-    public void ended(JobExecutionException jobException) {
+    public void ended(JobExecutionException jobException, Trigger trigger) {
+        this.startedAt = trigger.getPreviousFireTime();
         this.endedAt = new Date();
         if (jobException != null)
             errorMessage = ExceptionUtil.getStackTraceAsString(getAppException(jobException));
