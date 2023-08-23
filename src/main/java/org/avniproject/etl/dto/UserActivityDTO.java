@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 
 public class UserActivityDTO {
 
+    private String tableName;
+    private String tableType;
     private String userName;
     private Long id;
     private Long registrationCount;
@@ -19,6 +21,22 @@ public class UserActivityDTO {
     private DateTime syncStart;
     private DateTime syncEnd;
     private DateTime lastSuccessfulSync;
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getTableType() {
+        return tableType;
+    }
+
+    public void setTableType(String tableType) {
+        this.tableType = tableType;
+    }
 
     public String getUserName() {
         return userName;
