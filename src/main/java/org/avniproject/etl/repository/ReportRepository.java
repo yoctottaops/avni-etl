@@ -234,6 +234,24 @@ public class ReportRepository {
                 .replace("${userWhere}", userWhere);
         return jdbcTemplate.query(query, new LatestSyncMapper());
     }
+
+    public List<UserActivityDTO> generateMedianSync(String orgSchemaName, String syncTelemetryWhere, String userWhere) {
+        String baseQuery = "select coalesce(u.name, u.username) as name,\n" +
+                "coalesce(percentile_cont(0.5) within group (order by (sync_end_time-sync_start_time)), '00:00:00') as median_sync_time\n" +
+                "from ${schemaName}.sync_telemetry st\n" +
+                "join ${schemaName}.users u on st.last_modified_by_id = u.id\n" +
+                "where (u.is_voided = false or u.is_voided isnull) and u.organisation_id notnull\n" +
+                "${syncTelemetryWhere}\n"+
+                "${userWhere}\n"+
+                "group by u.name, u.username\n" +
+                "order by 2 desc;";
+        String query = baseQuery
+                .replace("${schemaName}", orgSchemaName)
+                .replace("${syncTelemetryWhere}", syncTelemetryWhere)
+                .replace("${userWhere}", userWhere);
+        return jdbcTemplate.query(query, new MedianSyncMapper());
+    }
+
     public List<AggregateReportResult> generateCompletedVisitsOnTimeByProportion(String proportionCondition, String orgSchemaName, String encounterWhere, String userWhere) {
         SchemaMetadata schema = schemaMetadataRepository.getExistingSchemaMetadata();
         List<String> encounterTableNames = schema.getAllEncounterTableNames().stream().toList();
