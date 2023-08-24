@@ -21,6 +21,7 @@ public class UserActivityDTO {
     private DateTime syncStart;
     private DateTime syncEnd;
     private DateTime lastSuccessfulSync;
+    private String medianSync;
 
     public String getTableName() {
         return tableName;
@@ -156,5 +157,13 @@ public class UserActivityDTO {
 
     public void setSyncSource(String syncSource) {
         this.syncSource = syncSource;
+    }
+
+    public String getMedianSync() {
+        return medianSync;
+    }
+
+    public void setMedianSync(String medianSync) {
+        this.medianSync = medianSync;
     }
 }
