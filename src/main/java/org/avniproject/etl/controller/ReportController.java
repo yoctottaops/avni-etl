@@ -106,8 +106,7 @@ public class ReportController {
 
         return reportRepository.generateMedianSync(
                 OrgIdentityContextHolder.getDbSchema(),
-                reportUtil.getDateDynamicMedianSync(startDate, endDate, "st.sync_start_time"),
-                reportUtil.getDynamicUserWhere(userIds, "u.id"));
+                reportUtil.getDateSeries(startDate, endDate));
     }
 
     @PreAuthorize("hasAnyAuthority('analytics_user')")

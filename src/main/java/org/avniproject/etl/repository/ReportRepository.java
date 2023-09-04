@@ -235,20 +235,22 @@ public class ReportRepository {
         return jdbcTemplate.query(query, new LatestSyncMapper());
     }
 
-    public List<UserActivityDTO> generateMedianSync(String orgSchemaName, String syncTelemetryWhere, String userWhere) {
-        String baseQuery = "select coalesce(u.name, u.username) as name,\n" +
-                "coalesce(percentile_cont(0.5) within group (order by (sync_end_time-sync_start_time)), '00:00:00') as median_sync_time\n" +
-                "from ${schemaName}.sync_telemetry st\n" +
-                "join ${schemaName}.users u on st.last_modified_by_id = u.id\n" +
-                "where (u.is_voided = false or u.is_voided isnull) and u.organisation_id notnull\n" +
-                "${syncTelemetryWhere}\n"+
-                "${userWhere}\n"+
-                "group by u.name, u.username\n" +
-                "order by 2 desc;";
+    public List<UserActivityDTO> generateMedianSync(String orgSchemaName, String syncTelemetryWhere) {
+        String baseQuery = "with weeks as (\n" +
+                "    select day::date start_date, day::date+6 end_date\n" +
+                "    ${syncTelemetryWhere}\n" +
+                ")\n" +
+                "select w.start_date, w.end_date, \n" +
+                "    coalesce(percentile_cont(0.5) within group (order by (st.sync_end_time-st.sync_start_time)), '00:00:00') as median_sync_time\n" +
+                "from weeks w\t\n" +
+                "left join ${schemaName}.sync_telemetry st\n" +
+                "on st.sync_start_time::date >= w.start_date and st.sync_end_time::date <= w.end_date\n" +
+//                "and st.sync_source = 'manual'\n" +
+                "group by 1,2;";
         String query = baseQuery
                 .replace("${schemaName}", orgSchemaName)
-                .replace("${syncTelemetryWhere}", syncTelemetryWhere)
-                .replace("${userWhere}", userWhere);
+                .replace("${syncTelemetryWhere}", syncTelemetryWhere);
+        System.out.print(query);
         return jdbcTemplate.query(query, new MedianSyncMapper());
     }
 
