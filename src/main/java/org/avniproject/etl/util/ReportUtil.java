@@ -15,11 +15,11 @@ public class ReportUtil {
         return "";
     }
 
-    public String getDateDynamicMedianSync(String startDate, String endDate, String columnName) {
+    public String getDateSeries(String startDate, String endDate) {
         if (startDate != null) {
-            return format("and %s::date between ( '%s'::date - interval '7 days') and ('%s'::date - interval '7 days')", columnName, startDate, endDate);
+            return format("from generate_series('%s'::date - interval '3 months', '%s'::date, '7d'::interval) day", startDate, endDate);
         }
-        return "and st.sync_start_time between ( current_date at time zone 'UTC'+'5:30' - interval '7 days') and current_date";
+        return "from generate_series(current_date at time zone 'UTC'+'5:30'- interval '3 months' , current_date at time zone 'UTC'+'5:30' , '7d'::interval) day";
     }
 
     public String getDynamicUserWhere(List<Long> userIds, String columnName) {
