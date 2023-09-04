@@ -245,7 +245,7 @@ public class ReportRepository {
                 "from weeks w\t\n" +
                 "left join ${schemaName}.sync_telemetry st\n" +
                 "on st.sync_start_time::date >= w.start_date and st.sync_end_time::date <= w.end_date\n" +
-//                "and st.sync_source = 'manual'\n" +
+                "and st.sync_source = 'manual'\n" +
                 "group by 1,2;";
         String query = baseQuery
                 .replace("${schemaName}", orgSchemaName)
