@@ -250,7 +250,6 @@ public class ReportRepository {
         String query = baseQuery
                 .replace("${schemaName}", orgSchemaName)
                 .replace("${syncTelemetryWhere}", syncTelemetryWhere);
-        System.out.print(query);
         return jdbcTemplate.query(query, new MedianSyncMapper());
     }
 
