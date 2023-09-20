@@ -3,10 +3,7 @@ package org.avniproject.etl.repository;
 import org.avniproject.etl.domain.metadata.ColumnMetadata;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
-import org.avniproject.etl.dto.ConceptFilter;
-import org.avniproject.etl.dto.ConceptFilterSearch;
-import org.avniproject.etl.dto.MediaDTO;
-import org.avniproject.etl.dto.MediaSearchRequest;
+import org.avniproject.etl.dto.*;
 import org.avniproject.etl.repository.service.MediaTableRepositoryService;
 import org.avniproject.etl.repository.sql.MediaSearchQueryBuilder;
 import org.avniproject.etl.repository.sql.Page;
@@ -15,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -78,6 +76,10 @@ public class MediaTableRepository {
     }
 
     public List<MediaDTO> search(MediaSearchRequest mediaSearchRequest, Page page) {
+        return searchInternal(mediaSearchRequest, page, (rs, rowNum) -> mediaTableRepositoryService.setMediaDto(rs));
+    }
+
+    private <T> List<T> searchInternal(MediaSearchRequest mediaSearchRequest, Page page, RowMapper<T> rowMapper) {
         List<ConceptFilterSearch> conceptFilterSearches = null;
         if (mediaSearchRequest.getConceptFilters() != null) {
             conceptFilterSearches = determineConceptFilterTablesAndColumns(mediaSearchRequest.getConceptFilters());
@@ -89,7 +91,12 @@ public class MediaTableRepository {
                 .withSearchConceptFilters(conceptFilterSearches)
                 .build();
         return runInSchemaUserContext(() -> new NamedParameterJdbcTemplate(jdbcTemplate)
-                .query(query.sql(), query.parameters(),
-                        (rs, rowNum) -> mediaTableRepositoryService.setMediaDto(rs)), jdbcTemplate);
+                .query(query.sql(), query.parameters(), rowMapper), jdbcTemplate);
+    }
+
+
+
+    public List<ImageData> getImageData(MediaSearchRequest mediaSearchRequest, Page page) {
+        return searchInternal(mediaSearchRequest, page, (rs, rowNum) -> mediaTableRepositoryService.setImageData(rs));
     }
 }

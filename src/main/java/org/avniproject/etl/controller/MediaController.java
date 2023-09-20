@@ -2,6 +2,9 @@ package org.avniproject.etl.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
+import org.apache.log4j.Logger;
+import org.avniproject.etl.dto.DownloadAllMediaRequest;
+import org.avniproject.etl.dto.DownloadRequest;
 import org.avniproject.etl.dto.MediaSearchRequest;
 import org.avniproject.etl.repository.sql.Page;
 import org.avniproject.etl.service.MediaService;
@@ -19,6 +22,8 @@ public class MediaController {
     MediaController(MediaService mediaService) {
         this.mediaService = mediaService;
     }
+
+    private static final Logger log = Logger.getLogger(MediaController.class);
 
     @PreAuthorize("hasAnyAuthority('analytics_user')")
     @GetMapping("/media")
@@ -41,6 +46,18 @@ public class MediaController {
             return ResponseEntity.ok(mediaService.search(modifiedRequest, new Page(page, size)));
         } catch (Exception exception) {
             return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('analytics_user')")
+    @PostMapping("/requestDownloadAll")
+    public ResponseEntity downloadAllImages(@RequestBody(required = true) DownloadAllMediaRequest downloadAllMediaRequest) {
+        try {
+            mediaService.createDownloadRequest(downloadAllMediaRequest);
+            return ResponseEntity.ok().body("");
+        } catch (Exception exception) {
+            log.error("Error reading object: ", exception);
+            return ResponseEntity.internalServerError().body(exception.getMessage());
         }
     }
 }
