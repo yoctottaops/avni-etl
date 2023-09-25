@@ -12,6 +12,9 @@ import java.sql.SQLException;
 
 @Service
 public class MediaTableRepositoryService {
+    public static final int INTEGER_CONSTANT_ONE = 1;
+    public static final int INT_INDEX_WHEN_NOT_FOUND = -1;
+    public static final int BEGIN_INDEX = 0;
     private final AmazonClientService amazonClientService;
 
     public MediaTableRepositoryService(AmazonClientService amazonClientService) {
@@ -53,10 +56,13 @@ public class MediaTableRepositoryService {
 
     public ImageData setImageData(ResultSet rs) {
         try {
-            return new ImageData(rs.getString("uuid"),
+            String imageUrl = rs.getString("image_url");
+            String imageUUID = getImageUUID(imageUrl);
+            String compositeImageUUID = rs.getString("uuid") + "#" + imageUUID;
+            return new ImageData(compositeImageUUID,
                     rs.getString("subject_first_name"),
                     rs.getString("subject_last_name"),
-                    rs.getString("image_url"),
+                    imageUrl,
                     rs.getString("concept_name"),
                     rs.getString("subject_type_name"),
                     rs.getString("program_name"),
@@ -69,5 +75,16 @@ public class MediaTableRepositoryService {
         }catch(SQLException e) {
             throw new Error("Error:" + e.getMessage());
         }
+    }
+
+    private static String getImageUUID(String imageUrl) {
+        String imageUUID = imageUrl;
+        int startOfUUid = imageUrl.lastIndexOf('/');
+        if(startOfUUid > INT_INDEX_WHEN_NOT_FOUND) {
+            String imageUUIDWithExtension = imageUrl.substring(startOfUUid + INTEGER_CONSTANT_ONE);
+            int endOfUUID = imageUUIDWithExtension.indexOf('.');
+            imageUUID = endOfUUID > INT_INDEX_WHEN_NOT_FOUND ? imageUUIDWithExtension.substring(BEGIN_INDEX, endOfUUID) : imageUUIDWithExtension;
+        }
+        return imageUUID;
     }
 }
