@@ -29,8 +29,11 @@ public class MediaTableRepositoryService {
             String thumbnailUrl = Utils.getThumbnailUrl(imageUrl);
             URL signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
 
+            String uuid = rs.getString("uuid");
+            String imageUUID = getImageUUID(imageUrl);
+            String compositeUUID = uuid + "#" + imageUUID;
             return new MediaDTO(
-                    rs.getString("uuid"),
+                    compositeUUID,
                     rs.getString("subject_first_name"),
                     rs.getString("subject_last_name"),
                     imageUrl,
