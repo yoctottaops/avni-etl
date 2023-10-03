@@ -207,10 +207,17 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Sql({"/test-data-teardown.sql", "/organisation-group.sql"})
-    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql({"/test-data-teardown.sql", "/organisation-group-teardown.sql", "/organisation-group.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql", "/organisation-group-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void allTheDBUserOfOrgGroupAreAbleToQueryTables() {
         etlService.runForOrganisationGroup("og");
+        etlService.runForOrganisationGroup("og");
+
+        etlService.runFor(OrganisationIdentity.createForOrganisation("ogi1", "ogi1"));
+
+        etlService.runForOrganisationGroup("og");
+        etlService.runFor(OrganisationIdentity.createForOrganisation("ogi1", "ogi1"));
+
         jdbcTemplate.execute("set role og;");
         List<Map<String, Object>> groupList = jdbcTemplate.queryForList("select * from og.person;");
         jdbcTemplate.execute("set role ogi1;");
@@ -218,9 +225,36 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         jdbcTemplate.execute("set role ogi2;");
         List<Map<String, Object>> child2List = jdbcTemplate.queryForList("select * from og.person;");
         jdbcTemplate.execute("reset role;");
+
+        assertThat("Group organisation schema contains data from both individual organisations", groupList.size(), is(2));
+        assertThat("Member organisations will also get the same data as the group organisations", child1List.size(), is(2));
+        assertThat("Member organisations will also get the same data as the group organisations", child2List.size(), is(2));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/organisation-group-teardown.sql", "/organisation-group.sql"})
+    @Sql(scripts = {"/test-data-teardown.sql", "/organisation-group-teardown.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void multipleRunsShouldNotCauseDuplicateDataInOrganisationsAndGroups() {
+
+        etlService.runFor(OrganisationIdentity.createForOrganisation("ogi2", "ogi2"));
+        etlService.runForOrganisationGroup("og");
+        etlService.runFor(OrganisationIdentity.createForOrganisation("ogi1", "ogi1"));
+
+        etlService.runFor(OrganisationIdentity.createForOrganisation("ogi2", "ogi2"));
+        etlService.runForOrganisationGroup("og");
+        etlService.runFor(OrganisationIdentity.createForOrganisation("ogi1", "ogi1"));
+
+        jdbcTemplate.execute("set role og;");
+        List<Map<String, Object>> groupList = jdbcTemplate.queryForList("select * from og.person;");
+        jdbcTemplate.execute("set role ogi1;");
+        List<Map<String, Object>> child1List = jdbcTemplate.queryForList("select * from ogi1.person;");
+        jdbcTemplate.execute("set role ogi2;");
+        List<Map<String, Object>> child2List = jdbcTemplate.queryForList("select * from ogi2.person;");
+        jdbcTemplate.execute("reset role;");
+
         assertThat(groupList.size(), is(2));
-        assertThat(child1List.size(), is(2));
-        assertThat(child2List.size(), is(2));
+        assertThat(child1List.size(), is(1));
+        assertThat(child2List.size(), is(1));
     }
 
     @Test
