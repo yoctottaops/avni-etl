@@ -46,3 +46,31 @@ BEGIN
     return true;
 END
 $$;
+
+-- List all waiting triggers for ETL , in ascending order of next trigger
+select
+    qt.trigger_state,
+    qt.trigger_type,
+    qjd.job_name,
+    qjd.sched_name,
+    qjd.job_group,
+    qjd.description,
+    qt.next_fire_time
+from public.qrtz_triggers qt
+         join public.qrtz_job_details qjd
+              on qt.sched_name = qjd.sched_name
+                  and qt.job_name = qjd.job_name
+                  and qt.job_group = qjd.job_group
+order by qt.next_fire_time asc;
+
+-- List currently running ETL job
+select qft.state,
+       qt.trigger_state,
+       qt.trigger_type,
+       qjd.job_name,
+       qjd.sched_name,
+       qjd.job_group,
+       qjd.description
+from qrtz_fired_triggers qft
+         join qrtz_triggers qt on qft.job_name = qt.job_name
+         join qrtz_job_details qjd on qt.sched_name = qjd.sched_name and qt.job_name = qjd.job_name and qt.job_group = qjd.job_group;
