@@ -50,7 +50,8 @@ public class MediaTableRepositoryService {
                     rs.getString("sync_parameter_key2"),
                     rs.getString("sync_parameter_value1"),
                     rs.getString("sync_parameter_value2"),
-                    rs.getString("address")
+                    rs.getString("address"),
+                    rs.getLong("entity_id")
             );
         } catch (SQLException e) {
             throw new Error("Error:" + e.getMessage());

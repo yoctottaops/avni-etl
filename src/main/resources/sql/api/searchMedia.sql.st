@@ -17,7 +17,8 @@ SELECT media.id as id,
        media.encounter_type_name as encounter_type_name,
        media.program_name as program_name,
        media.concept_name as concept_name,
-       row_to_json(address.*) as address
+       row_to_json(address.*) as address,
+       media.entity_id as entity_id
 FROM <schemaName>.media media
          JOIN <schemaName>.address address ON address.id = media.address_id
          <if(joinTablesAndColumns)>
