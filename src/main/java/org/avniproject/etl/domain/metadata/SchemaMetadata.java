@@ -42,16 +42,52 @@ public class SchemaMetadata {
         return tableMetadata.stream().filter(TableMetadata::isSubjectTable).toList();
     }
 
+    public List<String> getAllSubjectTableNames() {
+        List<TableMetadata> subjectTables = getAllSubjectTables();
+        List<String> subjectTableNames = new ArrayList<>();
+        for(TableMetadata subject : subjectTables){
+            subjectTableNames.add(subject.getName());
+        }
+        return subjectTableNames;
+    }
+
     public List<TableMetadata> getAllProgramEnrolmentTables() {
         return tableMetadata.stream().filter(table -> table.getType() == TableMetadata.Type.ProgramEnrolment).toList();
+    }
+
+    public List<String> getAllProgramEnrolmentTableNames() {
+        List<TableMetadata> programEnrolmentTables = getAllProgramEnrolmentTables();
+        List<String> programEnrolmentTableNames = new ArrayList<>();
+        for(TableMetadata programEnrolment : programEnrolmentTables){
+            programEnrolmentTableNames.add(programEnrolment.getName());
+        }
+        return programEnrolmentTableNames;
     }
 
     public List<TableMetadata> getAllProgramEncounterTables() {
         return tableMetadata.stream().filter(table -> table.getType() == TableMetadata.Type.ProgramEncounter).toList();
     }
 
+    public List<String> getAllProgramEncounterTableNames() {
+        List<TableMetadata> programEncounterTables = getAllProgramEncounterTables();
+        List<String> programEncounterTableNames = new ArrayList<>();
+        for(TableMetadata programEncounter : programEncounterTables){
+            programEncounterTableNames.add(programEncounter.getName());
+        }
+        return programEncounterTableNames;
+    }
+
     public List<TableMetadata> getAllEncounterTables() {
         return tableMetadata.stream().filter(table -> table.getType() == TableMetadata.Type.Encounter).toList();
+    }
+
+    public List<String> getAllEncounterTableNames() {
+        List<TableMetadata> encounterTables = getAllEncounterTables();
+        List<String> encounterTableNames = new ArrayList<>();
+        for(TableMetadata encounter : encounterTables){
+            encounterTableNames.add(encounter.getName());
+        }
+        return encounterTableNames;
     }
 
     private List<Diff> findChanges(SchemaMetadata currentSchema, TableMetadata newTable) {
