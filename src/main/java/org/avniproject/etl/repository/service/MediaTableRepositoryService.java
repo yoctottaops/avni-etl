@@ -24,10 +24,16 @@ public class MediaTableRepositoryService {
     public MediaDTO setMediaDto(ResultSet rs) {
         try {
             String imageUrl = rs.getString("image_url");
-            URL signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
-
             String thumbnailUrl = Utils.getThumbnailUrl(imageUrl);
-            URL signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
+
+            URL signedImageUrl = null, signedThumbnailUrl = null;
+
+            try {
+                signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
+                signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
+            } catch (IllegalArgumentException illegalArgumentException) {
+                //Ignore and move on. Image will be null
+            }
 
             String uuid = rs.getString("uuid");
             String imageUUID = getImageUUID(imageUrl);
@@ -54,7 +60,7 @@ public class MediaTableRepositoryService {
                     rs.getLong("entity_id")
             );
         } catch (SQLException e) {
-            throw new Error("Error:" + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
