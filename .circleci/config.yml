@@ -235,7 +235,7 @@ workflows:
     - RWB_STAGING_approve:
         type: approval
         requires:
-          - app_build
+          - build
     - RWB_STAGING_deploy:
         context:
           - RWB_AWS_OIDC
@@ -245,7 +245,7 @@ workflows:
     - RWB_PRODUCTION_approve:
         type: approval
         requires:
-          - app_build
+          - build
     - RWB_PRODUCTION_deploy:
         context:
           - RWB_AWS_OIDC
