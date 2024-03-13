@@ -46,15 +46,15 @@ public class CreateTable implements Diff {
 
     private StringBuilder grantPermissionsToObject(String dbSchema, String user, String objectName) {
         return new StringBuilder().append("grant all privileges on all ")
-            .append(QUOTE)
             .append(objectName)
-            .append(QUOTE)
             .append(" in schema ")
             .append(QUOTE)
             .append(dbSchema)
             .append(QUOTE)
             .append(" to ")
+            .append(QUOTE)
             .append(user)
+            .append(QUOTE)
             .append(END_STATEMENT)
             .append(NEWLINE);
     }
