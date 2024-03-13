@@ -27,7 +27,7 @@ public interface JdbcContextWrapper<T> {
     }
 
     private T wrap(JdbcTemplate jdbcTemplate, String dbUser) {
-        jdbcTemplate.execute("set role " + dbUser + ";");
+        jdbcTemplate.execute("set role \"" + dbUser + "\";");
         InterfaceLogger.JdbcContextWrapper.debug(String.format("[%s] Executing with dbUser: %s", OrgIdentityContextHolder.getDbSchema(), dbUser));
         try {
             return execute();

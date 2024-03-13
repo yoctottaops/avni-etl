@@ -45,13 +45,18 @@ public class CreateTable implements Diff {
     }
 
     private StringBuilder grantPermissionsToObject(String dbSchema, String user, String objectName) {
-        return new StringBuilder()
-                .append("grant all privileges on all "  + objectName + " in schema ")
-                .append(dbSchema)
-                .append(" to ")
-                .append(user)
-                .append(END_STATEMENT)
-                .append(NEWLINE);
+        return new StringBuilder().append("grant all privileges on all ")
+            .append(QUOTE)
+            .append(objectName)
+            .append(QUOTE)
+            .append(" in schema ")
+            .append(QUOTE)
+            .append(dbSchema)
+            .append(QUOTE)
+            .append(" to ")
+            .append(user)
+            .append(END_STATEMENT)
+            .append(NEWLINE);
     }
 
     private String getTableName() {
