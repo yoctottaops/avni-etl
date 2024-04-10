@@ -30,6 +30,7 @@ public class MediaTable extends Table {
                 .withColumn(new Column("entity_id", Column.Type.integer))
                 .withColumn(new Column("subject_first_name", Column.Type.text))
                 .withColumn(new Column("subject_last_name", Column.Type.text))
+                .withColumn(new Column("subject_middle_name", Column.Type.text))
                 .build();
     }
 }

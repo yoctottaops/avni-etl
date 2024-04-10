@@ -6,10 +6,7 @@ import org.avniproject.etl.dto.*;
 import org.springframework.util.CollectionUtils;
 import org.stringtemplate.v4.ST;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.avniproject.etl.repository.sql.SqlFile.readFile;
@@ -46,6 +43,8 @@ public class MediaSearchQueryBuilder {
         addParameter("imageConcepts", getConceptNames(request.getImageConcepts()));
         addParameter("fromDate", request.getFromDate());
         addParameter("toDate", request.getToDate());
+        addParameter("subjectName", request.getSubjectName());
+        addParameter("subjectNameTokens", request.getSubjectNameTokens());
 
         List<AddressRequest> addressRequests = request.getAddresses();
         for (int index = 0; index < addressRequests.size(); index++) {
