@@ -4,6 +4,7 @@ public record ImageData(
         String uuid,
         String subjectFirstName,
         String subjectLastName,
+        String subjectMiddleName,
         String url,
         String conceptName,
         String subjectTypeName,

@@ -2,6 +2,7 @@ SELECT media.id as id,
        media.uuid as uuid,
        media.subject_first_name as subject_first_name,
        media.subject_last_name as subject_last_name,
+       media.subject_middle_name as subject_middle_name,
        media.is_voided as is_voided,
        media.created_by_id as created_by_id,
        media.last_modified_by_id as last_modified_by_id,
@@ -38,6 +39,10 @@ where media.image_url is not null
     and media.is_voided is false
     <if(request.fromDate)>                  and media.created_date_time >= :fromDate                   <endif>
     <if(request.toDate)>                    and media.created_date_time \<= :toDate                     <endif>
+    <if(request.subjectName)>               and  (<request.subjectNameTokens : {subjectNameToken |
+                    (media.subject_first_name ilike '%<subjectNameToken>%' or media.subject_middle_name ilike '%<subjectNameToken>%' or media.subject_last_name ilike '%<subjectNameToken>%')
+                    }; separator="\n OR ">)
+    <endif>
     <if(request.subjectTypeNames)>          and media.subject_type_name in (:subjectTypeNames)          <endif>
     <if(request.programNames)>              and media.program_name in (:programNames)                   <endif>
     <if(request.encounterTypeNames)>        and media.encounter_type_name in (:encounterTypeNames)      <endif>

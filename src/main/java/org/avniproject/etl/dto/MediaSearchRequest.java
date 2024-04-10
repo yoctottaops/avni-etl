@@ -1,9 +1,6 @@
 package org.avniproject.etl.dto;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class MediaSearchRequest {
@@ -16,6 +13,8 @@ public final class MediaSearchRequest {
     private List<ConceptFilter> conceptFilters = new ArrayList<>();
     private Date fromDate;
     private Date toDate;
+    private String subjectName;
+    private List<String> subjectNameTokens = new ArrayList<>();
 
     public MediaSearchRequest() {
     }
@@ -96,6 +95,23 @@ public final class MediaSearchRequest {
         this.toDate = toDate;
     }
 
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+        this.setSubjectNameTokens(subjectName == null ? null : Arrays.stream(subjectName.split(" ")).toList());
+    }
+
+    public List<String> getSubjectNameTokens() {
+        return subjectNameTokens;
+    }
+
+    private void setSubjectNameTokens(List<String> subjectNameTokens) {
+        this.subjectNameTokens = subjectNameTokens;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -108,12 +124,13 @@ public final class MediaSearchRequest {
                 Objects.equals(this.syncValues, that.syncValues) &&
                 Objects.equals(this.fromDate, that.fromDate) &&
                 Objects.equals(this.toDate, that.toDate) &&
-                Objects.equals(this.conceptFilters, that.conceptFilters);
+                Objects.equals(this.conceptFilters, that.conceptFilters) &&
+                Objects.equals(this.subjectName, that.subjectName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(subjectTypeNames, programNames, encounterTypeNames, imageConcepts, syncValues, fromDate, toDate, conceptFilters);
+        return Objects.hash(subjectTypeNames, programNames, encounterTypeNames, imageConcepts, syncValues, fromDate, toDate, conceptFilters, subjectName);
     }
 
     @Override
@@ -126,7 +143,8 @@ public final class MediaSearchRequest {
                 "syncValues=" + syncValues + ", " +
                 "conceptFilters=" + conceptFilters + ", " +
                 "fromDate=" + fromDate + ", " +
-                "toDate=" + toDate + ']';
+                "toDate=" + toDate + ", " +
+                "subjectName=" + subjectName + ']';
     }
 }
 
