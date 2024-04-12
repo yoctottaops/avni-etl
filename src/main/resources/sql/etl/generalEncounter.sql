@@ -32,7 +32,6 @@ FROM public.encounter entity
   ${cross_join_concept_maps}
 WHERE st.uuid = '${subject_type_uuid}'
   AND et.uuid = '${encounter_type_uuid}'
-  AND entity.cancel_date_time isnull
     and entity.last_modified_date_time > '${start_time}'
     and entity.last_modified_date_time <= '${end_time}'
     );

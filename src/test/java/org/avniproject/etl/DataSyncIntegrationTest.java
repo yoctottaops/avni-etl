@@ -168,7 +168,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         runDataSync();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(format("select * from orgc.person_general_encounter_asset_info where encounter_id = %d", 2001));
         assertEquals(2, list.size());
-        assertEquals(100, ((BigDecimal)(list.get(0).get("Asset Info Bitcoin"))).intValue());
+        assertEquals(100, ((BigDecimal) (list.get(0).get("Asset Info Bitcoin"))).intValue());
         assertEquals("FTX", list.get(0).get("Asset Info Exchange"));
 
         jdbcTemplate.execute("update encounter set last_modified_date_time = current_timestamp where id = 2001");
@@ -278,11 +278,11 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         List<Map<String, Object>> exits = jdbcTemplate.queryForList("select * from orgc.person_nutrition_exit;");
         assertThat(exits.size() == 1, is(true));
         List<Map<String, Object>> programEncounters = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring;");
-        assertThat(programEncounters.size() == 1, is(true));
+        assertThat(programEncounters.size() == 3, is(true));
         List<Map<String, Object>> programEncounterCancels = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring_cancel;");
         assertThat(programEncounterCancels.size() == 1, is(true));
         List<Map<String, Object>> encounters = jdbcTemplate.queryForList("select * from orgc.person_general_encounter;");
-        assertThat(encounters.size() == 1, is(true));
+        assertThat(encounters.size() == 3, is(true));
         List<Map<String, Object>> encounterCancels = jdbcTemplate.queryForList("select * from orgc.person_general_encounter_cancel;");
         assertThat(encounterCancels.size() == 1, is(true));
         Arrays.asList(enrolments, programEncounters, encounters, exits, programEncounterCancels, encounterCancels).forEach(entity -> {
@@ -351,4 +351,47 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         Long numberOfRowsAfterSecondRun = countOfRowsIn("orgc.users");
         assertThat(numberOfRowsAfterSecondRun, is(equalTo(numberOfRowsAfterFirstRun)));
     }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void cancelDateTimeShouldBeUpdatedWhenProgramEncounterIsCancelled() throws InterruptedException {
+        runDataSync();
+
+        List<Map<String, Object>> programEncounterToBeCancelled = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring where id = 877069;");
+        assertThat(programEncounterToBeCancelled.size() == 1, is(true));
+        assertThat(programEncounterToBeCancelled.get(0).get("cancel_date_time") == null, is(true));
+
+        jdbcTemplate.execute(format("update program_encounter set  last_modified_date_time = '%s', cancel_date_time = now() where id = 877069;", getCurrentTime()));
+
+        runDataSync();
+
+        List<Map<String, Object>> cancelledProgramEncounter = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring where id = 877069;");
+        assertThat(cancelledProgramEncounter.get(0).get("cancel_date_time") == null, is(false));
+
+        List<Map<String, Object>> valueInCancelTable = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring_cancel where id = 877069;");
+        assertThat(programEncounterToBeCancelled.size() == 1, is(true));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void cancelDateTimeShouldBeUpdatedWhenGeneralEncounterIsCancelled() throws InterruptedException {
+        runDataSync();
+
+        List<Map<String, Object>> programEncounterToBeCancelled = jdbcTemplate.queryForList("select * from orgc.person_general_encounter where id = 1902;");
+        assertThat(programEncounterToBeCancelled.size() == 1, is(true));
+        assertThat(programEncounterToBeCancelled.get(0).get("cancel_date_time") == null, is(true));
+
+        jdbcTemplate.execute(format("update encounter set  last_modified_date_time = '%s', cancel_date_time = now() where id = 1902;", getCurrentTime()));
+
+        runDataSync();
+
+        List<Map<String, Object>> cancelledProgramEncounter = jdbcTemplate.queryForList("select * from orgc.person_general_encounter where id = 1902;");
+        assertThat(cancelledProgramEncounter.get(0).get("cancel_date_time") == null, is(false));
+
+        List<Map<String, Object>> valueInCancelTable = jdbcTemplate.queryForList("select * from orgc.person_general_encounter_cancel where id = 1902;");
+        assertThat(programEncounterToBeCancelled.size() == 1, is(true));
+    }
 }
+
