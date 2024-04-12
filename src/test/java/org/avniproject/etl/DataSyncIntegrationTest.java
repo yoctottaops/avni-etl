@@ -355,6 +355,20 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     @Test
     @Sql({"/test-data-teardown.sql", "/test-data.sql"})
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void userTableShouldUpdateWithOldUserDataandIsVoided() throws InterruptedException {
+        runDataSync();
+        String updateLastModifiedDateTimeSql = "update public.users set last_modified_date_time = now(),is_voided = true where id = 3453;";
+        jdbcTemplate.execute(updateLastModifiedDateTimeSql);
+
+        runDataSync();
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from orgc.users where is_voided = true and id = 3453 ; ");
+        assertThat(list.size(), is(equalTo(1)));
+    }
+
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void cancelDateTimeShouldBeUpdatedWhenProgramEncounterIsCancelled() throws InterruptedException {
         runDataSync();
 
