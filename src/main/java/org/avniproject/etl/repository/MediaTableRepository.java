@@ -39,12 +39,19 @@ public class MediaTableRepository {
     private List<ConceptFilterSearch> determineConceptFilterTablesAndColumns(List<ConceptFilter> conceptFilters) {
         logger.debug("searching concepts: " + conceptFilters);
         List<ConceptFilterSearch> conceptFilterTablesAndColumns = new ArrayList<>();
-        List<ColumnMetadata.ConceptType> supportedConceptSearchTypes = Arrays.asList(
+        List<ColumnMetadata.ConceptType> textConceptSearchTypes = Arrays.asList(
+            ColumnMetadata.ConceptType.Text,
+            ColumnMetadata.ConceptType.Id,
+            ColumnMetadata.ConceptType.Notes
+        );
+        List<ColumnMetadata.ConceptType> supportedConceptSearchTypes = new ArrayList<>(Arrays.asList(
             ColumnMetadata.ConceptType.Numeric,
             ColumnMetadata.ConceptType.Date,
             ColumnMetadata.ConceptType.SingleSelect,
             ColumnMetadata.ConceptType.MultiSelect
-        );
+        ));
+        supportedConceptSearchTypes.addAll(textConceptSearchTypes);
+
         SchemaMetadata schema = schemaMetadataRepository.getExistingSchemaMetadata();
         List<TableMetadata> tablesToSearch = Stream.of(schema.getAllSubjectTables(),
                 schema.getAllProgramEnrolmentTables(),
@@ -53,9 +60,9 @@ public class MediaTableRepository {
             .flatMap(Collection::stream)
             .toList();
         logger.debug("Searching tables: " + tablesToSearch);
-        for (ConceptFilter conceptFilter: conceptFilters) {
+        for (ConceptFilter conceptFilter : conceptFilters) {
             String conceptUuid = conceptFilter.getConceptUuid();
-            for (TableMetadata tableMetadata: tablesToSearch) {
+            for (TableMetadata tableMetadata : tablesToSearch) {
                 Optional<ColumnMetadata> column = tableMetadata.getColumnMetadataList()
                     .stream()
                     .filter(columnMetadata -> Objects.equals(columnMetadata.getConceptUuid(), conceptUuid)
@@ -66,7 +73,8 @@ public class MediaTableRepository {
                     conceptFilterTablesAndColumns.add(new ConceptFilterSearch(tableMetadata.getName(),
                         columnMetadata.getName(), conceptFilter.getValues(),
                         conceptFilter.getFrom(), conceptFilter.getTo(),
-                        columnMetadata.getConceptType().equals(ColumnMetadata.ConceptType.Numeric)));
+                        columnMetadata.getConceptType().equals(ColumnMetadata.ConceptType.Numeric),
+                        !textConceptSearchTypes.contains(columnMetadata.getConceptType())));
                     break;
                 }
             }
@@ -86,12 +94,12 @@ public class MediaTableRepository {
         }
 
         Query query = new MediaSearchQueryBuilder()
-                .withPage(page)
-                .withMediaSearchRequest(mediaSearchRequest)
-                .withSearchConceptFilters(conceptFilterSearches)
-                .build();
+            .withPage(page)
+            .withMediaSearchRequest(mediaSearchRequest)
+            .withSearchConceptFilters(conceptFilterSearches)
+            .build();
         return runInSchemaUserContext(() -> new NamedParameterJdbcTemplate(jdbcTemplate)
-                .query(query.sql(), query.parameters(), rowMapper), jdbcTemplate);
+            .query(query.sql(), query.parameters(), rowMapper), jdbcTemplate);
     }
 
 
