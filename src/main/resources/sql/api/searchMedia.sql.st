@@ -41,7 +41,7 @@ where media.image_url is not null
     <if(request.toDate)>                    and media.created_date_time \<= :toDate                     <endif>
     <if(request.subjectName)>               and  (<request.subjectNameTokens : {subjectNameToken |
                     (media.subject_first_name ilike '%<subjectNameToken>%' or media.subject_middle_name ilike '%<subjectNameToken>%' or media.subject_last_name ilike '%<subjectNameToken>%')
-                    }; separator="\n OR ">)
+                    }; separator="\n AND ">)
     <endif>
     <if(request.subjectTypeNames)>          and media.subject_type_name in (:subjectTypeNames)          <endif>
     <if(request.programNames)>              and media.program_name in (:programNames)                   <endif>
