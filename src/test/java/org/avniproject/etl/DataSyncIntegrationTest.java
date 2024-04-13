@@ -297,7 +297,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void shouldPopulateMediaTable() {
         runDataSync();
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat(media.size(), is(2));
+        assertThat(media.size(), is(3));
     }
 
     @Test
@@ -306,14 +306,14 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void shouldPopulateMediaTableCorrectlyWhenTransactionalDataUpdates() throws InterruptedException {
         runDataSync();
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Verifying current value of media table", media.size(), is(2));
+        assertThat("Verifying current value of media table", media.size(), is(3));
 
         String newEncounterImage = "https://s3.amazon.com/newEncounterImage.jpg";
         jdbcTemplate.execute("update encounter set observations = observations || jsonb_build_object('44163589-f76d-447d-9b6e-f5c32aa859eb', '" + newEncounterImage + "'), last_modified_date_time = now() where id = 1900;");
         runDataSync();
 
         media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Media table number of rows has not changed since last run", media.size(), is(2));
+        assertThat("Media table number of rows has not changed since last run", media.size(), is(3));
 
         Optional<Map<String, Object>> encounterMedia = media.stream().filter(stringObjectMap -> (Integer.valueOf(1900)).equals(stringObjectMap.get("entity_id"))).findAny();
         assertThat(encounterMedia.isPresent(), is(true));
@@ -331,7 +331,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         runDataSync();
 
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Media table number of rows has not changed since last run", media.size(), is(3));
+        assertThat("Media table number of rows has not changed since last run", media.size(), is(4));
     }
 
     @Test
