@@ -137,7 +137,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
     }
 
     private String wrapStringValue(String parameter) {
-        return parameter == null ? "null" : "'" + parameter + "'";
+        return parameter == null ? "null" : "'" + parameter.replace("'", "''") + "'";
     }
 
     public static boolean equalsButNotBothNull(Object a, Object b) {
