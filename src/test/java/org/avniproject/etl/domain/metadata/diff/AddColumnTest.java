@@ -15,7 +15,7 @@ public class AddColumnTest {
     public void shouldAddColumn() {
         OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
         AddColumn addColumn = new AddColumn("table", new Column("name", Column.Type.text));
-        assertThat(addColumn.getSql(), is("alter table schema.table add column \"name\" text;"));
+        assertThat(addColumn.getSql(), is("alter table \"schema\".table add column \"name\" text;"));
     }
 
     @Test
@@ -32,6 +32,6 @@ public class AddColumnTest {
         String shortenedColumnName = "Total silt requested by the family members – Nu (1206887472)";
         OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
         AddColumn addColumn = new AddColumn("table", new Column(columnName, Column.Type.text));
-        assertThat(addColumn.getSql(), is("alter table schema.table add column \""+shortenedColumnName+"\" text;"));
+        assertThat(addColumn.getSql(), is("alter table \"schema\".table add column \""+shortenedColumnName+"\" text;"));
     }
 }
