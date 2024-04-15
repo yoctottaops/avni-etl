@@ -17,7 +17,9 @@ public class RenameIndex implements Diff{
     public String getSql() {
         return new StringBuffer()
                 .append("ALTER INDEX ")
+                .append(QUOTE)
                 .append(OrgIdentityContextHolder.getDbSchema())
+                .append(QUOTE)
                 .append(DOT)
                 .append(QUOTE)
                 .append(oldName)

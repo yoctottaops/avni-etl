@@ -22,7 +22,9 @@ public class AddColumn implements Diff {
     public String getSql() {
         String alter_table_add_column = new StringBuffer()
                 .append("alter table ")
+                .append(QUOTE)
                 .append(OrgIdentityContextHolder.getDbSchema())
+                .append(QUOTE)
                 .append(DOT)
                 .append(tableName)
                 .append(" add column ")

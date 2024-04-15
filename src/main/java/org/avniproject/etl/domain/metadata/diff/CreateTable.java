@@ -60,7 +60,7 @@ public class CreateTable implements Diff {
     }
 
     private String getTableName() {
-        return new StringBuilder().append(OrgIdentityContextHolder.getDbSchema())
+        return new StringBuilder().append(QUOTE).append(OrgIdentityContextHolder.getDbSchema()).append(QUOTE)
                 .append(DOT)
                 .append(name)
                 .toString();
