@@ -29,7 +29,7 @@ class ColumnMetadataTest {
 
         assertThat(changes.size(), is(1));
         assertThat(changes.get(0), instanceOf(RenameColumn.class));
-        assertThat(changes.get(0).getSql(), is("alter table schema.table rename column \"oldName\" to \"newName\";"));
+        assertThat(changes.get(0).getSql(), is("alter table \"schema\".table rename column \"oldName\" to \"newName\";"));
     }
 
     @Test
