@@ -4,9 +4,11 @@ import org.avniproject.etl.domain.NullObject;
 import org.avniproject.etl.domain.OrgIdentityContextHolder;
 import org.avniproject.etl.domain.metadata.SchemaMetadata;
 import org.avniproject.etl.domain.metadata.TableMetadata;
+import org.avniproject.etl.repository.sql.SqlFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.stringtemplate.v4.ST;
 
 import java.util.Date;
 
@@ -15,11 +17,7 @@ import static org.avniproject.etl.repository.JdbcContextWrapper.runInOrgContext;
 @Repository
 public class CleanEnrolmentExitTableAction implements EntitySyncAction {
     private final JdbcTemplate jdbcTemplate;
-
-    private static final String deleteInvalidExitsSql = "delete from \"${schemaName}\".\"${exitTableName}\"\n" +
-            "using \"${schemaName}\".\"${primaryTableName}\"\n" +
-            "where \"${schemaName}\".\"${exitTableName}\".id = \"${schemaName}\".\"${primaryTableName}\".id\n" +
-            "and \"${schemaName}\".\"${primaryTableName}\".program_exit_date_time is null;";
+    private static final String deleteInvalidExitsSqlTemplate = SqlFile.readSqlFile("deleteInvalidExits.sql.st");
     @Autowired
     public CleanEnrolmentExitTableAction(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -37,14 +35,19 @@ public class CleanEnrolmentExitTableAction implements EntitySyncAction {
         String schema = OrgIdentityContextHolder.getDbSchema();
         String exitTableName = tableMetadata.getName();
         String primaryTableName = exitTableName.substring(0, exitTableName.length() - 5);
-        String sql = deleteInvalidExitsSql
-                .replace("${schemaName}", schema)
-                .replace("${primaryTableName}", primaryTableName)
-                .replace("${exitTableName}", exitTableName);
+        String sql = new ST(deleteInvalidExitsSqlTemplate)
+                .add("schemaName", wrapInQuotes(schema))
+                .add("exitTableName", wrapInQuotes(exitTableName))
+                .add("primaryTableName", wrapInQuotes(primaryTableName))
+                .render();
         runInOrgContext(() -> {
             jdbcTemplate.execute(sql);
             return NullObject.instance();
         }, jdbcTemplate);
+    }
+
+    private String wrapInQuotes(String parameter) {
+        return parameter == null ? "null" : "\"" + parameter + "\"";
     }
 
     private boolean supports(TableMetadata tableMetadata) {

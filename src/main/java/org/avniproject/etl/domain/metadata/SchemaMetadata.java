@@ -22,31 +22,9 @@ public class SchemaMetadata {
         return tableMetadata;
     }
 
-    private static final Map<TableMetadata.Type, TableMetadata.OrderedType> typeToOrderedType = Map.ofEntries(
-            Map.entry(TableMetadata.Type.Individual, TableMetadata.OrderedType.Individual),
-            Map.entry(TableMetadata.Type.Person, TableMetadata.OrderedType.Person),
-            Map.entry(TableMetadata.Type.Household, TableMetadata.OrderedType.Household),
-            Map.entry(TableMetadata.Type.Group, TableMetadata.OrderedType.Group),
-            Map.entry(TableMetadata.Type.ProgramEnrolment, TableMetadata.OrderedType.ProgramEnrolment),
-            Map.entry(TableMetadata.Type.ProgramExit, TableMetadata.OrderedType.ProgramExit),
-            Map.entry(TableMetadata.Type.ProgramEncounter, TableMetadata.OrderedType.ProgramEncounter),
-            Map.entry(TableMetadata.Type.ProgramEncounterCancellation, TableMetadata.OrderedType.ProgramEncounterCancellation),
-            Map.entry(TableMetadata.Type.Encounter, TableMetadata.OrderedType.Encounter),
-            Map.entry(TableMetadata.Type.IndividualEncounterCancellation, TableMetadata.OrderedType.IndividualEncounterCancellation),
-            Map.entry(TableMetadata.Type.Address, TableMetadata.OrderedType.Address),
-            Map.entry(TableMetadata.Type.Media, TableMetadata.OrderedType.Media),
-            Map.entry(TableMetadata.Type.ManualProgramEnrolmentEligibility, TableMetadata.OrderedType.ManualProgramEnrolmentEligibility),
-            Map.entry(TableMetadata.Type.GroupToMember, TableMetadata.OrderedType.GroupToMember),
-            Map.entry(TableMetadata.Type.HouseholdToMember, TableMetadata.OrderedType.HouseholdToMember),
-            Map.entry(TableMetadata.Type.RepeatableQuestionGroup, TableMetadata.OrderedType.RepeatableQuestionGroup),
-            Map.entry(TableMetadata.Type.Checklist, TableMetadata.OrderedType.Checklist),
-            Map.entry(TableMetadata.Type.SyncTelemetry, TableMetadata.OrderedType.SyncTelemetry),
-            Map.entry(TableMetadata.Type.User, TableMetadata.OrderedType.User)
-    );
-
     public List<TableMetadata> getOrderedTableMetadata() {
         List<TableMetadata> sortedTableMetadata = new ArrayList<>(tableMetadata);
-        sortedTableMetadata.sort(Comparator.comparingInt(o -> typeToOrderedType.get(o.getType()).getPriority()));
+        sortedTableMetadata.sort(Comparator.comparing(TableMetadata::getType));
         return sortedTableMetadata;
     }
 

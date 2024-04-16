@@ -252,35 +252,6 @@ public class TableMetadata extends Model {
         User
     }
 
-    public enum OrderedType {
-        Individual(1),
-        Person(2),
-        Household(3),
-        HouseholdToMember(4),
-        Group(5),
-        GroupToMember(6),
-        Encounter(7),
-        IndividualEncounterCancellation(8),
-        ManualProgramEnrolmentEligibility(9),
-        ProgramEnrolment(10),
-        ProgramExit(11),
-        ProgramEncounter(12),
-        ProgramEncounterCancellation(13),
-        Address(14),
-        RepeatableQuestionGroup(15),
-        Checklist(16),
-        SyncTelemetry(17),
-        Media(18),
-        User(19);
-        private final int priority;
-        OrderedType(int priority) {
-            this.priority = priority;
-        }
-        public int getPriority() {
-            return this.priority;
-        }
-    }
-
 
     public enum TableType {
         IndividualProfile,
