@@ -115,4 +115,10 @@ public class SchemaMetadata {
         List<String> strings = grouped.entrySet().stream().map(x -> String.format("%s-%d", x.getKey(), x.getValue().size())).collect(Collectors.toList());
         return String.join(";", strings);
     }
+
+    public Optional<TableMetadata> findTableByForm(String formUuid) {
+        return this.tableMetadata.stream()
+            .filter(table -> table.getFormUuid() != null && table.getFormUuid().equals(formUuid))
+            .findFirst();
+    }
 }
