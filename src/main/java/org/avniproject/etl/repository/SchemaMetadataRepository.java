@@ -300,7 +300,7 @@ public class SchemaMetadataRepository {
 
     public void save(SchemaMetadata schemaMetadata) {
         schemaMetadata.setTableMetadata(
-                schemaMetadata.getTableMetadata()
+                schemaMetadata.getOrderedTableMetadata()
                         .stream()
                         .map(tableMetadataRepository::save)
                         .collect(Collectors.toList()));

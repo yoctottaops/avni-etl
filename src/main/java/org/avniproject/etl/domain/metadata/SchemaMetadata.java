@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -19,6 +20,12 @@ public class SchemaMetadata {
 
     public List<TableMetadata> getTableMetadata() {
         return tableMetadata;
+    }
+
+    public List<TableMetadata> getOrderedTableMetadata() {
+        List<TableMetadata> sortedTableMetadata = new ArrayList<>(tableMetadata);
+        sortedTableMetadata.sort(Comparator.comparing(TableMetadata::getType));
+        return sortedTableMetadata;
     }
 
     public void setTableMetadata(List<TableMetadata> tableMetadata) {

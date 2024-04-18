@@ -68,4 +68,17 @@ public class SchemaMetadataTest {
 
     }
 
+    @Test
+    public void shouldOrderMetadataByPriority() {
+        TableMetadata personTable = new TableMetadata();
+        personTable.setType(TableMetadata.Type.Person);
+        TableMetadata programEnrolmentTable = new TableMetadata();
+        programEnrolmentTable.setType(TableMetadata.Type.ProgramEnrolment);
+        TableMetadata programExitTable = new TableMetadata();
+        programExitTable.setType(TableMetadata.Type.ProgramExit);
+        SchemaMetadata schemaMetadata = new SchemaMetadata(Arrays.asList(personTable, programEnrolmentTable, programExitTable));
+        List<TableMetadata> orderedMetadata = schemaMetadata.getOrderedTableMetadata();
+        assertThat(orderedMetadata, contains(personTable, programEnrolmentTable, programExitTable));
+    }
+
 }

@@ -74,11 +74,11 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void addingNewRecordWillAddOneRow() {
         runDataSync();
-        assertThat(Objects.equals(getPersons().size(), 1), is(true));
+        assertThat(Objects.equals(getPersons().size(), 2), is(true));
         String newPersonQuery = format("INSERT INTO individual (id, uuid, address_id, observations, version, date_of_birth, date_of_birth_verified, gender_id, registration_date, organisation_id, first_name, last_name, is_voided, audit_id, facility_id, registration_location, subject_type_id, legacy_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, sync_concept_1_value, sync_concept_2_value) VALUES (574172, '751bb8c8-ef18-4250-a73d-73106e7a5b66', 107786, '{}', 0, '2001-04-05', false, 389, '2022-04-05', 12, 'New', 'Person', false, create_audit(), null, null, 339, null, 1, 1, '%s', '%s', null, null);", getCurrentTime(), getCurrentTime());
         jdbcTemplate.execute(newPersonQuery);
         runDataSync();
-        assertThat(Objects.equals(getPersons().size(), 2), is(true));
+        assertThat(Objects.equals(getPersons().size(), 3), is(true));
     }
 
     @Test
@@ -274,9 +274,9 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void allTablesHaveAddressIdAndIndividualIdColumns() {
         runDataSync();
         List<Map<String, Object>> enrolments = jdbcTemplate.queryForList("select * from orgc.person_nutrition;");
-        assertThat(enrolments.size() == 2, is(true));
+        assertThat(enrolments.size() == 3, is(true));
         List<Map<String, Object>> exits = jdbcTemplate.queryForList("select * from orgc.person_nutrition_exit;");
-        assertThat(exits.size() == 1, is(true));
+        assertThat(exits.size() == 2, is(true));
         List<Map<String, Object>> programEncounters = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring;");
         assertThat(programEncounters.size() == 3, is(true));
         List<Map<String, Object>> programEncounterCancels = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring_cancel;");
@@ -297,7 +297,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void shouldPopulateMediaTable() {
         runDataSync();
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat(media.size(), is(3));
+        assertThat(media.size(), is(5));
     }
 
     @Test
@@ -306,14 +306,14 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void shouldPopulateMediaTableCorrectlyWhenTransactionalDataUpdates() throws InterruptedException {
         runDataSync();
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Verifying current value of media table", media.size(), is(3));
+        assertThat("Verifying current value of media table", media.size(), is(5));
 
         String newEncounterImage = "https://s3.amazon.com/newEncounterImage.jpg";
         jdbcTemplate.execute("update encounter set observations = observations || jsonb_build_object('44163589-f76d-447d-9b6e-f5c32aa859eb', '" + newEncounterImage + "'), last_modified_date_time = now() where id = 1900;");
         runDataSync();
 
         media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Media table number of rows has not changed since last run", media.size(), is(3));
+        assertThat("Media table number of rows has not changed since last run", media.size(), is(5));
 
         Optional<Map<String, Object>> encounterMedia = media.stream().filter(stringObjectMap -> (Integer.valueOf(1900)).equals(stringObjectMap.get("entity_id"))).findAny();
         assertThat(encounterMedia.isPresent(), is(true));
@@ -331,7 +331,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         runDataSync();
 
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Media table number of rows has not changed since last run", media.size(), is(4));
+        assertThat("Media table number of rows has not changed since last run", media.size(), is(6));
     }
 
     @Test

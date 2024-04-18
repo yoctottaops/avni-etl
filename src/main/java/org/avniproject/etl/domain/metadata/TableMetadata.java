@@ -252,6 +252,7 @@ public class TableMetadata extends Model {
         User
     }
 
+
     public enum TableType {
         IndividualProfile,
         Encounter,
