@@ -8,15 +8,17 @@ public class ConceptFilterSearch {
     private List<String> columnValues;
     private String from;
     private String to;
-    private boolean isNonStringValue;
+    private boolean nonStringValue;
+    private boolean exactSearch;
 
-    public ConceptFilterSearch(String tableName, String columnName, List<String> columnValues, String from, String to, boolean isNonStringValue) {
+    public ConceptFilterSearch(String tableName, String columnName, List<String> columnValues, String from, String to, boolean nonStringValue, boolean exactSearch) {
         this.tableName = tableName;
         this.columnName = columnName;
         this.columnValues = columnValues;
         this.from = from;
         this.to = to;
-        this.isNonStringValue = isNonStringValue;
+        this.nonStringValue = nonStringValue;
+        this.exactSearch = exactSearch;
     }
 
     public String getTableName() {
@@ -51,7 +53,8 @@ public class ConceptFilterSearch {
             ", columnValues=" + columnValues +
             ", from=" + from +
             ", to=" + to +
-            ", isNonStringValue=" + isNonStringValue +
+            ", nonStringValue=" + nonStringValue +
+            ", exactSearch=" + exactSearch +
             '}';
     }
 
@@ -71,11 +74,19 @@ public class ConceptFilterSearch {
         this.to = to;
     }
 
-    public boolean getNonStringValue() {
-        return isNonStringValue;
+    public boolean isNonStringValue() {
+        return nonStringValue;
     }
 
     public void setNonStringValue(boolean nonStringValue) {
-        isNonStringValue = nonStringValue;
+        this.nonStringValue = nonStringValue;
+    }
+
+    public boolean isExactSearch() {
+        return exactSearch;
+    }
+
+    public void setExactSearch(boolean exactSearch) {
+        this.exactSearch = exactSearch;
     }
 }

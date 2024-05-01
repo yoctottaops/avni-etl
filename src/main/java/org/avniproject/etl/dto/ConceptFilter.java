@@ -5,6 +5,7 @@ import java.util.List;
 
 public class ConceptFilter {
     private String conceptUuid;
+    private String formUuid;
     private List<String> values;
     private String from;
     private String to;
@@ -15,6 +16,14 @@ public class ConceptFilter {
 
     public void setConceptUuid(String conceptUuid) {
         this.conceptUuid = conceptUuid;
+    }
+
+    public String getFormUuid() {
+        return formUuid;
+    }
+
+    public void setFormUuid(String formUuid) {
+        this.formUuid = formUuid;
     }
 
     public List<String> getValues() {
