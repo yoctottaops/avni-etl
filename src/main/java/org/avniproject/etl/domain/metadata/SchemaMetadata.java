@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -19,6 +20,12 @@ public class SchemaMetadata {
 
     public List<TableMetadata> getTableMetadata() {
         return tableMetadata;
+    }
+
+    public List<TableMetadata> getOrderedTableMetadata() {
+        List<TableMetadata> sortedTableMetadata = new ArrayList<>(tableMetadata);
+        sortedTableMetadata.sort(Comparator.comparing(TableMetadata::getType));
+        return sortedTableMetadata;
     }
 
     public void setTableMetadata(List<TableMetadata> tableMetadata) {
@@ -114,5 +121,11 @@ public class SchemaMetadata {
         Map<TableMetadata.Type, List<TableMetadata>> grouped = this.tableMetadata.stream().collect(groupingBy(TableMetadata::getType));
         List<String> strings = grouped.entrySet().stream().map(x -> String.format("%s-%d", x.getKey(), x.getValue().size())).collect(Collectors.toList());
         return String.join(";", strings);
+    }
+
+    public Optional<TableMetadata> findTableByForm(String formUuid) {
+        return this.tableMetadata.stream()
+            .filter(table -> table.getFormUuid() != null && table.getFormUuid().equals(formUuid))
+            .findFirst();
     }
 }

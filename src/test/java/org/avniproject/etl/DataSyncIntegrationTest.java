@@ -74,11 +74,11 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void addingNewRecordWillAddOneRow() {
         runDataSync();
-        assertThat(Objects.equals(getPersons().size(), 1), is(true));
+        assertThat(Objects.equals(getPersons().size(), 2), is(true));
         String newPersonQuery = format("INSERT INTO individual (id, uuid, address_id, observations, version, date_of_birth, date_of_birth_verified, gender_id, registration_date, organisation_id, first_name, last_name, is_voided, audit_id, facility_id, registration_location, subject_type_id, legacy_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, sync_concept_1_value, sync_concept_2_value) VALUES (574172, '751bb8c8-ef18-4250-a73d-73106e7a5b66', 107786, '{}', 0, '2001-04-05', false, 389, '2022-04-05', 12, 'New', 'Person', false, create_audit(), null, null, 339, null, 1, 1, '%s', '%s', null, null);", getCurrentTime(), getCurrentTime());
         jdbcTemplate.execute(newPersonQuery);
         runDataSync();
-        assertThat(Objects.equals(getPersons().size(), 2), is(true));
+        assertThat(Objects.equals(getPersons().size(), 3), is(true));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         runDataSync();
         List<Map<String, Object>> list = jdbcTemplate.queryForList(format("select * from orgc.person_general_encounter_asset_info where encounter_id = %d", 2001));
         assertEquals(2, list.size());
-        assertEquals(100, ((BigDecimal)(list.get(0).get("Asset Info Bitcoin"))).intValue());
+        assertEquals(100, ((BigDecimal) (list.get(0).get("Asset Info Bitcoin"))).intValue());
         assertEquals("FTX", list.get(0).get("Asset Info Exchange"));
 
         jdbcTemplate.execute("update encounter set last_modified_date_time = current_timestamp where id = 2001");
@@ -274,15 +274,15 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void allTablesHaveAddressIdAndIndividualIdColumns() {
         runDataSync();
         List<Map<String, Object>> enrolments = jdbcTemplate.queryForList("select * from orgc.person_nutrition;");
-        assertThat(enrolments.size() == 2, is(true));
+        assertThat(enrolments.size() == 3, is(true));
         List<Map<String, Object>> exits = jdbcTemplate.queryForList("select * from orgc.person_nutrition_exit;");
-        assertThat(exits.size() == 1, is(true));
+        assertThat(exits.size() == 2, is(true));
         List<Map<String, Object>> programEncounters = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring;");
-        assertThat(programEncounters.size() == 1, is(true));
+        assertThat(programEncounters.size() == 3, is(true));
         List<Map<String, Object>> programEncounterCancels = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring_cancel;");
         assertThat(programEncounterCancels.size() == 1, is(true));
         List<Map<String, Object>> encounters = jdbcTemplate.queryForList("select * from orgc.person_general_encounter;");
-        assertThat(encounters.size() == 1, is(true));
+        assertThat(encounters.size() == 3, is(true));
         List<Map<String, Object>> encounterCancels = jdbcTemplate.queryForList("select * from orgc.person_general_encounter_cancel;");
         assertThat(encounterCancels.size() == 1, is(true));
         Arrays.asList(enrolments, programEncounters, encounters, exits, programEncounterCancels, encounterCancels).forEach(entity -> {
@@ -297,7 +297,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void shouldPopulateMediaTable() {
         runDataSync();
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat(media.size(), is(2));
+        assertThat(media.size(), is(5));
     }
 
     @Test
@@ -306,14 +306,14 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
     public void shouldPopulateMediaTableCorrectlyWhenTransactionalDataUpdates() throws InterruptedException {
         runDataSync();
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Verifying current value of media table", media.size(), is(2));
+        assertThat("Verifying current value of media table", media.size(), is(5));
 
         String newEncounterImage = "https://s3.amazon.com/newEncounterImage.jpg";
         jdbcTemplate.execute("update encounter set observations = observations || jsonb_build_object('44163589-f76d-447d-9b6e-f5c32aa859eb', '" + newEncounterImage + "'), last_modified_date_time = now() where id = 1900;");
         runDataSync();
 
         media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Media table number of rows has not changed since last run", media.size(), is(2));
+        assertThat("Media table number of rows has not changed since last run", media.size(), is(5));
 
         Optional<Map<String, Object>> encounterMedia = media.stream().filter(stringObjectMap -> (Integer.valueOf(1900)).equals(stringObjectMap.get("entity_id"))).findAny();
         assertThat(encounterMedia.isPresent(), is(true));
@@ -331,7 +331,7 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         runDataSync();
 
         List<Map<String, Object>> media = jdbcTemplate.queryForList("select * from orgc.media;");
-        assertThat("Media table number of rows has not changed since last run", media.size(), is(3));
+        assertThat("Media table number of rows has not changed since last run", media.size(), is(6));
     }
 
     @Test
@@ -351,4 +351,61 @@ public class DataSyncIntegrationTest extends BaseIntegrationTest {
         Long numberOfRowsAfterSecondRun = countOfRowsIn("orgc.users");
         assertThat(numberOfRowsAfterSecondRun, is(equalTo(numberOfRowsAfterFirstRun)));
     }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void userTableShouldUpdateWithIsVoided() throws InterruptedException {
+        runDataSync();
+        String updateIsVoided = "update public.users set last_modified_date_time = now(),is_voided = true where id = 3453;";
+        jdbcTemplate.execute(updateIsVoided);
+
+        runDataSync();
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from orgc.users where is_voided = true and id = 3453 ; ");
+        assertThat(list.size(), is(equalTo(1)));
+    }
+
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void cancelDateTimeShouldBeUpdatedWhenProgramEncounterIsCancelled() throws InterruptedException {
+        runDataSync();
+
+        List<Map<String, Object>> programEncounterToBeCancelled = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring where id = 877069;");
+        assertThat(programEncounterToBeCancelled.size() == 1, is(true));
+        assertThat(programEncounterToBeCancelled.get(0).get("cancel_date_time") == null, is(true));
+
+        jdbcTemplate.execute(format("update program_encounter set  last_modified_date_time = '%s', cancel_date_time = now() where id = 877069;", getCurrentTime()));
+
+        runDataSync();
+
+        List<Map<String, Object>> cancelledProgramEncounter = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring where id = 877069;");
+        assertThat(cancelledProgramEncounter.get(0).get("cancel_date_time") == null, is(false));
+
+        List<Map<String, Object>> valueInCancelTable = jdbcTemplate.queryForList("select * from orgc.person_nutrition_growth_monitoring_cancel where id = 877069;");
+        assertThat(programEncounterToBeCancelled.size() == 1, is(true));
+    }
+
+    @Test
+    @Sql({"/test-data-teardown.sql", "/test-data.sql"})
+    @Sql(scripts = "/test-data-teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void cancelDateTimeShouldBeUpdatedWhenGeneralEncounterIsCancelled() throws InterruptedException {
+        runDataSync();
+
+        List<Map<String, Object>> programEncounterToBeCancelled = jdbcTemplate.queryForList("select * from orgc.person_general_encounter where id = 1902;");
+        assertThat(programEncounterToBeCancelled.size() == 1, is(true));
+        assertThat(programEncounterToBeCancelled.get(0).get("cancel_date_time") == null, is(true));
+
+        jdbcTemplate.execute(format("update encounter set  last_modified_date_time = '%s', cancel_date_time = now() where id = 1902;", getCurrentTime()));
+
+        runDataSync();
+
+        List<Map<String, Object>> cancelledProgramEncounter = jdbcTemplate.queryForList("select * from orgc.person_general_encounter where id = 1902;");
+        assertThat(cancelledProgramEncounter.get(0).get("cancel_date_time") == null, is(false));
+
+        List<Map<String, Object>> valueInCancelTable = jdbcTemplate.queryForList("select * from orgc.person_general_encounter_cancel where id = 1902;");
+        assertThat(programEncounterToBeCancelled.size() == 1, is(true));
+    }
 }
+

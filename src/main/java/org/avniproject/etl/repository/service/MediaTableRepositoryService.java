@@ -1,6 +1,8 @@
 package org.avniproject.etl.repository.service;
 
+import org.apache.log4j.Logger;
 import org.avniproject.etl.config.AmazonClientService;
+import org.avniproject.etl.config.S3FileDoesNotExist;
 import org.avniproject.etl.dto.ImageData;
 import org.avniproject.etl.dto.MediaDTO;
 import org.avniproject.etl.util.Utils;
@@ -30,9 +32,14 @@ public class MediaTableRepositoryService {
 
             try {
                 signedImageUrl = amazonClientService.generateMediaDownloadUrl(imageUrl);
-                signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
+                try {
+                    signedThumbnailUrl = amazonClientService.generateMediaDownloadUrl(thumbnailUrl);
+                } catch (S3FileDoesNotExist ignored) {
+                }
             } catch (IllegalArgumentException illegalArgumentException) {
                 //Ignore and move on. Image will be null
+            } catch (S3FileDoesNotExist e) {
+                throw new RuntimeException(e);
             }
 
             String uuid = rs.getString("uuid");
@@ -42,6 +49,7 @@ public class MediaTableRepositoryService {
                     compositeUUID,
                     rs.getString("subject_first_name"),
                     rs.getString("subject_last_name"),
+                    rs.getString("subject_middle_name"),
                     imageUrl,
                     rs.getString("concept_name"),
                     signedImageUrl,
@@ -72,6 +80,7 @@ public class MediaTableRepositoryService {
             return new ImageData(compositeImageUUID,
                     rs.getString("subject_first_name"),
                     rs.getString("subject_last_name"),
+                    rs.getString("subject_middle_name"),
                     imageUrl,
                     rs.getString("concept_name"),
                     rs.getString("subject_type_name"),

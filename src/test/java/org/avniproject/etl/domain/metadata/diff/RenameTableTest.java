@@ -13,6 +13,6 @@ public class RenameTableTest {
     public void shouldRenameTable() {
         OrgIdentityContextHolder.setContext(OrganisationIdentity.createForOrganisation("dbUser", "schema"));
         RenameTable renameTable = new RenameTable("old_name", "new_name");
-        assertThat(renameTable.getSql(), is("alter table schema.old_name rename to new_name;"));
+        assertThat(renameTable.getSql(), is("alter table \"schema\".old_name rename to new_name;"));
     }
 }

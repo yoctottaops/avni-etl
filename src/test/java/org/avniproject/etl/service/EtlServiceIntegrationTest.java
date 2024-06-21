@@ -27,10 +27,10 @@ public class EtlServiceIntegrationTest extends BaseIntegrationTest {
 
         assertThat(countOfRowsIn("orgc.goat"), equalTo(1L));
         assertThat(countOfRowsIn("orgc.household"), equalTo(1L));
-        assertThat(countOfRowsIn("orgc.person"), equalTo(1L));
-        assertThat(countOfRowsIn("orgc.person_nutrition"), equalTo(2L));
-        assertThat(countOfRowsIn("orgc.person_nutrition_exit"), equalTo(1L));
-        assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring"), equalTo(1L));
+        assertThat(countOfRowsIn("orgc.person"), equalTo(2L));
+        assertThat(countOfRowsIn("orgc.person_nutrition"), equalTo(3L));
+        assertThat(countOfRowsIn("orgc.person_nutrition_exit"), equalTo(2L));
+        assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring"), equalTo(3L));
         assertThat(countOfRowsIn("orgc.person_nutrition_growth_monitoring_cancel"), equalTo(1L));
         assertThat(countOfRowsIn("orgc.sync_telemetry"), equalTo(1L));
     }

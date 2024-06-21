@@ -3,7 +3,7 @@ insert into <schemaName>.<tableName> (entity_id, uuid, is_voided, created_by_id,
                                   address_id, image_url, sync_parameter_key1, sync_parameter_value1,
                                   sync_parameter_key2,
                                   sync_parameter_value2, subject_type_name, encounter_type_name, program_name,
-                                  concept_name, subject_first_name, subject_last_name)
+                                  concept_name, subject_first_name, subject_last_name, subject_middle_name)
 select entity.id,
        entity.uuid,
        entity.is_voided,
@@ -31,7 +31,12 @@ select entity.id,
        <programName>,
        <conceptName>,
        subject.first_name,
-       subject.last_name
+       subject.last_name,
+       <if(hasMiddleName)>
+            subject.middle_name
+       <else>
+            null
+       <endif>
 from <schemaName>.<fromTableName> entity
     inner join <schemaName>.<subjectTableName> subject on entity.<individualId> = subject.id
 where entity.last_modified_date_time > '<startTime>'

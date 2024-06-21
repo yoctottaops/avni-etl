@@ -36,7 +36,7 @@ public class SyncService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sync(Organisation organisation) {
         SchemaMetadata currentSchemaMetadata = organisation.getSchemaMetadata();
-        currentSchemaMetadata.getTableMetadata().forEach(tableMetadata -> migrateTable(tableMetadata, organisation.getSyncStatus(), currentSchemaMetadata));
+        currentSchemaMetadata.getOrderedTableMetadata().forEach(tableMetadata -> migrateTable(tableMetadata, organisation.getSyncStatus(), currentSchemaMetadata));
     }
 
     @Transactional

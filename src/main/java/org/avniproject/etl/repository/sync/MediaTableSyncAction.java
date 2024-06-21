@@ -103,6 +103,10 @@ public class MediaTableSyncAction implements EntitySyncAction {
                     .add("syncRegistrationConcept2Name", wrapStringValue(syncRegistrationConcepts[1].getName()))
                     .add("syncRegistrationConcept2ColumnName", wrapInQuotes(syncRegistrationConcepts[1].getColumnName()));
         }
+        if (tableMetadata.getType().equals(TableMetadata.Type.Person) && tableMetadata.hasColumn("middle_name")) {
+            template = template
+                .add("hasMiddleName", true);
+        }
 
         String sql = template.render();
 
@@ -137,7 +141,7 @@ public class MediaTableSyncAction implements EntitySyncAction {
     }
 
     private String wrapStringValue(String parameter) {
-        return parameter == null ? "null" : "'" + parameter + "'";
+        return parameter == null ? "null" : "'" + parameter.replace("'", "''") + "'";
     }
 
     public static boolean equalsButNotBothNull(Object a, Object b) {

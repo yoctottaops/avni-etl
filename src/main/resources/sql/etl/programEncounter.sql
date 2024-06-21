@@ -53,6 +53,5 @@ FROM public.program_encounter entity
 WHERE p.uuid = '${program_uuid}'
   AND et.uuid = '${encounter_type_uuid}'
   AND st.uuid = '${subject_type_uuid}'
-  AND entity.cancel_date_time isnull
   and entity.last_modified_date_time > '${start_time}'
   and entity.last_modified_date_time <= '${end_time}');
