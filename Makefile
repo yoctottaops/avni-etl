@@ -27,10 +27,10 @@ start_server_with_dump_data_org: build_server
 	OPENCHS_DATABASE_NAME=avni_org OPENCHS_CLIENT_ID=dummy OPENCHS_KEYCLOAK_CLIENT_SECRET=dummy AVNI_IDP_TYPE=none java -jar ./build/libs/etl-1.0.0-SNAPSHOT.jar
 
 debug_server: build_server
-	java -Xmx2048m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar ./build/libs/etl-1.0.0-SNAPSHOT.jar
+	java -Xmx2048m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006 -jar ./build/libs/etl-1.0.0-SNAPSHOT.jar
 
 debug_server_with_dump_data_org: build_server
-	OPENCHS_DATABASE_NAME=avni_org OPENCHS_CLIENT_ID=dummy OPENCHS_KEYCLOAK_CLIENT_SECRET=dummy AVNI_IDP_TYPE=none java -Xmx2048m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar ./build/libs/etl-1.0.0-SNAPSHOT.jar
+	OPENCHS_DATABASE_NAME=avni_org OPENCHS_CLIENT_ID=dummy OPENCHS_KEYCLOAK_CLIENT_SECRET=dummy AVNI_IDP_TYPE=none java -Xmx2048m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006 -jar ./build/libs/etl-1.0.0-SNAPSHOT.jar
 
 boot_run:
 	./gradlew bootRun
@@ -46,7 +46,7 @@ open-test-results:
 start: boot_run
 
 debug:
-	./gradlew bootRun -Dagentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+	./gradlew bootRun -Dagentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
 
 delete-etl-metadata:
 ifndef schemaName
